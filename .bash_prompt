@@ -1,0 +1,71 @@
+# ex: ts=2 sw=2 et filetype=bash
+
+# ANSI color codes
+bold="\e[1m"
+reset="\e[0m"
+black="\e[030m"
+red="\e[031m"
+green="\e[38;5;82m"
+yellow="\e[033m"
+blue="\e[034m"
+magenta="\e[035m"
+cyan="\e[036m"
+white="\e[037m"
+
+prompt_devenv() {
+  if [ -n "$DEVENVFLAVOR" ]; then
+    echo -e " [${cyan}${bold}dev: $DEVENVFLAVOR${reset}]"
+  fi
+}
+
+prompt_git() {
+  # Check if the current directory is in a Git repository.
+  if [ "$(git rev-parse --is-inside-work-tree 2> /dev/null)" == 'true' ]; then
+    local t=''
+    local s=''
+    local c=''
+
+    # Ensure the index is up to date.
+    git update-index --really-refresh -q &>/dev/null
+
+    # Get the short symbolic ref.
+    # If HEAD isnât a symbolic ref, get the short SHA for the latest commit
+    # Otherwise, just give up.
+    if s=$(git symbolic-ref --quiet --short HEAD 2> /dev/null); then
+      t='\uf418'
+    elif s=$(git describe --tags --abbrev=0 2> /dev/null); then
+      t='\uf02c'
+    elif s=$(git rev-parse --short HEAD 2> /dev/null); then
+      t='\ue729'
+    else
+      s='(unknown)'
+      t='\uf29c'
+    fi
+
+    # Check for unstaged/untracked changes.
+    if [ -n "$(git ls-files --others --exclude-standard)" ] || \
+       ! $(git diff --quiet --ignore-submodules && git diff --quiet --ignore-submodules --cached)
+    then
+      c='*'
+    fi
+
+    echo -e " [${cyan}${t} ${s}${yellow}${c}${reset}]"
+  else
+    return
+  fi
+}
+
+arrow() {
+  echo -e "\uf307"
+}
+
+check_ssh() {
+  if [[ -n "${SSH_CLIENT}" ]]; then
+    echo -e " \ue762"
+  fi
+}
+# Set the terminal title to the current working directory.
+PS1=""
+PS1+="┌── ${bold}${green}\w${reset}\$(prompt_git)\$(prompt_devenv)\$(check_ssh)\n"
+PS1+="└─\$(arrow) "
+export PS1

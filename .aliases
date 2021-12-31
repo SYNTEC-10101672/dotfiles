@@ -1,0 +1,19 @@
+# ex: ts=2 sw=2 et filetype=bash
+
+alias diff="diff -ubBw"
+alias less="less -R"
+alias tmux-attach="tmux attach &> /dev/null || tmux"
+
+if [ -e /usr/local/bin/vim ]; then
+  alias vim=/usr/local/bin/vim
+fi
+
+if [ "$(uname)" == "Darwin" ]; then
+  # set for Mac
+  export CLICOLOR=1
+  export LSCOLORS=ExGxFxdaCxdAdAhbadacec
+  alias ls="/bin/ls -G"
+else
+  alias ls="/bin/ls --color=always"
+fi
+alias ll="ls"

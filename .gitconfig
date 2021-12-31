@@ -1,0 +1,44 @@
+[alias]
+  diff=difftool
+[branch]
+  autosetuprebase = always
+[core]
+  editor = vim
+  excludesfile = ~/.gitignore_global
+[color]
+  ui = always
+[color "diff"]
+  meta = yellow bold
+  commit = green bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
+[color "diff-highlight"]
+  oldNormal = red bold
+  oldHighlight = "red bold 52"
+  newNormal = "green bold"
+  newHighlight = "green bold 22"
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "status"]
+  added = green
+  changed = red
+  untracked = cyan
+[diff]
+  tool = vimdiff
+[difftool]
+  prompt = false
+[push]
+  default = current
+[pull]
+  default = current
+  rebase = true
+[user]
+  email = as2266317@gmail.com
+  name = gugugu
+[rebase]
+  autoStash = true
+
