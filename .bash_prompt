@@ -56,16 +56,16 @@ prompt_git() {
 }
 
 arrow() {
-  echo -e "\uf307"
+  echo -e "\u276F"
 }
 
 check_ssh() {
   if [[ -n "${SSH_CLIENT}" ]]; then
-    echo -e " \ue762"
+    echo -e " "
   fi
 }
 # Set the terminal title to the current working directory.
 PS1=""
-PS1+="┌── ${bold}${green}\w${reset}\$(prompt_git)\$(prompt_devenv)\$(check_ssh)\n"
-PS1+="└─\$(arrow) "
+PS1+=" ${bold}${blue}\w${reset}\$(prompt_git)\$(prompt_devenv)\$(check_ssh)\n"
+PS1+=" ${blue}\$(arrow)${reset} "
 export PS1
