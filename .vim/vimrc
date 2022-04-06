@@ -1,7 +1,7 @@
 "--------------
 " Plugins
 "--------------
-call plug#begin('~/dotfiles/.vim/plugged')
+call plug#begin('~/.dotfiles/.vim/plugged')
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
   Plug 'scrooloose/nerdtree'
