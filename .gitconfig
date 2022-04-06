@@ -37,8 +37,8 @@
   default = current
   rebase = true
 [user]
-  email = as2266317@gmail.com
-  name = gugugu
+	email = r01543033@g.ntu.edu.tw
+	name = s911335
 [rebase]
   autoStash = true
 
