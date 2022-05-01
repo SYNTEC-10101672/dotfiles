@@ -2,6 +2,7 @@
 " Plugins
 "--------------
 call plug#begin('~/.dotfiles/.vim/plugged')
+  " for general purpose development
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
   Plug 'scrooloose/nerdtree'
@@ -9,21 +10,20 @@ call plug#begin('~/.dotfiles/.vim/plugged')
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
   Plug 'terryma/vim-multiple-cursors'
-
-  " for general purpose development
   Plug 'tomtom/tcomment_vim'
+  Plug 'majutsushi/tagbar'
+  Plug 'mileszs/ack.vim'
+  Plug 'airblade/vim-gitgutter'
+  " for general purpose, snipmate, snippets
   Plug 'MarcWeber/vim-addon-mw-utils'
   Plug 'tomtom/tlib_vim'
   Plug 'garbas/vim-snipmate'
   Plug 'honza/vim-snippets'
-  Plug 'majutsushi/tagbar'
-  Plug 'mileszs/ack.vim'
-  Plug 'airblade/vim-gitgutter'
 
-   " for markdown
+  " for markdown
   Plug 'godlygeek/tabular'
   Plug 'plasticboy/vim-markdown'
-  
+
   " for python
   Plug 'davidhalter/jedi-vim'
   
