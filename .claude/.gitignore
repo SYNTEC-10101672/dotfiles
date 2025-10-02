@@ -1,0 +1,33 @@
+# 敏感資訊
+.env
+*.credentials.json
+.credentials.json
+
+# Claude Code 內部檔案
+todos/
+shell-snapshots/
+.claude/
+statsig/
+ide/
+
+# 專案特定設定
+projects/*/
+
+# 臨時檔案
+*.tmp
+*.log
+*.swp
+*~
+
+# IDE 設定檔
+.vscode/
+.idea/
+
+# OS 檔案
+.DS_Store
+Thumbs.db
+
+# 其他常見檔案
+node_modules/
+*.pyc
+__pycache__/

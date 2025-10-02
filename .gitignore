@@ -1,0 +1,17 @@
+# Vim
+.vim/plugged/
+.vim/.netrwhist
+*.swp
+*.swo
+*~
+
+# Claude Code
+.claude/.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup

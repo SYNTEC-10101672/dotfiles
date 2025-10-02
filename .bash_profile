@@ -24,7 +24,10 @@ if [ -f /etc/bashutils.sh ]; then
   source /etc/bashutils.sh
 fi
 
-bind 'set show-all-if-ambiguous on'
-bind 'set completion-ignore-case on'
-bind 'TAB:menu-complete'
+# Only set bind in interactive shells
+if [[ $- == *i* ]]; then
+  bind 'set show-all-if-ambiguous on'
+  bind 'set completion-ignore-case on'
+  bind 'TAB:menu-complete'
+fi
 
