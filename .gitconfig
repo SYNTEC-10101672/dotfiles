@@ -37,8 +37,8 @@
   default = current
   rebase = true
 [user]
-	email = s911336@gmail.com
-	name = s911336
+	name = 10101672
+	email = ken.chang@syntecclub.com.tw
 [rebase]
   autoStash = true
 
