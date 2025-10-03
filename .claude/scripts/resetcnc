@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# 設定 Tasmota 裝置 IP
+TASMOTA_IP="10.10.90.92"
+
+# 執行關 → 等 → 開
+curl -s "http://${TASMOTA_IP}:8080/cm?cmnd=Backlog%20Power1%20Off%3BDelay%202%3BPower1%20On"
+
