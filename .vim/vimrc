@@ -24,7 +24,10 @@ call plug#begin('~/.vim/plugged')
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
     \ }
-  
+
+  " for AI assistance
+  Plug 'github/copilot.vim'
+
   " for markdown
   Plug 'godlygeek/tabular'
   Plug 'plasticboy/vim-markdown'
