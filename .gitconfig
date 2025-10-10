@@ -30,7 +30,7 @@
 [diff]
   tool = vimdiff
 [difftool]
-  prompt = false
+  prompt = true
 [push]
   default = current
 [pull]

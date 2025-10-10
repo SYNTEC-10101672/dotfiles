@@ -8,6 +8,7 @@
 - ⚡ **Vim**: 完整的 Vim 開發環境（包含 LSP、NERDTree、CtrlP 等）
 - 🔧 **Git**: 顏色配置、別名、自動 rebase
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
+- 🖥️ **Tmux**: 終端機多工器，支援 Vim 風格操作和美化狀態列
 - 🤖 **Claude Code**: SYNTEC 嵌入式開發模板（支援多專案類型和人設系統）
 
 ## 快速安裝
@@ -45,6 +46,7 @@ make vim       # 安裝 Vim 設定
 make claude    # 安裝 Claude Code 設定
 make git       # 安裝 Git 設定
 make tig       # 安裝 Tig 設定
+make tmux      # 安裝 Tmux 設定
 ```
 
 ## Makefile 指令
@@ -71,6 +73,7 @@ dotfiles/
 ├── .gitignore_global     # Git 全域忽略檔案
 ├── .gitignore            # 本專案忽略檔案
 ├── .tigrc                # Tig 設定檔（Git 文字介面）
+├── .tmux.conf            # Tmux 設定檔（終端機多工器）
 ├── .vim/                 # Vim 設定目錄
 │   ├── vimrc             # Vim 主設定檔
 │   ├── plugin/           # Vim 插件設定
@@ -155,6 +158,111 @@ vim
 ```
 
 詳細說明請參考 `.claude/README.md`
+
+## Tmux 設定
+
+### 特色功能
+
+- **Vim 風格操作**: 使用 hjkl 按鍵移動和操作面板/視窗
+- **Ctrl-w 視窗切換**: 類似 Vim 的 `Ctrl-w` + `hjkl` 快速切換視窗
+- **滑鼠支援**: 可使用滑鼠點擊切換視窗、調整面板大小
+- **美化狀態列**: 顯示 session、時間、主機名等資訊
+- **快速鍵優化**: 更直覺的面板分割和視窗切換
+- **複製模式**: Vi 風格的文字選取和複製
+- **自動編號**: 視窗自動重新編號，保持連續性
+- **中文支援**: UTF-8 編碼，完整支援中文顯示
+
+### 常用快捷鍵
+
+以下快捷鍵使用 `Ctrl-b` 作為 prefix（記作 `<prefix>`）
+
+**基本操作：**
+- `<prefix> r` - 重新載入配置檔
+- `<prefix> ?` - 顯示所有快捷鍵
+- `<prefix> d` - 離開（detach）session
+
+**視窗管理：**
+- `<prefix> c` - 新建視窗
+- `<prefix> ,` - 重新命名視窗
+- `<prefix> &` - 關閉視窗
+- `<prefix> a` - 切換到上一個視窗
+- `Ctrl-w` + `h/l` - Vim 風格切換視窗（左/右，不需要 prefix）
+- `Ctrl-w` + `j/k` - Vim 風格切換視窗（下一個/上一個）
+- `Ctrl-w` + `c` - 新建視窗（在當前路徑）
+- `Shift-Left` / `Shift-Right` - 切換視窗（不需要 prefix）
+- `<prefix> Ctrl-h` / `<prefix> Ctrl-l` - 快速切換視窗
+
+**面板管理：**
+- `<prefix> |` - 垂直分割面板
+- `<prefix> -` - 水平分割面板
+- `<prefix> h/j/k/l` - Vim 風格切換面板（左/下/上/右）
+- `Alt-方向鍵` - 切換面板（不需要 prefix）
+- `<prefix> H/J/K/L` - 調整面板大小（可重複按）
+- `<prefix> x` - 關閉面板
+- `<prefix> z` - 最大化/還原當前面板
+
+**複製模式：**
+- `<prefix> Escape` - 進入複製模式
+- `v` - 開始選取（在複製模式中）
+- `y` - 複製選取內容（在複製模式中）
+- `r` - 矩形選取模式（在複製模式中）
+- `<prefix> p` - 貼上
+
+**其他：**
+- `<prefix> :` - 命令模式
+- `<prefix> t` - 顯示時鐘
+
+### 常用指令
+
+```bash
+# 啟動 tmux
+tmux
+
+# 啟動並命名 session
+tmux new -s 工作
+
+# 列出所有 session
+tmux ls
+
+# 重新連接 session
+tmux attach -t 工作
+
+# 重新連接最後的 session
+tmux attach
+
+# 刪除 session
+tmux kill-session -t 工作
+
+# 刪除所有 session
+tmux kill-server
+```
+
+### 進階使用
+
+**多個 Session 工作流程：**
+```bash
+# 為不同專案建立不同 session
+tmux new -s dotfiles     # 開發專案
+tmux new -s server       # 伺服器監控
+tmux new -s debug        # 除錯工作
+
+# 在 session 間切換
+<prefix> s              # 顯示 session 列表
+<prefix> (              # 切換到上一個 session
+<prefix> )              # 切換到下一個 session
+```
+
+**本地自訂設定：**
+
+如需個人專屬設定，可建立 `~/.tmux.conf.local`：
+```bash
+# ~/.tmux.conf.local
+# 這裡的設定不會被版本控制
+
+# 例如：使用原本的 prefix
+set-option -g prefix C-b
+unbind C-a
+```
 
 ## Tig 設定
 

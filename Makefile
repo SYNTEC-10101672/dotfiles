@@ -3,7 +3,7 @@ SHELL := bash
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 BACKUP_DIR:=$(HOME)/.dotfiles_backup_$(shell date +%Y%m%d_%H%M%S)
 
-.PHONY: all install bashrc vim claude git tig backup uninstall clean check help
+.PHONY: all install bashrc vim claude git tig tmux backup uninstall clean check help
 
 all: install
 
@@ -23,14 +23,15 @@ help:
 	@echo "  make claude    - Install Claude Code configuration"
 	@echo "  make git       - Install git configuration"
 	@echo "  make tig       - Install tig configuration"
+	@echo "  make tmux      - Install tmux configuration"
 
-install: backup bashrc vim claude git tig
+install: backup bashrc vim claude git tig tmux
 	@echo "✓ Dotfiles installed successfully"
 
 backup:
 	@echo "Creating backup at $(BACKUP_DIR)..."
 	@mkdir -p $(BACKUP_DIR)
-	@for file in .aliases .bashrc .bash_profile .bash_prompt .vimrc .vim .claude .gitconfig .gitignore_global .tigrc; do \
+	@for file in .aliases .bashrc .bash_profile .bash_prompt .vimrc .vim .claude .gitconfig .gitignore_global .tigrc .tmux.conf; do \
 		if [ -e "$(HOME)/$$file" ] && [ ! -L "$(HOME)/$$file" ]; then \
 			echo "  Backing up $$file"; \
 			cp -r "$(HOME)/$$file" "$(BACKUP_DIR)/"; \
@@ -68,9 +69,14 @@ tig:
 	@ln -sf $(ROOT_DIR)/.tigrc $(HOME)/.tigrc
 	@echo "✓ Tig configuration installed"
 
+tmux:
+	@echo "Installing tmux configuration..."
+	@ln -sf $(ROOT_DIR)/.tmux.conf $(HOME)/.tmux.conf
+	@echo "✓ Tmux configuration installed"
+
 uninstall:
 	@echo "Removing dotfiles symlinks..."
-	@for file in .aliases .bashrc .bash_profile .bash_prompt .vimrc .vim .claude .gitconfig .gitignore_global .tigrc; do \
+	@for file in .aliases .bashrc .bash_profile .bash_prompt .vimrc .vim .claude .gitconfig .gitignore_global .tigrc .tmux.conf; do \
 		if [ -L "$(HOME)/$$file" ]; then \
 			echo "  Removing $$file"; \
 			rm "$(HOME)/$$file"; \
@@ -98,7 +104,7 @@ clean:
 check:
 	@echo "Checking dotfiles installation..."
 	@echo ""
-	@for file in .aliases .bashrc .bash_profile .bash_prompt .vimrc .vim .claude .gitconfig .gitignore_global .tigrc; do \
+	@for file in .aliases .bashrc .bash_profile .bash_prompt .vimrc .vim .claude .gitconfig .gitignore_global .tigrc .tmux.conf; do \
 		if [ -L "$(HOME)/$$file" ]; then \
 			target=$$(readlink "$(HOME)/$$file"); \
 			if [ "$$target" = "$(ROOT_DIR)/$$file" ] || [ "$$target" = "$(ROOT_DIR)/.vim/vimrc" ]; then \
