@@ -91,6 +91,7 @@ dotfiles/
 - **彩色 ls**: 根據檔案類型顯示不同顏色
 - **Tab 補全**: 不區分大小寫的自動補全
 - **中文支援**: 預設 UTF-8 編碼，支援 fcitx 輸入法
+- **NVM 支援**: Node.js 版本管理工具自動載入
 
 ### 自訂設定
 
@@ -126,6 +127,8 @@ vim
 ### 常用快捷鍵
 
 - `,` - Leader 鍵
+- `jj` / `11` - 退出插入模式（ESC 替代）
+- `<F2>` / `22` - 切換 NERDTree
 - 詳細快捷鍵設定請參考 `.vim/plugin/keymappings.vim`
 
 ## Claude Code 模板

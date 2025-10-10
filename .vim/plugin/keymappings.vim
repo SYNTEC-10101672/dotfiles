@@ -17,3 +17,5 @@ noremap ]b :bn<Enter>
 
 " other way to exit insert mode
 inoremap jj <ESC>
+inoremap 11 <ESC>
+vnoremap 11 <ESC>
