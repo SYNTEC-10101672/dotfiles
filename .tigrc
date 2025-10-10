@@ -1,0 +1,172 @@
+# Tig Configuration File
+# Tig is a ncurses-based text-mode interface for Git
+
+# ============================================================================
+# General Settings
+# ============================================================================
+
+# Display relative dates (e.g., 2 hours ago)
+set main-view-date = relative
+
+# Display full author name
+set main-view-author = full
+
+# Display first 8 characters of commit ID
+set main-view-id = yes
+
+# Display line numbers (line-number-interval is obsolete, use interval in view settings)
+set blame-view-line-number = yes
+set blob-view-line-number = yes
+set diff-view-line-number = yes
+set log-view-line-number = yes
+set stage-view-line-number = yes
+
+# Tab width
+set tab-size = 4
+
+# Wrap long lines
+set wrap-lines = yes
+
+# Vertical split mode
+set vertical-split = auto
+
+# Ignore whitespace changes
+set ignore-space = all
+
+# Enable mouse support
+set mouse = yes
+
+# ============================================================================
+# Color Settings
+# ============================================================================
+
+# Improve commit graph display
+color graph-commit  cyan    default
+color main-head     cyan    default bold
+color main-remote   yellow  default bold
+color main-tracked  green   default bold
+color main-tag      magenta default bold
+color main-local-tag magenta default
+
+# ============================================================================
+# Git Graph Visualization
+# ============================================================================
+
+# Enable commit graph rendering
+set main-view = line-number:yes,interval=1 id:yes date:relative author:full commit-title:graph=v2,refs=yes
+
+# Use ASCII characters for graph (better compatibility)
+set line-graphics = ascii
+
+# Or use UTF-8 characters for prettier graph (requires UTF-8 terminal support)
+# set line-graphics = utf-8
+
+# ============================================================================
+# Key Bindings
+# ============================================================================
+
+# Vim-style navigation
+bind generic k move-up
+bind generic j move-down
+bind generic G move-last-line
+
+# Half-page scrolling removed (Ctrl-D/U conflicts with d/u view switching)
+# Note: Tig's Ctrl keys are case-insensitive, <Ctrl-d> conflicts with 'd' key
+# Use PageUp/PageDown instead
+
+# Full-page scrolling
+bind generic <Ctrl-f> move-page-down
+bind generic <Ctrl-b> move-page-up
+
+# Space for page down
+bind generic <Space> move-page-down
+
+# Quick view switching
+bind generic m view-main
+bind generic d view-diff
+bind generic l view-log
+bind generic t view-tree
+bind generic f view-blob
+bind generic b view-blame
+bind generic r view-refs
+bind generic s view-status
+bind generic c view-stage
+bind generic y view-stash
+
+# g key navigation (gg to jump to first line, press g twice)
+# Note: Tig uses Home key to jump to first line, End key to last line by default
+
+# Refresh view
+bind generic <F5> refresh
+
+# Stage/Unstage files (in status view)
+bind status a !git add %(file)
+bind status r !git reset %(file)
+
+# Commit (in status view)
+bind status C !git commit
+
+# Push to remote (in refs view)
+bind refs P !git push origin %(branch)
+
+# Create new branch
+bind refs n !git branch %(prompt) %(commit)
+
+# Delete branch
+bind refs D !git branch -d %(branch)
+
+# Cherry-pick
+bind main H !git cherry-pick %(commit)
+
+# Revert commit
+bind main ! !git revert %(commit)
+
+# Use vimdiff to view commit changes (in main view)
+bind main D !git difftool %(commit)^!
+
+# ============================================================================
+# Search Settings
+# ============================================================================
+
+# Case-insensitive search (smart-case)
+set ignore-case = smart-case
+
+# ============================================================================
+# Diff Settings
+# ============================================================================
+
+# Show more context lines
+set diff-context = 3
+
+# ============================================================================
+# External Tool Integration
+# ============================================================================
+
+# Open file with external editor
+bind generic E !$EDITOR %(file)
+
+# View full content with less
+bind generic V !git show %(commit)
+
+# ============================================================================
+# Vimdiff Integration
+# ============================================================================
+
+# Use vimdiff to view diff (in diff view for specific file)
+bind diff D !git difftool %(commit)^! -- %(file)
+
+# Use vimdiff to view diff (in log view)
+bind log D !git difftool %(commit)^!
+
+# Use vimdiff to compare working tree changes (in status view)
+bind status D !git difftool -- %(file)
+
+# ============================================================================
+# Performance Optimization
+# ============================================================================
+
+# Limit commit display count (improves performance for large repos)
+set main-options = -n 1000
+
+# Limit diff display
+set diff-options = -m --first-parent

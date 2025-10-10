@@ -7,6 +7,7 @@
 - 🎨 **Bash**: 自訂提示符（支援 Git 狀態顯示）、別名、環境變數
 - ⚡ **Vim**: 完整的 Vim 開發環境（包含 LSP、NERDTree、CtrlP 等）
 - 🔧 **Git**: 顏色配置、別名、自動 rebase
+- 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
 - 🤖 **Claude Code**: SYNTEC 嵌入式開發模板（支援多專案類型和人設系統）
 
 ## 快速安裝
@@ -43,6 +44,7 @@ make bashrc    # 安裝 Bash 設定
 make vim       # 安裝 Vim 設定
 make claude    # 安裝 Claude Code 設定
 make git       # 安裝 Git 設定
+make tig       # 安裝 Tig 設定
 ```
 
 ## Makefile 指令
@@ -68,6 +70,7 @@ dotfiles/
 ├── .gitconfig            # Git 設定
 ├── .gitignore_global     # Git 全域忽略檔案
 ├── .gitignore            # 本專案忽略檔案
+├── .tigrc                # Tig 設定檔（Git 文字介面）
 ├── .vim/                 # Vim 設定目錄
 │   ├── vimrc             # Vim 主設定檔
 │   ├── plugin/           # Vim 插件設定
@@ -153,6 +156,79 @@ vim
 
 詳細說明請參考 `.claude/README.md`
 
+## Tig 設定
+
+### 特色功能
+
+- **美化的 commit graph**: 視覺化顯示分支和合併歷史
+- **Vim 風格操作**: 使用 hjkl 和其他 vim 按鍵移動
+- **Vimdiff 整合**: 按 `D` 鍵即可使用 vimdiff 查看差異（已整合 Git difftool）
+- **多視圖切換**: 快速在 main、diff、log、tree、blame 等視圖間切換
+- **互動式操作**: 支援 stage、unstage、commit 等 Git 操作
+- **滑鼠支援**: 可使用滑鼠點擊和滾動
+- **自訂快捷鍵**: 針對常用操作設定便捷按鍵
+
+### 常用指令
+
+```bash
+# 啟動 tig (檢視所有 commit)
+tig
+
+# 檢視特定檔案的歷史
+tig <檔案名稱>
+
+# 檢視特定分支
+tig <分支名稱>
+
+# 檢視 diff
+tig show <commit>
+
+# 檢視當前變更
+tig status
+```
+
+### 常用快捷鍵
+
+在 tig 介面中：
+
+**視圖切換：**
+- `m` - main view (commit 歷史)
+- `d` - diff view (差異檢視)
+- `l` - log view (詳細日誌)
+- `t` - tree view (檔案樹)
+- `b` - blame view (逐行追蹤)
+- `s` - status view (工作區狀態)
+
+**Vim 風格移動：**
+- `h` / `j` / `k` / `l` - 左/下/上/右移動
+- `g` / `G` - 跳到第一行 / 最後一行
+- `<Space>` - 向下翻頁
+- `<Ctrl-d>` / `<Ctrl-u>` - 半頁捲動
+- `<Ctrl-f>` / `<Ctrl-b>` - 整頁捲動
+
+**Vimdiff 整合：**
+- `D` (main view) - 使用 vimdiff 查看 commit 差異
+- `D` (diff view) - 使用 vimdiff 查看當前檔案差異
+- `D` (log view) - 使用 vimdiff 查看 commit 差異
+- `D` (status view) - 使用 vimdiff 比較工作區變更
+
+**其他操作：**
+- `q` - 退出當前視圖
+- `/` - 搜尋
+- `<F5>` - 重新整理
+- `E` - 使用編輯器開啟檔案
+
+### 進階功能
+
+配置檔案支援：
+- UTF-8 字元的美化 graph 顯示（可切換為 ASCII 模式）
+- 自訂顏色主題
+- 相對時間顯示
+- 忽略空白變更
+- 外部編輯器整合
+
+詳細設定請參考 `.tigrc`
+
 ## Git 設定
 
 ### 特色功能
@@ -217,6 +293,7 @@ make restore BACKUP=<備份目錄>
 - Bash 4.0+
 - Vim 8.0+ 或 Neovim
 - Git 2.0+
+- Tig 2.0+（可選，用於 Git 圖形介面）
 - Docker（若使用 Claude Code MCP 功能）
 
 ## 問題排除
