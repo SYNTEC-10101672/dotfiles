@@ -41,4 +41,9 @@
 	email = ken.chang@syntecclub.com.tw
 [rebase]
   autoStash = true
-
+[credential]
+  helper = store
+[url "https://"]
+    insteadOf = git://
+[url "ssh://git@gitlab.syntecclub.com:40022"]
+    insteadOf = git://gitlab.syntecclub.com
