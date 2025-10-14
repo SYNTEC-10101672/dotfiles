@@ -6,5 +6,6 @@
       "Edit"
     ],
     "deny": []
-  }
+  },
+  "alwaysThinkingEnabled": true
 }
