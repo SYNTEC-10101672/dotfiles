@@ -5,6 +5,11 @@
 # 每日自動向 Claude Code 問好並取得回應
 # 用於 crontab 排程執行
 
+# 確保環境變數正確設定（cron 環境）
+export HOME="${HOME:-/home/10101672}"
+export PATH="$HOME/.nvm/versions/node/v22.17.1/bin:$PATH"
+export NODE_PATH="$HOME/.nvm/versions/node/v22.17.1/lib/node_modules"
+
 # 設定
 LOG_DIR="$HOME/.claude/logs"
 LOG_FILE="$LOG_DIR/daily-greeting.log"
