@@ -7,6 +7,14 @@
 
 # Claude Code
 .claude/.env
+.claude/.credentials.json
+.claude/debug/
+.claude/file-history/
+.claude/history.jsonl
+.claude/shell-snapshots/
+.claude/statsig/
+.claude/todos/
+.extra
 
 # OS
 .DS_Store
