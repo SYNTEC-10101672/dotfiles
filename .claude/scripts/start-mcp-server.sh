@@ -8,16 +8,15 @@ set -e
 TRANSPORT=${1:-sse}
 PORT=8001
 
-# 載入 .env 檔案
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="$SCRIPT_DIR/../.env"
+# 載入 .env 檔案 (統一從 ~/.env 載入)
+ENV_FILE=~/.env
 
 if [ -f "$ENV_FILE" ]; then
     echo "載入環境變數檔案: $ENV_FILE"
     source "$ENV_FILE"
 else
     echo "警告: 找不到 .env 檔案 ($ENV_FILE)"
-    echo "請複製 .env.example 為 .env 並填入你的帳號資訊"
+    echo "請複製 ~/dotfiles/env.example 為 ~/.env 並填入你的帳號資訊"
 fi
 
 echo "啟動 SYNTEC Confluence/JIRA MCP Server..."

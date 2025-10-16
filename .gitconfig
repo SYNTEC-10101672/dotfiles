@@ -37,8 +37,8 @@
   default = current
   rebase = true
 [user]
-	name = 10101672
-	email = ken.chang@syntecclub.com.tw
+	name = $GIT_USER_NAME
+	email = $GIT_USER_EMAIL
 [rebase]
   autoStash = true
 [credential]

@@ -1,0 +1,48 @@
+#!/bin/bash
+# CNC 控制器重置腳本
+#
+# 功能：透過 Tasmota 智能插座重置 CNC 控制器
+# 執行順序：關機 → 等待 2 秒 → 開機
+#
+# 使用方式：
+#   ~/dotfiles/scripts/resetcnc
+
+# 載入環境變數
+if [ -f ~/.env ]; then
+    source ~/.env
+else
+    echo "錯誤: 找不到 ~/.env 檔案"
+    echo "請先設定環境變數 TASMOTA_IP 和 TASMOTA_PORT"
+    exit 1
+fi
+
+# 檢查必要的環境變數
+if [ -z "$TASMOTA_IP" ]; then
+    echo "錯誤: TASMOTA_IP 未設定"
+    echo "請在 ~/.env 中設定 TASMOTA_IP"
+    exit 1
+fi
+
+if [ -z "$TASMOTA_PORT" ]; then
+    echo "錯誤: TASMOTA_PORT 未設定"
+    echo "請在 ~/.env 中設定 TASMOTA_PORT"
+    exit 1
+fi
+
+# 顯示操作資訊
+echo "====================================="
+echo "CNC 控制器重置"
+echo "====================================="
+echo "Tasmota 裝置: ${TASMOTA_IP}:${TASMOTA_PORT}"
+echo "執行: 關機 → 等待 2秒 → 開機"
+echo ""
+
+# 執行重置
+curl -s "http://${TASMOTA_IP}:${TASMOTA_PORT}/cm?cmnd=Backlog%20Power1%20Off%3BDelay%202%3BPower1%20On"
+
+if [ $? -eq 0 ]; then
+    echo "✓ 重置指令已送出"
+else
+    echo "✗ 重置失敗，請檢查網路連線和 Tasmota 設定"
+    exit 1
+fi

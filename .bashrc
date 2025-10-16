@@ -1,5 +1,8 @@
 # ex: ts=2 sw=2 et filetype=bash
 
+# Add ~/bin to PATH for user scripts
+export PATH="$HOME/bin:$PATH"
+
 export LANGUAGE="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="UTF-8"
@@ -11,10 +14,10 @@ export XMODIFIERS=@im=fcitx
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
-# * ~/.extra can be used for other settings you don't want to commit.
+# * ~/.env can be used for environment variables (API tokens, credentials, etc.)
 . ~/.aliases
 . ~/.bash_prompt
-[ -f ~/.extra ] && . ~/.extra
+[ -f ~/.env ] && . ~/.env
 
 # Set PATH priority to Homebrew installation folder
 

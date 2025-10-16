@@ -3,7 +3,7 @@ SHELL := bash
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 BACKUP_DIR:=$(HOME)/.dotfiles_backup_$(shell date +%Y%m%d_%H%M%S)
 
-.PHONY: all install bashrc vim claude git tig tmux backup uninstall clean check help
+.PHONY: all install bashrc vim claude git tig tmux scripts backup uninstall clean check help
 
 all: install
 
@@ -24,8 +24,9 @@ help:
 	@echo "  make git       - Install git configuration"
 	@echo "  make tig       - Install tig configuration"
 	@echo "  make tmux      - Install tmux configuration"
+	@echo "  make scripts   - Install utility scripts to ~/bin"
 
-install: backup bashrc vim claude git tig tmux
+install: backup bashrc vim claude git tig tmux scripts
 	@echo "✓ Dotfiles installed successfully"
 
 backup:
@@ -74,12 +75,27 @@ tmux:
 	@ln -sf $(ROOT_DIR)/.tmux.conf $(HOME)/.tmux.conf
 	@echo "✓ Tmux configuration installed"
 
+scripts:
+	@echo "Installing utility scripts..."
+	@mkdir -p $(HOME)/bin
+	@ln -sf $(ROOT_DIR)/scripts/resetcnc $(HOME)/bin/resetcnc
+	@ln -sf $(ROOT_DIR)/scripts/setup-git-credentials.sh $(HOME)/bin/setup-git-credentials
+	@echo "✓ Scripts installed to ~/bin"
+	@echo "  Note: Ensure ~/bin is in your PATH"
+
 uninstall:
 	@echo "Removing dotfiles symlinks..."
 	@for file in .aliases .bashrc .bash_profile .bash_prompt .vimrc .vim .claude .gitconfig .gitignore_global .tigrc .tmux.conf; do \
 		if [ -L "$(HOME)/$$file" ]; then \
 			echo "  Removing $$file"; \
 			rm "$(HOME)/$$file"; \
+		fi; \
+	done
+	@echo "Removing scripts..."
+	@for script in resetcnc setup-git-credentials; do \
+		if [ -L "$(HOME)/bin/$$script" ]; then \
+			echo "  Removing ~/bin/$$script"; \
+			rm "$(HOME)/bin/$$script"; \
 		fi; \
 	done
 	@echo "✓ Symlinks removed"
@@ -116,5 +132,17 @@ check:
 			echo "✗ $$file (exists but not a symlink)"; \
 		else \
 			echo "✗ $$file (not found)"; \
+		fi; \
+	done
+	@echo ""
+	@echo "Checking scripts installation..."
+	@for script in resetcnc setup-git-credentials; do \
+		if [ -L "$(HOME)/bin/$$script" ]; then \
+			target=$$(readlink "$(HOME)/bin/$$script"); \
+			echo "✓ ~/bin/$$script -> $$target"; \
+		elif [ -e "$(HOME)/bin/$$script" ]; then \
+			echo "✗ ~/bin/$$script (exists but not a symlink)"; \
+		else \
+			echo "✗ ~/bin/$$script (not found)"; \
 		fi; \
 	done
