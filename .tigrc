@@ -121,9 +121,6 @@ bind main H !git cherry-pick %(commit)
 # Revert commit
 bind main ! !git revert %(commit)
 
-# Use vimdiff to view commit changes (in main view)
-bind main D !git difftool %(commit)^!
-
 # ============================================================================
 # Search Settings
 # ============================================================================
@@ -160,6 +157,24 @@ bind log D !git difftool %(commit)^!
 
 # Use vimdiff to compare working tree changes (in status view)
 bind status D !git difftool -- %(file)
+
+# ============================================================================
+# Cross-Commit Comparison (Mark & Diff)
+# ============================================================================
+
+# Smart D key behavior:
+# - If no commit is marked: show single commit diff (original behavior)
+# - If commit is marked: compare marked commit with current commit
+bind main D !tig-mark-commit diff %(commit)
+
+# Mark current commit (press M to mark)
+bind main M !tig-mark-commit mark %(commit)
+
+# Show currently marked commit
+bind main <Ctrl-M> !tig-mark-commit status
+
+# Clear marked commit
+bind main <Ctrl-X> !tig-mark-commit clear
 
 # ============================================================================
 # Performance Optimization
