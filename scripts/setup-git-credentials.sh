@@ -1,5 +1,5 @@
 #!/bin/bash
-# Git Credentials 自動設定腳本
+# GitLab Credentials 自動設定腳本
 #
 # 功能：
 #   1. 從 ~/.env 載入 GITLAB_TOKEN
@@ -11,7 +11,7 @@
 set -e
 
 echo "==================================="
-echo "Git Credentials 設定工具"
+echo "GitLab Credentials 設定工具"
 echo "==================================="
 
 # 載入環境變數
@@ -31,26 +31,7 @@ if [ -z "$GITLAB_TOKEN" ]; then
     exit 1
 fi
 
-if [ -z "$GIT_USER_NAME" ]; then
-    echo "✗ 錯誤: GIT_USER_NAME 未設定"
-    echo "  請在 ~/.env 中設定 GIT_USER_NAME"
-    exit 1
-fi
-
-if [ -z "$GIT_USER_EMAIL" ]; then
-    echo "✗ 錯誤: GIT_USER_EMAIL 未設定"
-    echo "  請在 ~/.env 中設定 GIT_USER_EMAIL"
-    exit 1
-fi
-
 echo "✓ 環境變數檢查完成"
-echo ""
-
-# 設定 Git 使用者資訊
-echo "設定 Git 使用者資訊..."
-git config --global user.name "$GIT_USER_NAME"
-git config --global user.email "$GIT_USER_EMAIL"
-echo "✓ Git 使用者: $GIT_USER_NAME <$GIT_USER_EMAIL>"
 echo ""
 
 # 設定 GitLab credentials
@@ -86,10 +67,6 @@ echo ""
 echo "==================================="
 echo "設定完成！"
 echo "==================================="
-echo ""
-echo "Git 設定："
-echo "  使用者: $(git config --global user.name)"
-echo "  Email: $(git config --global user.email)"
 echo ""
 echo "GitLab 認證："
 echo "  URL: $GITLAB_URL"
