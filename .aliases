@@ -17,3 +17,12 @@ else
   alias ls="/bin/ls --color=always"
 fi
 alias ll="ls"
+
+# Tig wrapper: clear marked commit before launching tig
+tig() {
+  # Clear marked commit from previous session
+  rm -f "/tmp/tig-marked-commit-${USER}"
+
+  # Launch tig with all arguments
+  command tig "$@"
+}
