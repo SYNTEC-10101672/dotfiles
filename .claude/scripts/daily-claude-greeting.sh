@@ -15,7 +15,7 @@ LOG_DIR="$HOME/.claude/logs"
 LOG_FILE="$LOG_DIR/daily-greeting.log"
 RESPONSE_FILE="$LOG_DIR/greeting-response-$(date '+%Y%m%d-%H%M%S').txt"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
-WORK_DIR="$HOME/dotfiles"
+WORK_DIR="$HOME/.dotfiles"
 
 # 建立日誌目錄
 mkdir -p "$LOG_DIR"
