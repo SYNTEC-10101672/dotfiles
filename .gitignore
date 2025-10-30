@@ -14,6 +14,9 @@
 .claude/shell-snapshots/
 .claude/statsig/
 .claude/todos/
+.claude/.claude.json
+.claude/settings.local.json
+.claude/logs/
 
 # Local environment files (these are in ~/ not in repo, listed for documentation)
 # .env - environment variables (API tokens, credentials, etc.)

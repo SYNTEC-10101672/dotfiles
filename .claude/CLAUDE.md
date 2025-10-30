@@ -1,168 +1,122 @@
-# Claude Code Template for SYNTEC Embedded Development
+# SYNTEC Claude Code 開發模板
 
-這是 SYNTEC 嵌入式開發專案的統一 Claude Code 模板，包含：
-- 自動專案類型偵測
-- Confluence/JIRA MCP 整合
-- 硬體平台特定工作流程
+這是 SYNTEC 嵌入式系統開發專案的統一 Claude Code 模板，整合了 Confluence/JIRA MCP 伺服器，提供自動化的專案管理和文件處理功能。
 
----
+## 在任務開始前
 
-## 模板載入系統
+- 請用平輩的方式與我講話、不用對我使用「您」「請」等敬語。
+- 我預設使用繁體中文進行溝通和協助，請直接用中文與我互動。
+- 不要因為我的語氣而去揣測我想聽甚麼答案。
+- 如果你認為自己是對的，就請堅持你的立場，並提供充分的理由和證據來支持你的觀點。
+- 請保持直接、清楚、理性
 
-### 當前專案
-**目錄**: {{ cwd | basename }}
+## 功能特色
 
-### 人設系統
-@./personas/default.md
+- 🎭 **多重人設系統**: 5種專業人設（開發助手、除錯專家、架構師、審查員、測試專家）
+- 📝 **MCP 平台**: 搜尋Confluence文件、JIRA議題以及Notion筆記軟體，學習規格以及實作方式
 
-### 通用模板
-@./project-templates/allproject-template.md
+## 資料夾結構
 
-### 專案特定模板
-<!-- 根據專案類型自動載入對應模板 -->
-{% if cwd | basename == "appkernel" %}
-@./project-templates/appkernel-template.md
-{% elif cwd | basename | startswith("workspace-imx8") %}
-@./project-templates/workspace-imx8-template.md
-{% elif cwd | basename | startswith("workspace-am625") %}
-@./project-templates/workspace-am625-template.md
-{% endif %}
+```
+claude-template/
+├── CLAUDE.md                              # 主記憶檔案
+├── settings.json                          # Claude 全局設定
+├── .mcp.json                              # MCP 伺服器設定
+├── project-templates/                     # 專案模板目錄
+│   ├── allproject-template.md            # 通用開發模板
+│   ├── appkernel-template.md             # AppKernel 專案模板
+│   ├── workspace-imx8-template.md        # IMX8 工作空間模板
+│   ├── workspace-am625-template.md       # AM625 工作空間模板
+├── personas/                             # 人設系統
+│   ├── default.md                        # 預設開發助手
+│   ├── debugger.md                       # 除錯專家
+│   ├── architect.md                      # 系統架構師
+│   ├── reviewer.md                       # 程式碼審查員
+│   └── tester.md                         # 測試專家
+├── commands/                             # Slash 指令
+│   └── persona.md                        # 人設切換指令
+│   └── project.md                        # 專案切換指令
+└── scripts/                              # 自動化腳本
+    ├── start-mcp-server.sh               # 啟動 MCP 伺服器
+    ├── check-mcp-connection.sh           # 檢查連線狀態
+    └── setup-project-mcp.sh              # 為專案設定 MCP 連接
+```
 
-### 自動偵測規則
-- `appkernel` → AppKernel 專案模板
-- `workspace-imx8-*` → IMX8 工作空間模板
-- `workspace-am625-*` → AM625 工作空間模板
+## 人設系統
 
----
+Claude Code 預設使用繁體中文，並提供 5 種專業人設，可根據不同工作情境切換：
 
-## MCP 工具整合 (學習模式)
+### 🎭 可用人設
 
-本模板已整合多個 MCP server，主要用於學習和認識開發環境：
+1. **default** - 預設開發助手
+   - 適用於一般開發任務
+   - 平衡的技術知識和建議
 
-### SYNTEC Confluence/JIRA MCP
-- Confluence 文件搜尋和學習
-- JIRA 議題搜尋和分析
-- 專案知識庫探索
+2. **debugger** - 除錯專家
+   - 專精於問題診斷和效能分析
+   - 熟悉各種除錯工具和技術
+   - 系統性的問題排查方法
 
-### Notion MCP
-- Notion 頁面和資料庫存取
-- 個人知識庫管理
-- 專案文件整理
+3. **architect** - 系統架構師
+   - 專注於系統設計和架構規劃
+   - 考慮可擴展性和可維護性
+   - 技術選型和設計決策
 
-### 環境變數設定
+4. **reviewer** - 程式碼審查員
+   - 專精於程式碼品質和安全性
+   - 提供具體的改進建議
+   - 編碼最佳實務和規範
+
+5. **tester** - 測試專家
+   - 專注於測試策略和品質保證
+   - 測試案例設計和自動化
+   - 品質控制和風險管理
+
+### 🔄 人設切換
+
+使用 slash 指令快速切換人設：
 
 ```bash
-# 1. 複製範例檔案
-cd .claude
-cp .env.example .env
-
-# 2. 編輯 .env 檔案，填入你的實際帳號資訊
-nano .env
-```
-
-.env 檔案內容範例：
-```
-# SYNTEC Confluence/JIRA
-SYNTEC_EMAIL=your.email@syntecclub.com.tw
-SYNTEC_API_TOKEN=your_api_token_here
-
-# Notion
-NOTION_TOKEN=ntn_your_token_here
-```
-
-### 啟動 MCP Server
-
-#### SYNTEC Confluence/JIRA (需要 Docker)
-```bash
-./scripts/start-mcp-server.sh
-```
-
-檢查連線狀態：
-```bash
-./scripts/check-mcp-connection.sh
-```
-
-#### Notion MCP (自動啟動)
-Notion MCP 會在 Claude Code 啟動時自動透過 npx 執行，無需手動啟動。
-
-## 使用說明
-
-### 設定步驟
-1. 確保環境準備完成：
-   - Docker 已安裝並運行（SYNTEC MCP 需要）
-   - Node.js 已安裝（Notion MCP 需要）
-2. 設定環境變數（參考上方說明）
-3. 啟動所需的 MCP server
-
-### MCP 功能使用
-
-#### SYNTEC Confluence/JIRA
-當 SYNTEC MCP server 運行時，你可以直接要求我：
-- 搜尋並學習 Confluence 技術文件
-- 分析 JIRA 議題了解專案狀況
-- 探索專案的架構和開發規範
-- 學習團隊的工作流程和最佳實務
-
-#### Notion
-當 Notion token 設定完成後，你可以：
-- 存取 Notion 頁面和資料庫
-- 搜尋個人知識庫內容
-- 整理和管理專案文件
-- 同步開發筆記和文件
-
-### 人設切換指令
-
-可以使用以下指令切換不同的專業人設：
-
-```
-# 切換為除錯專家
+# 除錯問題時
 /persona debugger
+我的系統在高負載時會當機，請幫我分析可能的原因
 
-# 切換為系統架構師
+# 設計新功能時  
 /persona architect
+我需要為現有系統加入新的通訊模組，請幫我設計架構
 
-# 切換為程式碼審查員
+# 程式碼審查時
 /persona reviewer
+請幫我檢查這段記憶體管理的程式碼是否有問題
 
-# 切換為測試專家
+# 規劃測試時
 /persona tester
+請幫我設計這個新功能的完整測試策略
 
 # 回到預設人設
 /persona default
 ```
 
-### 學習導向的使用範例
+## 🌐 語言設定
 
-#### SYNTEC Confluence/JIRA 範例
-```
-# 學習專案架構
-請搜尋 Confluence 中關於 IMX8 專案的架構文件，幫我了解系統設計
+- Claude Code 預設使用繁體中文回應
+- 技術術語和程式碼保持英文
+- 可透過 settings.json 調整語言偏好
 
-# 了解開發規範
-請搜尋 Confluence 中的編碼標準和開發流程文件
+## Git相關設定
 
-# 分析問題模式
-請搜尋 JIRA 中最近的 Bug 報告，讓我了解常見問題類型
-
-# 學習 API 使用
-請搜尋 Confluence 中的 API 文件，教我如何正確使用這些介面
-```
-
-#### Notion 範例
-```
-# 搜尋專案文件
-請搜尋我 Notion 中關於 [專案名稱] 的筆記和文件
-
-# 查看任務清單
-請列出我 Notion 中待辦事項資料庫的內容
-
-# 整理學習筆記
-請幫我在 Notion 中整理關於 [技術主題] 的學習筆記
-```
-
----
+- git commit 原則上採用英文撰寫
+- commit message 格式遵循 Conventional Commits 規範
+- commit message 不要出現任何 by Claude 或類似字樣
+- commit message 需找我確認後再進行提交
 
 ## 控制器設定
+
+### 重啟控制器時，請使用以下指令：
+
+```bash
+resetcnc
+```
 
 ### SSH 連接配置
 - **主機別名**: cnc (設定於 ~/.ssh/config)
@@ -183,5 +137,4 @@ ssh-copy-id -i ~/.ssh/10101672_rsa root@控制器IP
 
 ---
 
-*模板版本: 1.0*
-*最後更新: {{ "now" | date: "%Y-%m-%d" }}*
+如有問題或建議，請聯繫開發團隊。
