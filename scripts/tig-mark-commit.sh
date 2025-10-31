@@ -18,28 +18,41 @@ case "$1" in
         ;;
 
     diff)
-        if [ -z "$2" ]; then
-            echo "Error: No commit specified"
-            exit 1
-        fi
-
         CURRENT_COMMIT="$2"
 
-        # Check if a commit is marked
-        if [ ! -f "$MARK_FILE" ]; then
-            # No commit marked - show single commit diff (original D key behavior)
-            git difftool "${CURRENT_COMMIT}^!"
+        # Detect uncommitted changes (empty or invalid commit)
+        if [ -z "$CURRENT_COMMIT" ] || [ "$CURRENT_COMMIT" = "0000000000000000000000000000000000000000" ]; then
+            # Handle uncommitted changes
+            if [ ! -f "$MARK_FILE" ]; then
+                # No commit marked - compare working directory with HEAD
+                echo "Comparing uncommitted changes with HEAD"
+                echo ""
+                git difftool HEAD
+            else
+                # Commit is marked - compare working directory with marked commit
+                MARKED_COMMIT=$(cat "$MARK_FILE")
+                echo "Comparing uncommitted changes with marked commit:"
+                echo "  Marked: $MARKED_COMMIT"
+                echo ""
+                git difftool "$MARKED_COMMIT"
+            fi
         else
-            # Commit is marked - compare marked commit with current commit
-            MARKED_COMMIT=$(cat "$MARK_FILE")
+            # Handle normal commit
+            if [ ! -f "$MARK_FILE" ]; then
+                # No commit marked - show single commit diff (original D key behavior)
+                git difftool "${CURRENT_COMMIT}^!"
+            else
+                # Commit is marked - compare marked commit with current commit
+                MARKED_COMMIT=$(cat "$MARK_FILE")
 
-            echo "Comparing commits:"
-            echo "  Marked:  $MARKED_COMMIT"
-            echo "  Current: $CURRENT_COMMIT"
-            echo ""
+                echo "Comparing commits:"
+                echo "  Marked:  $MARKED_COMMIT"
+                echo "  Current: $CURRENT_COMMIT"
+                echo ""
 
-            # Launch vimdiff for all changed files between the two commits
-            git difftool "$MARKED_COMMIT" "$CURRENT_COMMIT"
+                # Launch vimdiff for all changed files between the two commits
+                git difftool "$MARKED_COMMIT" "$CURRENT_COMMIT"
+            fi
         fi
         ;;
 

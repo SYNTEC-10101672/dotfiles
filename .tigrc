@@ -112,8 +112,14 @@ bind refs P !git push origin %(branch)
 # Create new branch
 bind refs n !git branch %(prompt) %(commit)
 
+# Checkout branch/tag
+bind refs O ?git checkout %(branch)
+
 # Delete branch
 bind refs D !git branch -d %(branch)
+
+# Checkout commit
+bind main O ?git checkout %(commit)
 
 # Cherry-pick
 bind main H !git cherry-pick %(commit)
