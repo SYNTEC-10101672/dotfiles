@@ -44,6 +44,7 @@ echo $GIT_USER_EMAIL
 echo $GITLAB_TOKEN
 echo $SYNTEC_EMAIL
 echo $NOTION_TOKEN
+echo $CONTEXT7_API_KEY
 ```
 
 ## 環境變數詳細說明
@@ -84,6 +85,12 @@ echo $NOTION_TOKEN
 - **用途**: Notion MCP Server 認證
 - **產生位置**: https://www.notion.so/my-integrations
 - **格式**: `ntn_xxxxxxxxxxxxxxxxxxxx`
+
+#### CONTEXT7_API_KEY
+- **用途**: Context7 MCP Server 認證
+- **產生位置**: https://console.upstash.com/
+- **格式**: `ctx7sk-xxxxxxxxxxxxxxxxxxxx`
+- **說明**: Upstash Context7 的 API 金鑰，用於語意搜尋和上下文管理
 
 ### 硬體控制設定
 
@@ -292,6 +299,7 @@ cat ~/.git-credentials
 echo $SYNTEC_EMAIL
 echo $SYNTEC_API_TOKEN
 echo $NOTION_TOKEN
+echo $CONTEXT7_API_KEY
 
 # 重新載入環境變數
 source ~/.env
