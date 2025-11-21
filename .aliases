@@ -26,3 +26,7 @@ tig() {
   # Launch tig with all arguments
   command tig "$@"
 }
+
+# Appkernel Development Shortcuts
+alias aksetup="~/.dotfiles/.appkernel/appkernel-setup.sh"   # Mount + Load SDK
+alias akbuild="~/.dotfiles/.appkernel/appkernel-build.sh"   # Build project (generic)
