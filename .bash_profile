@@ -31,3 +31,5 @@ if [[ $- == *i* ]]; then
   bind 'TAB:menu-complete'
 fi
 
+
+. "$HOME/.atuin/bin/env"
