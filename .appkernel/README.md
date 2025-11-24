@@ -32,12 +32,13 @@ Linux (Samba Server)                   Windows PC
 └── .appkernel/                        # 所有 appkernel 相關腳本集中管理
     ├── appkernel-setup.sh             # Setup（mount + SDK）
     ├── appkernel-build.sh             # Build（通用編譯腳本）
+    ├── appkernel-deploy.sh            # Deploy（部署至控制器）
     └── README.md                      # 本文件
 ```
 
 ## 核心概念
 
-系統簡化為**兩個核心指令**：
+系統簡化為**三個核心指令**：
 
 ### 1. `aksetup` - 環境設定（一次性）
 - 掛載 Samba 共享到 Z:
@@ -54,6 +55,12 @@ Linux (Samba Server)                   Windows PC
 - **參數說明**：
   - `PROJECT`: 專案名稱（如 `MMICommon32`、`CncMonEL`、`CncMon`）
   - `CONFIG`: 組態名稱（如 `ReleaseEL`、`DebugEL`）
+
+### 3. `akdeploy <PROJECT> <CONFIG>` - 部署至控制器
+- 檢查編譯產物並部署至控制器（透過 SSH）
+- 支援新舊版本自動相容（`MMICommon.dll` / `MMICommon32.dll`）
+- **執行時機**：編譯完成後需要測試時
+- **執行時間**：10-30 秒
 
 ## 環境變數設定（首次使用必須）
 
@@ -114,17 +121,20 @@ vim CncMon/Source/MainForm.cs
 # 編譯測試（可重複執行多次，使用不同專案/組態）
 akbuild CncMonEL ReleaseEL
 akbuild MMICommon32 ReleaseEL
-akbuild CncMon DebugEL
 
-# 繼續修改和編譯...
+# 部署至控制器
+akdeploy MMICommon32 ReleaseEL
+
+# 繼續修改、編譯和部署...
 ```
 
 ## 可用的指令 (Aliases)
 
-| 指令       | 功能說明                           | 範例                          |
-|-----------|-----------------------------------|------------------------------|
-| `aksetup` | 掛載共享 + 載入 SDK                | `aksetup`                    |
-| `akbuild` | 編譯指定專案（需要兩個參數）        | `akbuild CncMonEL ReleaseEL` |
+| 指令         | 功能說明                           | 範例                              |
+|-------------|-----------------------------------|----------------------------------|
+| `aksetup`   | 掛載共享 + 載入 SDK                | `aksetup`                        |
+| `akbuild`   | 編譯指定專案（需要兩個參數）        | `akbuild CncMonEL ReleaseEL`     |
+| `akdeploy`  | 部署至控制器（需要兩個參數）        | `akdeploy MMICommon32 ReleaseEL` |
 
 ### 啟用 Aliases
 
@@ -324,5 +334,5 @@ aksetup  # 重新部署批次檔和設定環境
 ---
 
 **建立日期**: 2025-11-21
-**更新日期**: 2025-11-21
-**版本**: 4.0（簡化為兩個核心指令 + 通用編譯系統）
+**更新日期**: 2025-11-24
+**版本**: 4.1（新增 akdeploy 部署指令）
