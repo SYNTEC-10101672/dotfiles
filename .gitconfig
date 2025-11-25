@@ -30,7 +30,7 @@
 [diff]
   tool = vimdiff
 [difftool]
-  prompt = true
+  prompt = false
 [push]
   default = current
 [pull]
@@ -43,7 +43,3 @@
   autoStash = true
 [credential]
   helper = store
-[url "https://"]
-    insteadOf = git://
-[url "ssh://git@gitlab.syntecclub.com:40022"]
-    insteadOf = git://gitlab.syntecclub.com

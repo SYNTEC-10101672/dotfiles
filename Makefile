@@ -81,6 +81,7 @@ scripts:
 	@ln -sf $(ROOT_DIR)/scripts/resetcnc $(HOME)/bin/resetcnc
 	@ln -sf $(ROOT_DIR)/scripts/setup-git-credentials.sh $(HOME)/bin/setup-git-credentials
 	@ln -sf $(ROOT_DIR)/scripts/tig-mark-commit.sh $(HOME)/bin/tig-mark-commit
+	@ln -sf $(ROOT_DIR)/scripts/tig-diff-selector.sh $(HOME)/bin/tig-diff-selector
 	@echo "✓ Scripts installed to ~/bin"
 	@echo "  Note: Ensure ~/bin is in your PATH"
 
@@ -93,7 +94,7 @@ uninstall:
 		fi; \
 	done
 	@echo "Removing scripts..."
-	@for script in resetcnc setup-git-credentials tig-mark-commit; do \
+	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector; do \
 		if [ -L "$(HOME)/bin/$$script" ]; then \
 			echo "  Removing ~/bin/$$script"; \
 			rm "$(HOME)/bin/$$script"; \
@@ -137,7 +138,7 @@ check:
 	done
 	@echo ""
 	@echo "Checking scripts installation..."
-	@for script in resetcnc setup-git-credentials tig-mark-commit; do \
+	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector; do \
 		if [ -L "$(HOME)/bin/$$script" ]; then \
 			target=$$(readlink "$(HOME)/bin/$$script"); \
 			echo "✓ ~/bin/$$script -> $$target"; \

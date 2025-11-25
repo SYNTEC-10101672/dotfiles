@@ -21,6 +21,10 @@ cd ~/dotfiles
 # 安裝所有設定（自動備份現有檔案）
 make install
 
+# 安裝 fzf（Tig 檔案選擇器需要）
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install --bin
+
 # 或使用 make 查看所有可用指令
 make help
 ```
@@ -314,8 +318,17 @@ tig status
 - `<Ctrl-d>` / `<Ctrl-u>` - 半頁捲動
 - `<Ctrl-f>` / `<Ctrl-b>` - 整頁捲動
 
-**Vimdiff 整合：**
-- `D` (main view) - 使用 vimdiff 查看 commit 差異
+**互動式檔案選擇與 Vimdiff 整合：**
+- `M` (main view) - 標記當前 commit
+- `D` (main view) - 顯示檔案選擇器，選擇要用 vimdiff 查看的檔案
+  - 沒有標記 commit：查看當前 commit 的變更
+  - 有標記 commit：比對標記的 commit 與當前 commit
+  - `j`/`k` - 上下移動（vim 風格）
+  - `/` - 進入搜尋模式（模糊搜尋檔案）
+  - `Enter` - 選擇檔案開啟 vimdiff
+  - `ESC` - 退出回到 tig
+- `Ctrl-M` (main view) - 顯示目前標記的 commit
+- `Ctrl-X` (main view) - 清除標記的 commit
 - `D` (diff view) - 使用 vimdiff 查看當前檔案差異
 - `D` (log view) - 使用 vimdiff 查看 commit 差異
 - `D` (status view) - 使用 vimdiff 比較工作區變更
@@ -334,8 +347,21 @@ tig status
 - 相對時間顯示
 - 忽略空白變更
 - 外部編輯器整合
+- **互動式檔案選擇器**：使用 fzf 提供流暢的檔案選擇體驗
+  - 支援 vim 風格的 j/k 移動
+  - 模糊搜尋快速過濾檔案
+  - 顯示變更統計（新增/刪除行數）
 
-詳細設定請參考 `.tigrc`
+**檔案選擇器工作流程：**
+1. 在 tig 中瀏覽 commit 歷史
+2. 按 `M` 標記一個 commit（可選）
+3. 移動到另一個 commit（或停留在同一個）
+4. 按 `D` 顯示檔案列表
+5. 用 `j`/`k` 或 `/` 搜尋選擇檔案
+6. 按 `Enter` 開啟 vimdiff
+7. 看完自動回到檔案列表，繼續選擇或按 `ESC` 退出
+
+詳細設定請參考 `.tigrc` 和 `scripts/tig-diff-selector.sh`
 
 ## Git 設定
 
@@ -402,9 +428,23 @@ make restore BACKUP=<備份目錄>
 - Vim 8.0+ 或 Neovim
 - Git 2.0+
 - Tig 2.0+（可選，用於 Git 圖形介面）
+- fzf（必需，用於 Tig 互動式檔案選擇器）
 - Docker（若使用 Claude Code MCP 功能）
 
 ## 問題排除
+
+### fzf 未安裝
+
+如果在使用 tig 按 `D` 時看到 `fzf not found` 錯誤：
+
+```bash
+# 安裝 fzf 到使用者目錄
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install --bin
+
+# 或使用系統套件管理器（需要 sudo）
+sudo apt-get install fzf  # Ubuntu/Debian
+```
 
 ### Bash bind 警告
 

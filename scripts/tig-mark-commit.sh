@@ -39,8 +39,8 @@ case "$1" in
         else
             # Handle normal commit
             if [ ! -f "$MARK_FILE" ]; then
-                # No commit marked - show single commit diff (original D key behavior)
-                git difftool "${CURRENT_COMMIT}^!"
+                # No commit marked - show single commit diff with file selector
+                tig-diff-selector "${CURRENT_COMMIT}^" "$CURRENT_COMMIT"
             else
                 # Commit is marked - compare marked commit with current commit
                 MARKED_COMMIT=$(cat "$MARK_FILE")
@@ -50,8 +50,8 @@ case "$1" in
                 echo "  Current: $CURRENT_COMMIT"
                 echo ""
 
-                # Launch vimdiff for all changed files between the two commits
-                git difftool "$MARKED_COMMIT" "$CURRENT_COMMIT"
+                # Launch interactive file selector
+                tig-diff-selector "$MARKED_COMMIT" "$CURRENT_COMMIT"
             fi
         fi
         ;;
