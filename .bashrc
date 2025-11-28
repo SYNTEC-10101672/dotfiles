@@ -3,6 +3,13 @@
 # Add ~/bin to PATH for user scripts
 export PATH="$HOME/bin:$PATH"
 
+# Add OmniSharp (C# Language Server) to PATH
+export PATH="$HOME/.omnisharp:$PATH"
+
+# Add .NET SDK to PATH
+export DOTNET_ROOT="$HOME/.dotnet"
+export PATH="$HOME/.dotnet:$PATH"
+
 export LANGUAGE="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="UTF-8"

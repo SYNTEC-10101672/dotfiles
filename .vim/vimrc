@@ -20,13 +20,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'garbas/vim-snipmate'
   Plug 'honza/vim-snippets'
   " for language server protocol
-  Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
-
-  " for AI assistance
-  Plug 'github/copilot.vim'
+  Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh' }
 
   " for markdown
   Plug 'godlygeek/tabular'
@@ -35,7 +29,10 @@ call plug#begin('~/.vim/plugged')
   " for python
   Plug 'davidhalter/jedi-vim'
 
-  " for GitHub Copilot
+  " for C#
+  Plug 'OmniSharp/omnisharp-vim'
+
+  " for AI assistance
   Plug 'github/copilot.vim'
 
 call plug#end()
