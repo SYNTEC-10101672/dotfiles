@@ -33,6 +33,8 @@ Linux (Samba Server)                   Windows PC
     ├── appkernel-setup.sh             # Setup（mount + SDK）
     ├── appkernel-build.sh             # Build（通用編譯腳本）
     ├── appkernel-deploy.sh            # Deploy（部署至控制器）
+    ├── omnisharp.json                 # OmniSharp 設定（ReleaseEL|x86）
+    ├── .editorconfig                  # C# coding style 規範
     └── README.md                      # 本文件
 ```
 
@@ -43,6 +45,7 @@ Linux (Samba Server)                   Windows PC
 ### 1. `aksetup` - 環境設定（一次性）
 - 掛載 Samba 共享到 Z:
 - 載入 SDK 環境
+- 自動建立開發環境設定檔（omnisharp.json、.editorconfig）
 - **執行時機**：每天第一次使用 / SDK 更新時
 - **執行時間**：3-10 分鐘（需下載 SDK）
 
@@ -278,6 +281,86 @@ source ~/.env
 cat ~/.env | grep SAMBA
 ```
 
+## Vim 開發環境整合
+
+### OmniSharp 與 EditorConfig 支援
+
+系統整合了 OmniSharp 語言伺服器和 EditorConfig，提供完整的 C# 開發環境。
+
+#### 自動設定
+
+執行 `aksetup` 時，會在專案目錄自動建立兩個設定檔的軟連結：
+
+```bash
+cd ~/project/windows_project/appkernel
+aksetup
+
+# 自動建立以下軟連結：
+# omnisharp.json  -> ~/.dotfiles/.appkernel/omnisharp.json
+# .editorconfig   -> ~/.dotfiles/.appkernel/.editorconfig
+```
+
+**或者**，直接開啟任何 C# 檔案時，vim 也會自動偵測並建立軟連結（防呆機制）。
+
+#### OmniSharp 設定
+
+`omnisharp.json` 設定檔內容：
+```json
+{
+  "MSBuild": {
+    "LoadProjectsOnDemand": false,
+    "Configuration": "ReleaseEL",
+    "Platform": "x86"
+  }
+}
+```
+
+這確保 OmniSharp 使用正確的 Configuration（ReleaseEL|x86），讓 IntelliSense 和 go-to-definition 能讀取正確的條件編譯程式碼。
+
+#### EditorConfig 設定
+
+`.editorconfig` 定義了團隊統一的 C# coding style：
+- **縮排**：Tab（不是空格）
+- **換行規則**：methods, types, accessors, properties 前換行
+- **空格規則**：控制流程語句、括號、逗號等的空格
+
+#### Vim 快捷鍵
+
+開啟 C# 檔案後可使用以下快捷鍵：
+
+**導航**：
+- `gd` - 跳轉到定義（go to definition）
+- `Ctrl-O` - 回到上一個位置
+- `Ctrl-I` / `Tab` - 往前跳
+- `[[` / `]]` - 在方法間上下跳轉
+
+**格式化**：
+- `,f` - 格式化整個檔案（Normal mode）
+- `,f` - 調整選取範圍的縮排（Visual mode）
+- `,os=` - 格式化整個檔案（完整版）
+
+**其他功能**：
+- `,osfu` - 尋找所有使用處（find usages）
+- `,osfi` - 尋找實作（find implementations）
+- `,osfx` - 修正 using 語句
+- `,osre` - 重新啟動 OmniSharp server
+- `:OmniSharpStatus` - 檢查 OmniSharp 狀態
+
+**重要提醒**：
+- OmniSharp 需要時間分析專案（首次開啟可能需要 1-2 分鐘）
+- 如果修改了 `omnisharp.json`，需要執行 `,osre` 重新啟動 server
+- 如果 go-to-definition 跳轉錯誤，確認 Configuration 是否正確設定為 ReleaseEL|x86
+
+### 中文顯示與顏色輸出
+
+系統已針對 SSH 遠端執行進行編碼優化：
+
+- **UTF-8 編碼**：自動設定 Windows CMD 為 UTF-8（`chcp 65001`），正確顯示中文訊息
+- **ANSI 顏色**：啟用虛擬終端支援，保留 MSBuild 的彩色輸出
+  - 綠色：成功訊息（BUILD SUCCEEDED）
+  - 紅色：錯誤訊息（error C1234）
+  - 黃色：警告訊息（warning C4567）
+
 ## 技術說明
 
 ### SSH Session 獨立性
@@ -334,5 +417,5 @@ aksetup  # 重新部署批次檔和設定環境
 ---
 
 **建立日期**: 2025-11-21
-**更新日期**: 2025-11-24
-**版本**: 4.1（新增 akdeploy 部署指令）
+**更新日期**: 2025-11-28
+**版本**: 5.0（整合 OmniSharp 與 EditorConfig，優化編碼與顏色輸出）

@@ -86,8 +86,12 @@ echo ""
 
 # Use sshpass to automatically provide password
 # Execute commands directly instead of running a batch file
-sshpass -p "${WINDOWS_PASSWORD}" ssh -o StrictHostKeyChecking=no ${WINDOWS_HOST} << ENDSSH
+# Enable color output with -t flag
+sshpass -p "${WINDOWS_PASSWORD}" ssh -t -o StrictHostKeyChecking=no ${WINDOWS_HOST} << ENDSSH
 @echo off
+chcp 65001 >nul 2>&1
+:: Enable ANSI color support
+reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
 echo [1/3] Mounting Samba share to Z:...
 net use Z: /delete /y >nul 2>&1
 net use Z: \\\\${SAMBA_SERVER}\\sharedfolder "${SAMBA_PASSWORD}" /user:${SAMBA_USER} /persistent:yes
@@ -123,6 +127,35 @@ if [ $SETUP_RESULT -eq 0 ]; then
     echo "✓ Samba share mounted to Z:"
     echo "✓ SDK environment loaded"
     echo ""
+
+    # Setup development environment configurations
+    echo -e "${YELLOW}[Additional] Setting up development configurations...${NC}"
+    OMNISHARP_TEMPLATE="$HOME/.dotfiles/.appkernel/omnisharp.json"
+    EDITORCONFIG_TEMPLATE="$HOME/.dotfiles/.appkernel/.editorconfig"
+    CURRENT_DIR=$(pwd)
+
+    # Check if appkernel32.sln or Appkernel32.sln exists in current directory
+    if [ -f "$CURRENT_DIR/appkernel32.sln" ] || [ -f "$CURRENT_DIR/Appkernel32.sln" ]; then
+        # Setup omnisharp.json
+        if [ ! -e "$CURRENT_DIR/omnisharp.json" ]; then
+            ln -s "$OMNISHARP_TEMPLATE" "$CURRENT_DIR/omnisharp.json"
+            echo -e "${GREEN}✓ Created omnisharp.json symlink${NC}"
+        else
+            echo -e "${BLUE}ℹ omnisharp.json already exists${NC}"
+        fi
+
+        # Setup .editorconfig
+        if [ ! -e "$CURRENT_DIR/.editorconfig" ]; then
+            ln -s "$EDITORCONFIG_TEMPLATE" "$CURRENT_DIR/.editorconfig"
+            echo -e "${GREEN}✓ Created .editorconfig symlink${NC}"
+        else
+            echo -e "${BLUE}ℹ .editorconfig already exists${NC}"
+        fi
+    else
+        echo -e "${BLUE}ℹ No appkernel32.sln found, skipping configuration setup${NC}"
+    fi
+    echo ""
+
     echo "Next step: Run 'akbuild' to compile"
 else
     echo -e "${RED}=====================================${NC}"

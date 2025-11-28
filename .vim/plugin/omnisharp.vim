@@ -29,9 +29,45 @@ set completepopup=highlight:Pmenu,border:off
 " Fetch full documentation during omnicomplete requests.
 let g:omnicomplete_fetch_full_documentation = 1
 
+" Auto-setup development configs for appkernel projects
+function! SetupOmniSharpConfig()
+  " Find appkernel32.sln or Appkernel32.sln in parent directories
+  let sln_file = findfile('appkernel32.sln', '.;')
+  if empty(sln_file)
+    let sln_file = findfile('Appkernel32.sln', '.;')
+  endif
+
+  if !empty(sln_file)
+    let sln_dir = fnamemodify(sln_file, ':p:h')
+    let omnisharp_config = sln_dir . '/omnisharp.json'
+    let omnisharp_template = expand('~/.dotfiles/.appkernel/omnisharp.json')
+    let editorconfig = sln_dir . '/.editorconfig'
+    let editorconfig_template = expand('~/.dotfiles/.appkernel/.editorconfig')
+
+    " Create omnisharp.json symlink if it doesn't exist
+    if !filereadable(omnisharp_config) && filereadable(omnisharp_template)
+      call system('ln -s ' . shellescape(omnisharp_template) . ' ' . shellescape(omnisharp_config))
+      echohl WarningMsg
+      echo 'Created omnisharp.json symlink at ' . sln_dir
+      echohl None
+    endif
+
+    " Create .editorconfig symlink if it doesn't exist
+    if !filereadable(editorconfig) && filereadable(editorconfig_template)
+      call system('ln -s ' . shellescape(editorconfig_template) . ' ' . shellescape(editorconfig))
+      echohl WarningMsg
+      echo 'Created .editorconfig symlink at ' . sln_dir
+      echohl None
+    endif
+  endif
+endfunction
+
 " Key mappings for OmniSharp (only active in C# files)
 augroup omnisharp_commands
   autocmd!
+
+  " Auto-setup omnisharp.json when entering a C# file
+  autocmd BufEnter *.cs call SetupOmniSharpConfig()
 
   " Show type information automatically when the cursor stops moving.
   " Note that the type is echoed to the Vim command line, and will overwrite
@@ -66,7 +102,13 @@ augroup omnisharp_commands
   autocmd FileType cs nmap <silent> <buffer> <Leader>os. <Plug>(omnisharp_code_action_repeat)
   autocmd FileType cs xmap <silent> <buffer> <Leader>os. <Plug>(omnisharp_code_action_repeat)
 
+  " Code formatting
   autocmd FileType cs nmap <silent> <buffer> <Leader>os= <Plug>(omnisharp_code_format)
+  " Additional convenient format shortcuts
+  autocmd FileType cs nmap <silent> <buffer> <Leader>f <Plug>(omnisharp_code_format)
+  " For visual mode: use vim's built-in indent (respects EditorConfig)
+  " Note: OmniSharp doesn't support range formatting
+  autocmd FileType cs vmap <silent> <buffer> <Leader>f =
 
   autocmd FileType cs nmap <silent> <buffer> <Leader>osnm <Plug>(omnisharp_rename)
 

@@ -1,0 +1,16 @@
+{
+  "MSBuild": {
+    "LoadProjectsOnDemand": false,
+    "Configuration": "ReleaseEL",
+    "Platform": "x86"
+  },
+  "FormattingOptions": {
+    "EnableEditorConfigSupport": true,
+    "OrganizeImports": true
+  },
+  "RoslynExtensionsOptions": {
+    "EnableAnalyzersSupport": true,
+    "EnableImportCompletion": true,
+    "EnableDecompilationSupport": true
+  }
+}

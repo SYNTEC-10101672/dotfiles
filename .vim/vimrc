@@ -35,6 +35,9 @@ call plug#begin('~/.vim/plugged')
   " for AI assistance
   Plug 'github/copilot.vim'
 
+  " for EditorConfig support
+  Plug 'editorconfig/editorconfig-vim'
+
 call plug#end()
 
 "--------------

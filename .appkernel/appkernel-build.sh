@@ -92,8 +92,12 @@ echo ""
 
 # Use sshpass to automatically provide password
 # Mount share and build in one session
-sshpass -p "${WINDOWS_PASSWORD}" ssh -o StrictHostKeyChecking=no ${WINDOWS_HOST} << ENDSSH
+# Enable color output with -t flag
+sshpass -p "${WINDOWS_PASSWORD}" ssh -t -o StrictHostKeyChecking=no ${WINDOWS_HOST} << ENDSSH
 @echo off
+chcp 65001 >nul 2>&1
+:: Enable ANSI color support
+reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
 echo [1/4] Mounting Z: drive...
 net use Z: /delete /y >nul 2>&1
 net use Z: \\\\${SAMBA_SERVER}\\sharedfolder "${SAMBA_PASSWORD}" /user:${SAMBA_USER} /persistent:no
@@ -115,7 +119,7 @@ set MSBUILD="C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSB
 echo MSBUILD: %MSBUILD%
 
 echo [4/4] Building ${1} (${2})...
-%MSBUILD% Appkernel32.sln /r /p:RestorePackagesConfig=true /t:${BUILD_TARGET} /property:Configuration=${BUILD_CONFIG} /nodeReuse:False
+%MSBUILD% Appkernel32.sln /r /p:RestorePackagesConfig=true /t:${BUILD_TARGET} /property:Configuration=${BUILD_CONFIG} /nodeReuse:False /consoleloggerparameters:ForceConsoleColor
 if errorlevel 1 (
     echo.
     echo BUILD FAILED!
