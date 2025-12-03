@@ -5,7 +5,7 @@
 ## 功能特色
 
 - 🎨 **Bash**: 自訂提示符（支援 Git 狀態顯示）、別名、環境變數
-- ⚡ **Vim**: 完整的 Vim 開發環境（包含 LSP、NERDTree、CtrlP 等）
+- ⚡ **Neovim**: 完整的 Neovim 開發環境（包含 LSP、NERDTree、CtrlP 等），向後相容 Vim
 - 🔧 **Git**: 顏色配置、別名、自動 rebase
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
 - 🖥️ **Tmux**: 終端機多工器，支援 Vim 風格操作和美化狀態列
@@ -46,7 +46,7 @@ make install
 
 # 或分別安裝個別模組
 make bashrc    # 安裝 Bash 設定
-make vim       # 安裝 Vim 設定
+make nvim      # 安裝 Neovim 設定
 make claude    # 安裝 Claude Code 設定
 make git       # 安裝 Git 設定
 make tig       # 安裝 Tig 設定
@@ -78,9 +78,10 @@ dotfiles/
 ├── .gitignore            # 本專案忽略檔案
 ├── .tigrc                # Tig 設定檔（Git 文字介面）
 ├── .tmux.conf            # Tmux 設定檔（終端機多工器）
-├── .vim/                 # Vim 設定目錄
-│   ├── vimrc             # Vim 主設定檔
-│   ├── plugin/           # Vim 插件設定
+├── .nvim/                # Neovim 設定目錄
+│   ├── vimrc             # 主設定檔
+│   ├── init.vim          # Neovim 進入點（指向 vimrc）
+│   ├── plugin/           # 插件設定
 │   ├── colors/           # 配色方案
 │   └── autoload/         # vim-plug 套件管理器
 ├── .claude/              # Claude Code 模板
@@ -113,7 +114,7 @@ export MY_CUSTOM_VAR="value"
 alias my_alias="command"
 ```
 
-## Vim 設定
+## Neovim 設定
 
 ### 已安裝插件
 
@@ -124,13 +125,16 @@ alias my_alias="command"
 - **vim-gitgutter**: Git 變更顯示
 - **tagbar**: 程式碼大綱瀏覽
 - **vim-snipmate**: 程式碼片段
-- 更多插件請參考 `.vim/vimrc`
+- **GitHub Copilot**: AI 程式碼助手
+- **OmniSharp**: C# 語言伺服器
+- **EditorConfig**: 統一程式碼風格
+- 更多插件請參考 `.nvim/vimrc`
 
 ### 首次使用
 
 ```bash
-# 開啟 Vim 並安裝插件
-vim
+# 開啟 Neovim 並安裝插件
+nvim
 :PlugInstall
 ```
 
@@ -139,7 +143,25 @@ vim
 - `,` - Leader 鍵
 - `jj` / `11` - 退出插入模式（ESC 替代）
 - `<F2>` / `22` - 切換 NERDTree
-- 詳細快捷鍵設定請參考 `.vim/plugin/keymappings.vim`
+- 詳細快捷鍵設定請參考 `.nvim/plugin/keymappings.vim`
+
+### 配置結構
+
+```
+.nvim/                      # Neovim 配置目錄
+├── vimrc                   # 主配置檔
+├── init.vim                # Neovim 進入點（指向 vimrc）
+├── plugin/                 # 插件配置
+│   ├── keymappings.vim     # 快捷鍵設定
+│   ├── appearance.vim      # 外觀設定
+│   ├── copilot.vim         # Copilot 設定
+│   └── ...
+├── colors/                 # 配色方案
+└── plugged/                # 插件安裝目錄
+```
+
+安裝後：
+- Neovim 配置：`~/.config/nvim/` → `~/.dotfiles/.nvim/`
 
 ## Claude Code 模板
 
@@ -425,11 +447,23 @@ make restore BACKUP=<備份目錄>
 ## 環境需求
 
 - Bash 4.0+
-- Vim 8.0+ 或 Neovim
+- **Neovim 0.6+**
 - Git 2.0+
 - Tig 2.0+（可選，用於 Git 圖形介面）
 - fzf（必需，用於 Tig 互動式檔案選擇器）
 - Docker（若使用 Claude Code MCP 功能）
+
+### 安裝 Neovim
+
+```bash
+# Ubuntu/Debian
+sudo apt install neovim
+
+# 或從官方獲取最新版本
+sudo add-apt-repository ppa:neovim-ppa/unstable
+sudo apt update
+sudo apt install neovim
+```
 
 ## 問題排除
 
@@ -450,15 +484,26 @@ sudo apt-get install fzf  # Ubuntu/Debian
 
 如果看到 `bind: warning: line editing not enabled` 警告，這是正常的非互動式 shell 執行結果，不影響功能。
 
-### Vim 插件安裝失敗
+### Neovim 插件安裝失敗
 
 ```bash
 # 手動安裝 vim-plug
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+curl -fLo ~/.dotfiles/.nvim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 # 重新安裝插件
-vim +PlugInstall +qall
+nvim +PlugInstall +qall
+```
+
+### Neovim 找不到配置
+
+確保 symlink 正確建立：
+```bash
+# 檢查安裝狀態
+make check
+
+# 重新安裝 neovim 配置
+make nvim
 ```
 
 ### 符號連結權限問題

@@ -24,7 +24,10 @@ endif
 " Highlight the completion documentation popup background/foreground the same as
 " the completion menu itself, for better readability with highlighted
 " documentation.
-set completepopup=highlight:Pmenu,border:off
+" Note: completepopup is only available in Vim 8.2+, not in Neovim
+if !has('nvim') && has('patch-8.2.0')
+  set completepopup=highlight:Pmenu,border:off
+endif
 
 " Fetch full documentation during omnicomplete requests.
 let g:omnicomplete_fetch_full_documentation = 1

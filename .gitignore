@@ -1,6 +1,6 @@
-# Vim
-.vim/plugged/
-.vim/.netrwhist
+# Neovim
+.nvim/plugged/
+.nvim/.netrwhist
 *.swp
 *.swo
 *~
