@@ -49,6 +49,22 @@ telescope.setup({
         return { "--hidden", "--glob", "!.git/*" }
       end,
     },
+    git_status = {
+      git_icons = {
+        added = "+",
+        changed = "~",
+        copied = ">",
+        deleted = "-",
+        renamed = "➡",
+        unmerged = "‡",
+        untracked = "?",
+      },
+      layout_config = {
+        horizontal = {
+          preview_width = 0.60,
+        },
+      },
+    },
   },
 
   extensions = {

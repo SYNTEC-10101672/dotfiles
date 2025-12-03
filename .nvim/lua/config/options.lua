@@ -85,3 +85,7 @@ vim.cmd([[
   filetype indent on
   filetype plugin on
 ]])
+
+-- 設定環境變數：在 Neovim 中關閉 git 顏色輸出（避免 ANSI 代碼）
+vim.env.GIT_PAGER = "cat"
+vim.env.GIT_CONFIG_PARAMETERS = "'color.ui=never' 'color.diff=never'"

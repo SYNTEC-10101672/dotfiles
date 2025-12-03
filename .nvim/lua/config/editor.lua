@@ -102,6 +102,22 @@ if status_ok3 then
       always_show_bufferline = true,
       sort_by = "id",
     },
+    highlights = {
+      buffer_selected = {
+        bold = true,
+        italic = false,
+      },
+      duplicate_selected = {
+        bold = true,
+        italic = false,
+      },
+      duplicate_visible = {
+        italic = false,
+      },
+      duplicate = {
+        italic = false,
+      },
+    },
   })
 
   -- Bufferline 快捷鍵
