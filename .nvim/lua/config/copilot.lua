@@ -14,8 +14,9 @@ vim.g.copilot_no_tab_map = true
 local keymap = vim.keymap.set
 local opts = { silent = true, script = true, expr = true, replace_keycodes = false }
 
--- 使用 Ctrl+J 接受建議
-keymap('i', '<C-J>', 'copilot#Accept("\\<CR>")', opts)
+-- 使用 Tab 接受建議
+-- 如果沒有 Copilot 建議，fallback 到正常的 Tab 行為
+keymap('i', '<Tab>', 'copilot#Accept("\\<Tab>")', opts)
 
 -- 導航建議
 keymap('i', '<C-N>', '<Plug>(copilot-next)', { silent = true })

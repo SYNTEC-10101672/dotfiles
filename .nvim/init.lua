@@ -26,6 +26,7 @@ require('config.tree')
 require('config.git')
 require('config.treesitter')
 require('config.editor')
+require('config.clipboard')
 
 -- 語言特定設定
 require('config.omnisharp')

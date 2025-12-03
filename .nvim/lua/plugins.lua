@@ -185,13 +185,6 @@ require("lazy").setup({
   -- 語言特定套件
   -- ============================================================================
 
-  -- Python 支援（可選，LSP 可能已經足夠）
-  {
-    "davidhalter/jedi-vim",
-    ft = "python",
-    enabled = false,  -- 預設停用，如果需要可以改為 true
-  },
-
   -- C# 支援
   {
     "OmniSharp/omnisharp-vim",
@@ -205,21 +198,6 @@ require("lazy").setup({
   -- Gruvbox 主題
   {
     "ellisonleao/gruvbox.nvim",
-    priority = 1000,
-    lazy = false,
-  },
-
-  -- Tokyo Night 主題
-  {
-    "folke/tokyonight.nvim",
-    priority = 1000,
-    lazy = false,
-  },
-
-  -- Catppuccin 主題
-  {
-    "catppuccin/nvim",
-    name = "catppuccin",
     priority = 1000,
     lazy = false,
   },

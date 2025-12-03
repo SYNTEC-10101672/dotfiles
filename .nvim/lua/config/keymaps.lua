@@ -59,4 +59,28 @@ keymap("n", "J", "mzJ`z", opts)
 keymap("n", "<leader>w", ":w<CR>", opts)
 keymap("n", "<leader>q", ":q<CR>", opts)
 
+-- ============================================================================
+-- 個人快捷鍵偏好
+-- ============================================================================
+
+-- 停用方向鍵（強制使用 hjkl）
+keymap("n", "<Up>", "<Nop>", opts)
+keymap("n", "<Down>", "<Nop>", opts)
+keymap("n", "<Left>", "<Nop>", opts)
+keymap("n", "<Right>", "<Nop>", opts)
+keymap("i", "<Up>", "<Nop>", opts)
+keymap("i", "<Down>", "<Nop>", opts)
+keymap("i", "<Left>", "<Nop>", opts)
+keymap("i", "<Right>", "<Nop>", opts)
+
+-- Buffer 切換（補充方式）
+-- 注意：已有 <S-l> 和 <S-h>，這裡額外提供 [b 和 ]b
+keymap("n", "[b", ":bprevious<CR>", opts)
+keymap("n", "]b", ":bnext<CR>", opts)
+
+-- 快速退出插入模式
+keymap("i", "jj", "<Esc>", opts)
+keymap("i", "11", "<Esc>", opts)
+keymap("v", "11", "<Esc>", opts)
+
 -- 套件特定快捷鍵會在各自的設定檔中定義
