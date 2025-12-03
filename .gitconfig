@@ -3,7 +3,7 @@
 [branch]
   autosetuprebase = always
 [core]
-  editor = vim
+  editor = nvim
   excludesfile = ~/.gitignore_global
 [color]
   ui = always
@@ -28,9 +28,18 @@
   changed = red
   untracked = cyan
 [diff]
-  tool = vimdiff
+  tool = nvimdiff
 [difftool]
   prompt = false
+[difftool "nvimdiff"]
+  cmd = nvim -d \"$LOCAL\" \"$REMOTE\"
+[merge]
+  tool = nvimdiff
+[mergetool]
+  prompt = false
+  keepBackup = false
+[mergetool "nvimdiff"]
+  cmd = nvim -d \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c \"wincmd w\" -c \"wincmd J\"
 [push]
   default = current
 [pull]
@@ -43,3 +52,5 @@
   autoStash = true
 [credential]
   helper = store
+[url "https://"]
+	insteadOf = git://~
