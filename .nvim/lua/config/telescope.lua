@@ -94,8 +94,6 @@ keymap("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", opts)
 keymap("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", opts)
 
 -- Git 相關
-keymap("n", "<leader>gc", "<cmd>Telescope git_commits<cr>", opts)
-keymap("n", "<leader>gb", "<cmd>Telescope git_branches<cr>", opts)
 keymap("n", "<leader>gs", "<cmd>Telescope git_status<cr>", opts)
 
 -- LSP 相關
