@@ -60,8 +60,8 @@ Linux (Samba Server)                   Windows PC
   - `CONFIG`: 組態名稱（如 `ReleaseEL`、`DebugEL`）
 
 ### 3. `akdeploy <PROJECT> <CONFIG>` - 部署至控制器
-- 檢查編譯產物並部署至控制器（透過 SSH）
-- 支援新舊版本自動相容（`MMICommon.dll` / `MMICommon32.dll`）
+- 自動檢查編譯產物並部署至控制器（透過 SSH）
+- 驗證部署成功並顯示檔案資訊
 - **執行時機**：編譯完成後需要測試時
 - **執行時間**：10-30 秒
 

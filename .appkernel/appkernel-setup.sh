@@ -134,8 +134,8 @@ if [ $SETUP_RESULT -eq 0 ]; then
     EDITORCONFIG_TEMPLATE="$HOME/.dotfiles/.appkernel/.editorconfig"
     CURRENT_DIR=$(pwd)
 
-    # Check if appkernel32.sln or Appkernel32.sln exists in current directory
-    if [ -f "$CURRENT_DIR/appkernel32.sln" ] || [ -f "$CURRENT_DIR/Appkernel32.sln" ]; then
+    # Check if Appkernel32.sln exists in current directory
+    if [ -f "$CURRENT_DIR/Appkernel32.sln" ]; then
         # Setup omnisharp.json
         if [ ! -e "$CURRENT_DIR/omnisharp.json" ]; then
             ln -s "$OMNISHARP_TEMPLATE" "$CURRENT_DIR/omnisharp.json"
@@ -152,7 +152,7 @@ if [ $SETUP_RESULT -eq 0 ]; then
             echo -e "${BLUE}ℹ .editorconfig already exists${NC}"
         fi
     else
-        echo -e "${BLUE}ℹ No appkernel32.sln found, skipping configuration setup${NC}"
+        echo -e "${BLUE}ℹ No Appkernel32.sln found, skipping configuration setup${NC}"
     fi
     echo ""
 

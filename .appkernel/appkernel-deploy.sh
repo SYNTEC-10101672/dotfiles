@@ -61,7 +61,7 @@ case "${PROJECT}" in
         SOURCE_DIR="${BUILD_BASE_DIR}/MMICommon/Source/bin32/${CONFIG}"
         DEPLOY_RULES=(
             "Syntec.OpenCNC.dll|Syntec.OpenCNC.dll|"
-            "MMICommon.dll|MMICommon.dll|MMICommon32.dll"
+            "MMICommon.dll|MMICommon.dll|"
         )
         ;;
     *)
