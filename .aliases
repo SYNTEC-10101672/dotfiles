@@ -31,3 +31,7 @@ tig() {
 alias aksetup="~/.dotfiles/.appkernel/appkernel-setup.sh"   # Mount + Load SDK
 alias akbuild="~/.dotfiles/.appkernel/appkernel-build.sh"   # Build project (generic)
 alias akdeploy="~/.dotfiles/.appkernel/appkernel-deploy.sh" # Deploy to controller
+
+# Appkernel Native Development Shortcuts (C++ projects)
+alias aknbuild="~/.dotfiles/.appkernel/appkernel-build-native.sh"     # Build native project
+alias akndeploy="~/.dotfiles/.appkernel/appkernel-deploy-native.sh"   # Deploy native artifacts
