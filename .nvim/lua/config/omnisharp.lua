@@ -76,6 +76,8 @@ vim.api.nvim_create_autocmd('FileType', {
 
     -- 跳轉相關
     vim.keymap.set('n', 'gd', '<Plug>(omnisharp_go_to_definition)', opts)
+    vim.keymap.set('n', 'gr', '<Plug>(omnisharp_find_usages)', opts)
+    vim.keymap.set('n', 'gi', '<Plug>(omnisharp_find_implementations)', opts)
 
     -- OmniSharp 功能
     vim.keymap.set('n', '<Leader>osfu', '<Plug>(omnisharp_find_usages)', opts)

@@ -31,9 +31,9 @@ opt.wrap = false                -- 不自動換行
 
 -- 縮排設定
 opt.expandtab = true            -- 使用空格代替 tab
-opt.shiftwidth = 2              -- 縮排寬度
-opt.tabstop = 2                 -- tab 寬度
-opt.softtabstop = 2
+opt.shiftwidth = 4              -- 縮排寬度
+opt.tabstop = 4                 -- tab 寬度
+opt.softtabstop = 4
 opt.smartindent = true          -- 智能縮排
 opt.autoindent = true
 
