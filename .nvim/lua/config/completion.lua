@@ -96,15 +96,19 @@ cmp.setup({
 })
 
 -- 命令列補全
+local cmdline_mapping = cmp.mapping.preset.cmdline()
+cmdline_mapping["<C-j>"] = { c = cmp.mapping.select_next_item() }
+cmdline_mapping["<C-k>"] = { c = cmp.mapping.select_prev_item() }
+
 cmp.setup.cmdline("/", {
-  mapping = cmp.mapping.preset.cmdline(),
+  mapping = cmdline_mapping,
   sources = {
     { name = "buffer" }
   }
 })
 
 cmp.setup.cmdline(":", {
-  mapping = cmp.mapping.preset.cmdline(),
+  mapping = cmdline_mapping,
   sources = cmp.config.sources({
     { name = "path" }
   }, {
