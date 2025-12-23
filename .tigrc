@@ -155,14 +155,18 @@ bind generic V !git show %(commit)
 # Vimdiff Integration
 # ============================================================================
 
-# Use vimdiff to view diff (in diff view for specific file)
-bind diff D !git difftool %(commit)^! -- %(file)
+# Use nvim diff to view diff (in diff view for specific file)
+# Cursor moves to right pane automatically
+bind diff D !git difftool -y -t nvimdiff %(commit)^! -- %(file)
 
-# Use vimdiff to view diff (in log view)
-bind log D !git difftool %(commit)^!
+# Use nvim diff to view diff (in log view)
+bind log D !git difftool -y -t nvimdiff %(commit)^!
 
-# Use vimdiff to compare working tree changes (in status view)
-bind status D !git difftool -- %(file)
+# Diff commands for status view:
+# D = unstaged diff (working tree vs staging)
+# S = staged diff (staging vs HEAD)
+bind status D !git difftool -y -t nvimdiff -- %(file)
+bind status S !git difftool --staged -y -t nvimdiff -- %(file)
 
 # ============================================================================
 # Cross-Commit Comparison (Mark & Diff)

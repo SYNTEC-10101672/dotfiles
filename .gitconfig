@@ -32,7 +32,7 @@
 [difftool]
   prompt = false
 [difftool "nvimdiff"]
-  cmd = nvim -d \"$LOCAL\" \"$REMOTE\"
+	cmd = nvim -d -u ~/.dotfiles/.nvim/diff.lua -c \"wincmd l\" \"$LOCAL\" \"$REMOTE\"
 [merge]
   tool = nvimdiff
 [mergetool]
