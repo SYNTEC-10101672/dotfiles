@@ -1,7 +1,7 @@
 #!/bin/bash
 # CNC 控制器重置腳本
 #
-# 功能：透過 Tasmota 智能插座重置 CNC 控制器
+# 功能：透過 SSH 連接到 Windows PC，使用 PowerShell 控制 Tasmota 智能插座重置 CNC 控制器
 # 執行順序：關機 → 等待 2 秒 → 開機
 #
 # 使用方式：
@@ -12,37 +12,36 @@ if [ -f ~/.env ]; then
     source ~/.env
 else
     echo "錯誤: 找不到 ~/.env 檔案"
-    echo "請先設定環境變數 TASMOTA_IP 和 TASMOTA_PORT"
+    echo "請先設定環境變數"
     exit 1
 fi
 
 # 檢查必要的環境變數
-if [ -z "$TASMOTA_IP" ]; then
-    echo "錯誤: TASMOTA_IP 未設定"
-    echo "請在 ~/.env 中設定 TASMOTA_IP"
+if [ -z "$WINDOWS_PASSWORD" ]; then
+    echo "錯誤: WINDOWS_PASSWORD 未設定"
+    echo "請在 ~/.env 中設定 WINDOWS_PASSWORD"
     exit 1
 fi
 
-if [ -z "$TASMOTA_PORT" ]; then
-    echo "錯誤: TASMOTA_PORT 未設定"
-    echo "請在 ~/.env 中設定 TASMOTA_PORT"
-    exit 1
-fi
+# 設定變數
+WINDOWS_HOST="${WINDOWS_HOST:-windows_pc}"
+TASMOTA_IP="${TASMOTA_IP:-192.168.137.126}"
 
 # 顯示操作資訊
 echo "====================================="
 echo "CNC 控制器重置"
 echo "====================================="
-echo "Tasmota 裝置: ${TASMOTA_IP}:${TASMOTA_PORT}"
+echo "Windows PC: ${WINDOWS_HOST}"
+echo "Tasmota 裝置: ${TASMOTA_IP}"
 echo "執行: 關機 → 等待 2秒 → 開機"
 echo ""
 
-# 執行重置
-curl -s "http://${TASMOTA_IP}:${TASMOTA_PORT}/cm?cmnd=Backlog%20Power1%20Off%3BDelay%202%3BPower1%20On"
+# 透過 SSH 執行 PowerShell 指令（使用 sshpass 傳遞密碼）
+sshpass -p "${WINDOWS_PASSWORD}" ssh -o StrictHostKeyChecking=no "${WINDOWS_HOST}" "powershell -Command \"Invoke-WebRequest -Uri 'http://${TASMOTA_IP}/cm?cmnd=Backlog%20Power1%20Off%3BDelay%202%3BPower1%20On' -UseBasicParsing\""
 
 if [ $? -eq 0 ]; then
     echo "✓ 重置指令已送出"
 else
-    echo "✗ 重置失敗，請檢查網路連線和 Tasmota 設定"
+    echo "✗ 重置失敗，請檢查 SSH 連線和 Tasmota 設定"
     exit 1
 fi
