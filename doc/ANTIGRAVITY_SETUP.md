@@ -17,9 +17,11 @@
 命令層:
 ┌──────────────────────┐    ┌──────────────────────┐
 │  claude-antigravity  │    │  gemini-antigravity  │
+│  (設定環境變數後)      │    │  (設定環境變數後)      │
+│  呼叫 claude CLI      │    │  呼叫 gemini CLI      │
 └──────────┬───────────┘    └──────────┬───────────┘
            │                           │
-           │ Claude API format         │ Gemini models
+           │ ANTHROPIC_BASE_URL        │ GOOGLE_GEMINI_BASE_URL
            │                           │
            └──────────┬────────────────┘
                       │
@@ -316,27 +318,51 @@ claude-antigravity
 
 ### 概述
 
-`gemini-antigravity` 是 Gemini CLI wrapper，透過 Antigravity-manager 使用多種 Gemini 模型。
+`gemini-antigravity` 是 Gemini CLI 的 wrapper，讓你透過 Antigravity-manager 使用 Gemini 模型，而不是直接使用 Google 帳號。
+
+實作方式：
+1. 設定 `GOOGLE_GEMINI_BASE_URL` 環境變數指向 Antigravity-manager
+2. 直接呼叫 `gemini` CLI，所有參數都傳給它
 
 Antigravity-manager 會自動管理多個 Google 帳號，並根據 quota 狀況進行智能路由。
+
+### 與原生 gemini 的差異
+
+| 特性 | `gemini` | `gemini-antigravity` |
+|------|----------|---------------------|
+| 後端 | Google API（直接）| Antigravity-manager |
+| 流量來源 | 單一 Google 帳號 | 多個 Google 帳號輪換 |
+| 設定 | GOOGLE_GEMINI_BASE_URL | ANTIGRAVITY_BASE_URL |
+| 帳號管理 | 單一帳號 | 多帳號輪換 |
+| 支援參數 | 所有 gemini CLI 參數 | 所有 gemini CLI 參數 |
+
+**重要特性**：
+- ✅ 支援所有 `gemini` CLI 功能（互動模式、專案上下文、MCP 伺服器等）
+- ✅ 支援對話歷史記錄和 `--resume` 功能
+- ✅ 支援 YOLO 模式和自動批准功能
+- ✅ 完全相容於原生 `gemini` 命令的工作流程
 
 ### 基本語法
 
 ```bash
-gemini-antigravity [OPTIONS] "PROMPT"
+gemini-antigravity [gemini CLI 的所有參數...]
 ```
 
-### 選項
+**常用參數**（完整參數請參考 `gemini --help`）：
 
-- `-m, --model MODEL` - 指定 Gemini 模型（預設：gemini-2.5-pro）
-- `-i, --interactive` - 啟動互動模式
+- `-m, --model MODEL` - 指定 Gemini 模型
+- `-i` - 啟動互動模式
+- `-p, --prompt PROMPT` - 單次查詢
+- `--resume` - 繼續先前的對話
 - `-h, --help` - 顯示說明
 
 ### 可用模型
 
+以下是 Gemini CLI 支援的模型，透過 `gemini-antigravity` 使用時會經過 Antigravity-manager 路由：
+
 | 模型名稱 | 說明 | 建議使用場景 |
 |---------|------|-------------|
-| `gemini-2.5-pro` | 最強模型（預設）| 複雜任務，但注意 quota |
+| `gemini-2.5-pro` | 最強模型 | 複雜任務，但注意 quota |
 | `gemini-2.5-flash` | 快速高效 | 日常對話、快速查詢 ⭐ |
 | `gemini-2.5-flash-thinking` | 帶思考鏈 | 需要推理過程的任務 |
 | `gemini-2.5-flash-lite` | 輕量版 | 簡單任務、大量請求 |
@@ -347,12 +373,14 @@ gemini-antigravity [OPTIONS] "PROMPT"
 
 ⭐ 推薦日常使用，速度快且 quota 充足
 
+**注意**：可用模型取決於 Antigravity-manager 配置的 Google 帳號權限，使用 `antigravity-monitor quota` 查看當前可用模型。
+
 ### 使用範例
 
 #### 單次查詢
 
 ```bash
-# 使用預設模型
+# 基本使用（與 gemini 命令相同）
 gemini-antigravity "解釋什麼是量子計算"
 
 # 指定模型（推薦使用 flash 系列）
@@ -360,40 +388,73 @@ gemini-antigravity -m gemini-2.5-flash "1+1等於多少？"
 
 # 使用最快的模型
 gemini-antigravity -m gemini-3-flash "Say hello in one word"
+
+# 使用 -p 參數（舊語法，仍然支援）
+gemini-antigravity -p "explain this code" -m gemini-2.5-flash
 ```
 
 #### 互動模式
 
 ```bash
-# 使用預設模型啟動
+# 基本互動模式
 gemini-antigravity -i
 
-# 使用指定模型啟動（推薦）
+# 指定模型的互動模式（推薦）
 gemini-antigravity -m gemini-2.5-flash -i
+
+# 繼續先前的對話
+gemini-antigravity --resume latest
+
+# 列出可用的對話歷史
+gemini-antigravity --list-sessions
 ```
 
 互動模式操作：
 - 直接輸入問題對話
-- 輸入 `exit` 或 `quit` 離開
+- 按 `Ctrl+D` 或輸入 `exit` 離開
 - 按 `Ctrl+C` 取消當前操作
+
+#### 進階用法
+
+```bash
+# 在專案中使用（自動載入專案上下文）
+cd ~/myproject
+gemini-antigravity "分析這個專案的架構"
+
+# YOLO 模式（自動批准所有操作）
+gemini-antigravity -y "幫我重構這段程式碼"
+
+# 指定輸出格式
+gemini-antigravity -o json "解析這段 JSON"
+
+# 啟用除錯模式
+gemini-antigravity -d "debug this issue"
+```
 
 #### 實用場景
 
 ```bash
-# 程式碼解釋
+# 程式碼解釋（使用高品質模型）
 gemini-antigravity -m gemini-3-pro-high "解釋這段 Python 程式碼：
 def fib(n):
     if n <= 1: return n
     return fib(n-1) + fib(n-2)"
 
-# 翻譯
+# 翻譯（快速模型即可）
 gemini-antigravity -m gemini-2.5-flash "將以下英文翻譯成繁體中文：Hello, World!"
 
-# 快速查詢
+# 快速查詢（使用最快的模型）
 gemini-antigravity -m gemini-3-flash "React hooks 是什麼？"
 
 # 文字摘要
 gemini-antigravity -m gemini-2.5-flash "總結以下文章：..."
+
+# 程式碼審查（在專案中）
+cd ~/myproject
+gemini-antigravity -m gemini-3-pro-high "審查這個專案的安全性問題"
+
+# 生成程式碼（YOLO 模式自動執行）
+gemini-antigravity -y -m gemini-2.5-flash "建立一個 React component"
 ```
 
 ## 監控工具
