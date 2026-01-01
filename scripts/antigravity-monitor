@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Monitor Antigravity proxy usage and logs
+#
+# Usage:
+#   antigravity-monitor           - Show real-time logs
+#   antigravity-monitor stats     - Show usage statistics
+#   antigravity-monitor accounts  - Show account info
+
+set -euo pipefail
+
+case "${1:-logs}" in
+    logs|log)
+        echo "=== Antigravity Real-time Logs ==="
+        echo "Press Ctrl+C to stop"
+        echo ""
+        docker logs antigravity -f --tail 50
+        ;;
+
+    stats|stat)
+        echo "=== Antigravity Usage Statistics ==="
+        echo ""
+        echo "Recent requests (last 20):"
+        docker logs antigravity --tail 200 | grep -i "using account\|received claude request" | tail -20
+        echo ""
+        echo "Request summary:"
+        docker logs antigravity --tail 1000 | grep -c "POST /v1/messages" | xargs -I {} echo "Total API calls: {}"
+        ;;
+
+    accounts|account)
+        echo "=== Antigravity Accounts ==="
+        echo ""
+        docker logs antigravity --tail 100 | grep -i "成功加载索引\|Success" | tail -5
+        echo ""
+        echo "Current active account:"
+        docker logs antigravity --tail 50 | grep "Using account:" | tail -1
+        ;;
+
+    quota)
+        echo "=== Available Models ==="
+        echo ""
+        docker logs antigravity --tail 200 | grep -A 20 "Quota API 返回了.*个模型:" | tail -21
+        ;;
+
+    *)
+        echo "Usage: antigravity-monitor [logs|stats|accounts|quota]"
+        echo ""
+        echo "Commands:"
+        echo "  logs     - Show real-time logs (default)"
+        echo "  stats    - Show usage statistics"
+        echo "  accounts - Show account information"
+        echo "  quota    - Show available models"
+        exit 1
+        ;;
+esac
