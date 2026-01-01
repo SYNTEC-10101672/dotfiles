@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+# Gemini CLI wrapper using Antigravity proxy
+#
+# This script provides a Gemini interface through Antigravity proxy,
+# allowing you to use Gemini models instead of Claude.
+#
+# Usage:
+#   gemini-antigravity "your prompt"
+#   gemini-antigravity -i              # Interactive mode
+#   gemini-antigravity -m MODEL "..."  # Specify model
+#
+# Available Gemini models:
+#   - gemini-2.5-pro (default, most capable)
+#   - gemini-2.5-flash (fast and efficient)
+#   - gemini-3-flash (fastest)
+#   - gemini-3-pro-high (highest quality)
+
+set -euo pipefail
+
+# Function to make API call
+make_api_call() {
+    local prompt="$1"
+
+    # Prepare JSON payload (escape quotes in prompt)
+    local escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g' | sed 's/$/\\n/' | tr -d '\n')
+
+    local json_payload=$(cat <<EOF
+{
+  "model": "$MODEL",
+  "messages": [
+    {
+      "role": "user",
+      "content": "$escaped_prompt"
+    }
+  ],
+  "max_tokens": 4096,
+  "stream": false
+}
+EOF
+)
+
+    # Make API request
+    local response=$(curl -s -X POST "$ANTIGRAVITY_URL/v1/messages" \
+        -H "Content-Type: application/json" \
+        -H "x-api-key: dummy-key" \
+        -d "$json_payload")
+
+    # Extract and display response
+    if [ "$HAS_JQ" = true ]; then
+        echo "$response" | jq -r '.content[0].text // .error.message // "Error: Invalid response"'
+    else
+        # Fallback: simple extraction
+        echo "$response" | grep -o '"text":"[^"]*"' | sed 's/"text":"//;s/"$//' || echo "$response"
+    fi
+}
+
+# Default configuration
+ANTIGRAVITY_URL="${ANTIGRAVITY_BASE_URL:-http://127.0.0.1:8045}"
+DEFAULT_MODEL="gemini-2.5-pro"
+MODEL="$DEFAULT_MODEL"
+INTERACTIVE=false
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -m|--model)
+            MODEL="$2"
+            shift 2
+            ;;
+        -i|--interactive)
+            INTERACTIVE=true
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: gemini-antigravity [OPTIONS] PROMPT"
+            echo ""
+            echo "Options:"
+            echo "  -m, --model MODEL    Specify Gemini model (default: gemini-2.5-pro)"
+            echo "  -i, --interactive    Interactive mode"
+            echo "  -h, --help          Show this help"
+            echo ""
+            echo "Available models:"
+            echo "  - gemini-2.5-pro (default)"
+            echo "  - gemini-2.5-flash"
+            echo "  - gemini-3-flash"
+            echo "  - gemini-3-pro-high"
+            exit 0
+            ;;
+        *)
+            PROMPT="$*"
+            break
+            ;;
+    esac
+done
+
+# Check if curl is available
+if ! command -v curl &> /dev/null; then
+    echo "Error: curl is required but not installed"
+    exit 1
+fi
+
+# Check if jq is available (optional, for pretty output)
+HAS_JQ=false
+if command -v jq &> /dev/null; then
+    HAS_JQ=true
+fi
+
+# Interactive mode
+if [ "$INTERACTIVE" = true ]; then
+    echo "=== Gemini Interactive Mode ==="
+    echo "Model: $MODEL"
+    echo "Type 'exit' or 'quit' to leave, Ctrl+C to cancel"
+    echo ""
+
+    while true; do
+        echo -n "You: "
+        read -r PROMPT
+
+        if [[ "$PROMPT" == "exit" || "$PROMPT" == "quit" ]]; then
+            echo "Goodbye!"
+            exit 0
+        fi
+
+        if [ -z "$PROMPT" ]; then
+            continue
+        fi
+
+        # Make API call
+        echo -n "Gemini: "
+        make_api_call "$PROMPT"
+        echo ""
+    done
+fi
+
+# Single prompt mode
+if [ -z "${PROMPT:-}" ]; then
+    echo "Error: No prompt provided"
+    echo "Usage: gemini-antigravity \"your prompt\""
+    echo "       gemini-antigravity -i  (interactive mode)"
+    exit 1
+fi
+
+make_api_call "$PROMPT"

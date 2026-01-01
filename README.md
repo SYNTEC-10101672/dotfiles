@@ -10,6 +10,7 @@
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
 - 🖥️ **Tmux**: 終端機多工器，支援 Vim 風格操作和美化狀態列
 - 🤖 **Claude Code**: SYNTEC 嵌入式開發模板（支援多專案類型和人設系統）
+- 🚀 **AI 工具整合**: Antigravity proxy 整合（Claude 和 Gemini 模型支援）
 
 ## 快速安裝
 
@@ -90,6 +91,14 @@ dotfiles/
 │   ├── project-templates/# 專案模板
 │   ├── commands/         # Slash 指令
 │   └── scripts/          # MCP 伺服器管理
+├── scripts/              # 工具腳本
+│   ├── claude-antigravity     # Claude Antigravity wrapper
+│   ├── gemini-antigravity     # Gemini Antigravity wrapper
+│   ├── antigravity-monitor    # Antigravity 監控工具
+│   └── ...
+├── doc/                  # 文件目錄
+│   ├── ENV_SETUP.md      # 環境設定指南
+│   └── ANTIGRAVITY_SETUP.md     # Antigravity 使用說明
 ├── Makefile              # 安裝管理腳本
 └── README.md             # 本說明文件
 ```
@@ -182,6 +191,51 @@ nvim
 /persona tester      # 切換為測試專家
 /persona default     # 回到預設人設
 ```
+
+詳細說明請參考 `.claude/README.md`
+
+## AI 工具整合
+
+### Antigravity Proxy 支援
+
+專案整合了 Antigravity proxy，提供 Claude 和 Gemini 模型的統一存取介面。
+
+詳細說明：**[doc/ANTIGRAVITY_SETUP.md](doc/ANTIGRAVITY_SETUP.md)**
+
+#### 可用工具
+
+**Claude 相關**：
+- `claude-antigravity` - 透過 Antigravity 使用 Claude Code
+
+**Gemini 相關**：
+- `gemini-antigravity` - 透過 Antigravity 使用 Gemini 模型
+- 支援多種模型：gemini-2.5-pro、gemini-2.5-flash、gemini-3-flash 等
+- 互動模式和單次查詢模式
+
+**監控工具**：
+- `antigravity-monitor` - 監控 Antigravity proxy 狀態、查看 quota 和帳號資訊
+
+#### 快速使用
+
+```bash
+# Claude Antigravity
+claude-antigravity "explain this code"
+
+# Gemini Antigravity（單次查詢）
+gemini-antigravity -m gemini-2.5-flash "翻譯這段文字"
+
+# Gemini 互動模式
+gemini-antigravity -i
+
+# 監控 Antigravity
+antigravity-monitor quota    # 查看可用模型
+antigravity-monitor logs     # 查看即時日誌
+antigravity-monitor accounts # 查看帳號資訊
+```
+
+#### 安裝
+
+工具會透過 `make scripts` 自動安裝到 `~/bin`。
 
 詳細說明請參考 `.claude/README.md`
 
