@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Claude Code wrapper for CLIProxyAPI
+#
+# This script provides a separate command to use Claude Code with CLIProxyAPI,
+# while keeping the original 'claude' command untouched.
+#
+# Usage:
+#   claude-cliproxy [claude arguments...]
+#
+# Example:
+#   claude-cliproxy "explain this code"
+#   claude-cliproxy --version
+#
+# Configuration:
+#   Set CLIPROXY_BASE_URL in ~/.env (default: http://127.0.0.1:8080)
+
+set -euo pipefail
+
+# Default CLIProxyAPI URL
+DEFAULT_CLIPROXY_URL="http://127.0.0.1:8080"
+
+# Use CLIPROXY_BASE_URL from environment, or fall back to default
+PROXY_URL="${CLIPROXY_BASE_URL:-$DEFAULT_CLIPROXY_URL}"
+
+# Set CLIProxyAPI URL for Claude Code
+export ANTHROPIC_BASE_URL="$PROXY_URL"
+export ANTHROPIC_AUTH_TOKEN="sk-dummy"
+
+# Set default models to Antigravity model names (for Claude Code 2.x.x)
+export ANTHROPIC_DEFAULT_SONNET_MODEL="gemini-claude-sonnet-4-5"
+export ANTHROPIC_DEFAULT_OPUS_MODEL="gemini-claude-opus-4-5-thinking"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="gemini-2.5-flash"
+
+# Forward all arguments to claude
+exec claude "$@"
