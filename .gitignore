@@ -21,6 +21,8 @@
 .claude/plugins/
 .claude/stats-cache.json
 .claude/telemetry/
+.claude/cache/
+.claude/paste-cache/
 
 # Local environment files (these are in ~/ not in repo, listed for documentation)
 # .env - environment variables (API tokens, credentials, etc.)
