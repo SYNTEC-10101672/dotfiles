@@ -7,5 +7,10 @@
     ],
     "deny": []
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.dotfiles/scripts/claude-code-statusline",
+    "padding": 0
+  }
 }

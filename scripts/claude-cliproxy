@@ -33,6 +33,9 @@ PROXY_URL="${CLIPROXY_BASE_URL:-$DEFAULT_CLIPROXY_URL}"
 export ANTHROPIC_BASE_URL="$PROXY_URL"
 export ANTHROPIC_AUTH_TOKEN="sk-dummy"
 
+# Mark that we're using CLIProxy mode for statusline display
+export CLAUDE_PROXY_MODE="cliproxy"
+
 # Parse --model argument
 MODEL_PROVIDER="claude"  # default
 CLAUDE_ARGS=()
@@ -61,18 +64,21 @@ case "$MODEL_PROVIDER" in
     export ANTHROPIC_DEFAULT_SONNET_MODEL="gemini-claude-sonnet-4-5"
     export ANTHROPIC_DEFAULT_OPUS_MODEL="gemini-claude-sonnet-4-5"
     export ANTHROPIC_DEFAULT_HAIKU_MODEL="gemini-2.5-flash"
+    export CLAUDE_PROXY_MODEL="gemini-claude-sonnet-4-5"
     ;;
   gemini)
     # Use Gemini native models
     export ANTHROPIC_DEFAULT_SONNET_MODEL="gemini-3-pro-preview"
     export ANTHROPIC_DEFAULT_OPUS_MODEL="gemini-3-pro-preview"
     export ANTHROPIC_DEFAULT_HAIKU_MODEL="gemini-3-flash-preview"
+    export CLAUDE_PROXY_MODEL="gemini-3-pro-preview"
     ;;
   flash)
     # Use Gemini Flash for all (fastest)
     export ANTHROPIC_DEFAULT_SONNET_MODEL="gemini-2.5-flash"
     export ANTHROPIC_DEFAULT_OPUS_MODEL="gemini-2.5-flash"
     export ANTHROPIC_DEFAULT_HAIKU_MODEL="gemini-2.5-flash-lite"
+    export CLAUDE_PROXY_MODEL="gemini-2.5-flash"
     ;;
   *)
     echo "Error: Unknown model provider '$MODEL_PROVIDER'" >&2
