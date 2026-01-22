@@ -3,6 +3,9 @@
 # Add ~/bin to PATH for user scripts
 export PATH="$HOME/bin:$PATH"
 
+# Add ~/.local/bin to PATH
+export PATH="$HOME/.local/bin:$PATH"
+
 # Add OmniSharp (C# Language Server) to PATH
 export PATH="$HOME/.omnisharp:$PATH"
 
