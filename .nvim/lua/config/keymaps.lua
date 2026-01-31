@@ -53,7 +53,10 @@ keymap("i", "?", "?<C-g>u", opts)
 -- 保持游標在中間
 keymap("n", "n", "nzzzv", opts)
 keymap("n", "N", "Nzzzv", opts)
-keymap("n", "J", "mzJ`z", opts)
+
+-- Fast page scrolling (J/K for page down/up)
+keymap("n", "J", "<C-f>", opts)
+keymap("n", "K", "<C-b>", opts)
 
 -- 快速儲存
 keymap("n", "<leader>w", ":w<CR>", opts)
