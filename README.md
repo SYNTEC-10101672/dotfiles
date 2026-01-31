@@ -9,7 +9,7 @@
 - 🔧 **Git**: 顏色配置、別名、自動 rebase
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
 - 🖥️ **Tmux**: 終端機多工器，支援 Vim 風格操作和美化狀態列
-- 🤖 **Claude Code**: SYNTEC 嵌入式開發模板（支援多專案類型和人設系統）
+- 🤖 **Claude Code**: SYNTEC 嵌入式開發模板（支援多專案類型）
 - 🚀 **AI 工具整合**: Antigravity proxy 整合（Claude 和 Gemini 模型支援）
 
 ## 快速安裝
@@ -87,9 +87,6 @@ dotfiles/
 │   └── autoload/         # vim-plug 套件管理器
 ├── .claude/              # Claude Code 模板
 │   ├── CLAUDE.md         # 主模板設定
-│   ├── personas/         # 專業人設（5種）
-│   ├── project-templates/# 專案模板
-│   ├── commands/         # Slash 指令
 │   └── scripts/          # MCP 伺服器管理
 ├── scripts/              # 工具腳本
 │   ├── claude-antigravity     # Claude Antigravity wrapper
@@ -172,27 +169,9 @@ nvim
 安裝後：
 - Neovim 配置：`~/.config/nvim/` → `~/.dotfiles/.nvim/`
 
-## Claude Code 模板
+## Claude Code 設定
 
-### 功能
-
-- **自動專案偵測**: 根據資料夾名稱載入對應模板
-- **多重人設**: 5 種專業人設（開發、除錯、架構、審查、測試）
-- **MCP 整合**: Confluence/JIRA 文件搜尋和學習
-
-### 使用方式
-
-模板會在進入專案目錄時自動載入。可使用 slash 指令切換人設：
-
-```
-/persona debugger    # 切換為除錯專家
-/persona architect   # 切換為系統架構師
-/persona reviewer    # 切換為程式碼審查員
-/persona tester      # 切換為測試專家
-/persona default     # 回到預設人設
-```
-
-詳細說明請參考 `.claude/README.md`
+Claude Code 的基本設定檔，包含 CLAUDE.md 和 MCP 伺服器管理腳本。
 
 ## AI 工具整合
 
