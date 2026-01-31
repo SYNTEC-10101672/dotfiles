@@ -34,3 +34,18 @@ Thumbs.db
 # Backup files
 *.bak
 *.backup
+
+# OpenCode
+.opencode/.env
+.opencode/.credentials.json
+.opencode/debug/
+.opencode/file-history/
+.opencode/history.jsonl
+.opencode/cache/
+.opencode/todos/
+.opencode/telemetry/
+.opencode/plugins/
+.opencode/session-env/
+.opencode/bun.lock
+.opencode/node_modules/
+.opencode/package.json
