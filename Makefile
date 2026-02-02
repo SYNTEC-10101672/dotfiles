@@ -73,6 +73,10 @@ gemini:
 opencode:
 	@echo "Installing OpenCode configuration..."
 	@mkdir -p $(HOME)/.config
+	@if [ -d "$(HOME)/.config/opencode" ] && [ ! -L "$(HOME)/.config/opencode" ]; then \
+		echo "  Removing existing opencode directory..."; \
+		rm -rf $(HOME)/.config/opencode; \
+	fi
 	@ln -sf $(ROOT_DIR)/.opencode $(HOME)/.config/opencode
 	@echo "✓ OpenCode configuration installed"
 
