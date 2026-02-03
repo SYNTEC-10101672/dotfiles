@@ -104,6 +104,7 @@ scripts:
 	@ln -sf $(ROOT_DIR)/scripts/tig-mark-commit.sh $(HOME)/bin/tig-mark-commit
 	@ln -sf $(ROOT_DIR)/scripts/tig-diff-selector.sh $(HOME)/bin/tig-diff-selector
 	@ln -sf $(ROOT_DIR)/scripts/claude-cliproxy $(HOME)/bin/claude-cliproxy
+	@ln -sf $(ROOT_DIR)/scripts/claude-glm $(HOME)/bin/claude-glm
 	@ln -sf $(ROOT_DIR)/scripts/claude-code-statusline $(HOME)/bin/claude-code-statusline
 	@echo "✓ Scripts installed to ~/bin"
 	@echo "  Note: Ensure ~/bin is in your PATH"
@@ -132,7 +133,7 @@ uninstall:
 		rm "$(HOME)/.config/opencode"; \
 	fi
 	@echo "Removing scripts..."
-	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector claude-cliproxy claude-code-statusline; do \
+	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector claude-cliproxy claude-glm claude-code-statusline; do \
 		if [ -L "$(HOME)/bin/$$script" ]; then \
 			echo "  Removing ~/bin/$$script"; \
 			rm "$(HOME)/bin/$$script"; \
@@ -235,7 +236,7 @@ check:
 	fi
 	@echo ""
 	@echo "Checking scripts installation..."
-	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector claude-cliproxy claude-code-statusline; do \
+	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector claude-cliproxy claude-glm claude-code-statusline; do \
 		if [ -L "$(HOME)/bin/$$script" ]; then \
 			target=$$(readlink "$(HOME)/bin/$$script"); \
 			echo "✓ ~/bin/$$script -> $$target"; \

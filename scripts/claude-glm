@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Claude Code wrapper for Z.AI GLM API
+#
+# This script provides a separate command to use Claude Code with Z.AI GLM API,
+# while keeping the original 'claude' command untouched.
+#
+# Usage:
+#   claude-glm [claude arguments...]
+#
+# Examples:
+#   claude-glm "explain this code"
+#   claude-glm --version
+#
+# Configuration:
+#   Set GLM_API_KEY in ~/.env
+#   Get your API key from: https://api.z.ai
+#
+# Models:
+#   - GLM-4.7: Used for Opus and Sonnet tier (high quality)
+#   - GLM-4.5-Air: Used for Haiku tier (fast)
+
+set -euo pipefail
+
+# Load environment variables from ~/.env
+if [[ -f "$HOME/.env" ]]; then
+  # Export GLM_API_KEY if it's defined in .env
+  source "$HOME/.env"
+fi
+
+# Verify API key is set
+if [[ -z "${GLM_API_KEY:-}" ]]; then
+  echo "Error: GLM_API_KEY is not set" >&2
+  echo "" >&2
+  echo "Please set your GLM API key in ~/.env:" >&2
+  echo "  export GLM_API_KEY=\"your-api-key-here\"" >&2
+  echo "" >&2
+  echo "Get your API key from: https://api.z.ai" >&2
+  exit 1
+fi
+
+# Set Z.AI GLM API endpoint
+export ANTHROPIC_BASE_URL="https://api.z.ai/api/anthropic"
+export ANTHROPIC_AUTH_TOKEN="$GLM_API_KEY"
+
+# Set longer timeout for GLM API (3000000 ms = 50 minutes)
+export API_TIMEOUT_MS="3000000"
+
+# Configure model mappings
+# GLM-4.7 for high-quality tasks (Opus/Sonnet tier)
+# GLM-4.5-Air for fast tasks (Haiku tier)
+export ANTHROPIC_DEFAULT_OPUS_MODEL="GLM-4.7"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="GLM-4.7"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="GLM-4.5-Air"
+
+# Mark that we're using GLM mode for statusline display
+export CLAUDE_PROXY_MODE="glm"
+export CLAUDE_PROXY_MODEL="GLM-4.7"
+
+# Forward all arguments to claude
+exec claude "$@"
