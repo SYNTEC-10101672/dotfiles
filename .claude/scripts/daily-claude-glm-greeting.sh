@@ -7,7 +7,7 @@
 
 # 確保環境變數正確設定（cron 環境）
 export HOME="${HOME:-/home/10101672}"
-export PATH="$HOME/.nvm/versions/node/v22.17.1/bin:$PATH"
+export PATH="$HOME/bin:$HOME/.nvm/versions/node/v22.17.1/bin:$PATH"
 export NODE_PATH="$HOME/.nvm/versions/node/v22.17.1/lib/node_modules"
 
 # 設定
