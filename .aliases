@@ -35,3 +35,8 @@ alias akdeploy="~/.dotfiles/.appkernel/appkernel-deploy.sh" # Deploy to controll
 # Appkernel Native Development Shortcuts (C++ projects)
 alias aknbuild="~/.dotfiles/.appkernel/appkernel-build-native.sh"     # Build native project
 alias akndeploy="~/.dotfiles/.appkernel/appkernel-deploy-native.sh"   # Deploy native artifacts
+
+# Apikernel Development Shortcuts
+alias apiksetup="~/.dotfiles/.apikernel/apikernel-setup.sh"    # Mount + SetupSDK
+alias apikbuild="~/.dotfiles/.apikernel/apikernel-build.sh"    # Cross-compile (Linux)
+alias apikdeploy="~/.dotfiles/.apikernel/apikernel-deploy.sh"  # Deploy to controller
