@@ -80,18 +80,11 @@ echo -e "${BLUE}Platform: ${PLATFORM}${NC}"
 echo -e "${BLUE}Config:   ${CONFIG}${NC}"
 echo ""
 
+# Fallback default (env var override still works)
+APIKERNEL_BUILD_DIR="${APIKERNEL_BUILD_DIR:-$HOME/project/windows_project/apikernel/Build}"
+
 # Check required environment variables
 echo -e "${YELLOW}[1/5] Checking environment variables...${NC}"
-
-if [ -z "${APIKERNEL_BUILD_DIR}" ]; then
-    echo -e "${RED}ERROR: APIKERNEL_BUILD_DIR not set${NC}"
-    echo ""
-    echo "Please add this to your ~/.env:"
-    echo "  export APIKERNEL_BUILD_DIR=\"\${HOME}/project/windows_project/apikernel/Build\""
-    echo ""
-    echo "Then reload: source ~/.env"
-    exit 1
-fi
 
 if [ ! -d "${APIKERNEL_BUILD_DIR}" ]; then
     echo -e "${RED}ERROR: Build directory not found${NC}"

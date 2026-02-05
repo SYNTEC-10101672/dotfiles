@@ -98,23 +98,14 @@ echo -e "${BLUE}Config:   ${CONFIG}${NC}"
 echo -e "${BLUE}Target:   ${CNC_HOST}${NC}"
 echo ""
 
-# Check required environment variables
-if [ -z "${OCUSER_SOURCE_DIR}" ]; then
-    echo -e "${RED}ERROR: OCUSER_SOURCE_DIR not set${NC}"
-    echo ""
-    echo "Please add this to your ~/.env:"
-    echo "  export OCUSER_SOURCE_DIR=\"\${HOME}/project/windows_project/appkernel/OCUser/Source\""
-    echo ""
-    echo "Then reload: source ~/.env"
-    exit 1
-fi
+# Fallback defaults (env var override still works)
+OCUSER_SOURCE_DIR="${OCUSER_SOURCE_DIR:-$HOME/project/windows_project/appkernel/OCUser/Source}"
+CNC_NATIVE_LIB_PATH="${CNC_NATIVE_LIB_PATH:-/DiskC/OpenCNC/Bin}"
 
-if [ -z "${CNC_NATIVE_LIB_PATH}" ]; then
-    echo -e "${RED}ERROR: CNC_NATIVE_LIB_PATH not set${NC}"
-    echo ""
-    echo "Please add this to your ~/.env:"
-    echo "  export CNC_NATIVE_LIB_PATH=\"/DiskC/OpenCNC/Bin\""
-    echo ""
+# Check required environment variables
+if [ ! -d "${OCUSER_SOURCE_DIR}" ]; then
+    echo -e "${RED}ERROR: OCUser source directory not found${NC}"
+    echo "Path: ${OCUSER_SOURCE_DIR}"
     exit 1
 fi
 

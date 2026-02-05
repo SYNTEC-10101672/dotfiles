@@ -94,18 +94,11 @@ echo -e "${BLUE}Platform: ${PLATFORM}${NC}"
 echo -e "${BLUE}Config:   ${CONFIG}${NC}"
 echo ""
 
+# Fallback defaults (env var override still works)
+OCUSER_SOURCE_DIR="${OCUSER_SOURCE_DIR:-$HOME/project/windows_project/appkernel/OCUser/Source}"
+
 # Check required environment variables
 echo -e "${YELLOW}[1/5] Checking environment variables...${NC}"
-
-if [ -z "${OCUSER_SOURCE_DIR}" ]; then
-    echo -e "${RED}ERROR: OCUSER_SOURCE_DIR not set${NC}"
-    echo ""
-    echo "Please add this to your ~/.env:"
-    echo "  export OCUSER_SOURCE_DIR=\"\${HOME}/project/windows_project/appkernel/OCUser/Source\""
-    echo ""
-    echo "Then reload: source ~/.env"
-    exit 1
-fi
 
 if [ ! -d "${OCUSER_SOURCE_DIR}" ]; then
     echo -e "${RED}ERROR: OCUser source directory not found${NC}"

@@ -84,25 +84,9 @@ echo -e "${BLUE}Config:   ${CONFIG}${NC}"
 echo -e "${BLUE}Target:   ${CNC_HOST}${NC}"
 echo ""
 
-# Check required environment variables
-if [ -z "${APIKERNEL_BUILD_DIR}" ]; then
-    echo -e "${RED}ERROR: APIKERNEL_BUILD_DIR not set${NC}"
-    echo ""
-    echo "Please add this to your ~/.env:"
-    echo "  export APIKERNEL_BUILD_DIR=\"\${HOME}/project/windows_project/apikernel/Build\""
-    echo ""
-    echo "Then reload: source ~/.env"
-    exit 1
-fi
-
-if [ -z "${CNC_NATIVE_LIB_PATH}" ]; then
-    echo -e "${RED}ERROR: CNC_NATIVE_LIB_PATH not set${NC}"
-    echo ""
-    echo "Please add this to your ~/.env:"
-    echo "  export CNC_NATIVE_LIB_PATH=\"/DiskC/OpenCNC/Bin\""
-    echo ""
-    exit 1
-fi
+# Fallback defaults (env var override still works)
+APIKERNEL_BUILD_DIR="${APIKERNEL_BUILD_DIR:-$HOME/project/windows_project/apikernel/Build}"
+CNC_NATIVE_LIB_PATH="${CNC_NATIVE_LIB_PATH:-/DiskC/OpenCNC/Bin}"
 
 # Step 1: Locate build artifact
 echo -e "${YELLOW}[1/3] Locating build artifact...${NC}"
