@@ -86,8 +86,8 @@ dotfiles/
 │   └── autoload/         # vim-plug 套件管理器
 ├── .claude/              # Claude Code 模板
 │   ├── CLAUDE.md         # 主模板設定
-│   └── scripts/          # MCP 伺服器管理
-├── scripts/              # 工具腳本
+│   └── scripts/          # Claude 相關腳本（含 MCP 伺服器管理）
+├── scripts/              # 一般工具腳本
 │   └── ...
 ├── doc/                  # 文件目錄
 │   └── ENV_SETUP.md      # 環境設定指南

@@ -103,8 +103,8 @@ scripts:
 	@ln -sf $(ROOT_DIR)/scripts/setup-git-credentials.sh $(HOME)/bin/setup-git-credentials
 	@ln -sf $(ROOT_DIR)/scripts/tig-mark-commit.sh $(HOME)/bin/tig-mark-commit
 	@ln -sf $(ROOT_DIR)/scripts/tig-diff-selector.sh $(HOME)/bin/tig-diff-selector
-	@ln -sf $(ROOT_DIR)/scripts/claude-glm $(HOME)/bin/claude-glm
-	@ln -sf $(ROOT_DIR)/scripts/claude-code-statusline $(HOME)/bin/claude-code-statusline
+	@ln -sf $(ROOT_DIR)/.claude/scripts/claude-glm $(HOME)/bin/claude-glm
+	@ln -sf $(ROOT_DIR)/.claude/scripts/claude-code-statusline $(HOME)/bin/claude-code-statusline
 	@echo "✓ Scripts installed to ~/bin"
 	@echo "  Note: Ensure ~/bin is in your PATH"
 
