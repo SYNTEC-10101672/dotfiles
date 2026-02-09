@@ -1,3 +1,0 @@
-[submodule ".claude/plugins/notion-skills"]
-	path = .claude/plugins/notion-skills
-	url = https://github.com/tommy-ca/notion-skills.git
