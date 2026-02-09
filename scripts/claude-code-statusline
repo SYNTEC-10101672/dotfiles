@@ -12,6 +12,7 @@ input=$(cat)
 # Extract values using jq
 MODEL_DISPLAY=$(echo "$input" | jq -r '.model.display_name')
 CURRENT_DIR=$(echo "$input" | jq -r '.workspace.current_dir')
+CONTEXT_USED=$(echo "$input" | jq -r '.context_window.used_percentage // "null"')
 
 # Determine display prefix based on mode
 if [ "$CLAUDE_PROXY_MODE" = "cliproxy" ]; then
@@ -35,5 +36,11 @@ if git rev-parse --git-dir > /dev/null 2>&1; then
     fi
 fi
 
+# Show context usage if available
+CONTEXT_DISPLAY=""
+if [ "$CONTEXT_USED" != "null" ] && [ -n "$CONTEXT_USED" ]; then
+    CONTEXT_DISPLAY=" | 🧠 ${CONTEXT_USED}%"
+fi
+
 # Output the status line
-echo "[$PREFIX] 📁 ${CURRENT_DIR##*/}$GIT_BRANCH"
+echo "[$PREFIX] 📁 ${CURRENT_DIR##*/}$GIT_BRANCH$CONTEXT_DISPLAY"
