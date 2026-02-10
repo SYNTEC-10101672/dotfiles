@@ -19,8 +19,8 @@ WINDOWS_PASSWORD="${APPKERNEL_WINDOWS_PASSWORD}"
 SAMBA_USER="${APPKERNEL_SAMBA_USER}"
 SAMBA_PASSWORD="${APPKERNEL_SAMBA_PASSWORD}"
 
-# Auto-detect local IP address for Samba server
-SAMBA_SERVER=$(hostname -I | awk '{print $1}')
+# Auto-detect local IP address for Samba server (use default route interface)
+SAMBA_SERVER=$(ip route get 1 | awk '{print $7; exit}')
 
 # Check if all required environment variables are set
 if [ -z "$WINDOWS_HOST" ]; then
