@@ -11,54 +11,8 @@ vim.g.OmniSharp_timeout = 5
 vim.g.omnicomplete_fetch_full_documentation = 1
 vim.g.OmniSharp_want_snippet = 1
 
--- 自動設定開發配置檔案函式
-local function setup_omnisharp_config()
-  -- 尋找 appkernel32.sln 或 Appkernel32.sln
-  local sln_file = vim.fn.findfile('appkernel32.sln', '.;')
-  if sln_file == '' then
-    sln_file = vim.fn.findfile('Appkernel32.sln', '.;')
-  end
-
-  if sln_file ~= '' then
-    local sln_dir = vim.fn.fnamemodify(sln_file, ':p:h')
-    local omnisharp_config = sln_dir .. '/omnisharp.json'
-    local omnisharp_template = vim.fn.expand('~/.dotfiles/.appkernel/omnisharp.json')
-    local editorconfig = sln_dir .. '/.editorconfig'
-    local editorconfig_template = vim.fn.expand('~/.dotfiles/.appkernel/.editorconfig')
-
-    -- 創建 omnisharp.json symlink
-    if vim.fn.filereadable(omnisharp_config) == 0 and vim.fn.filereadable(omnisharp_template) == 1 then
-      vim.fn.system(string.format('ln -s %s %s',
-        vim.fn.shellescape(omnisharp_template),
-        vim.fn.shellescape(omnisharp_config)))
-      vim.api.nvim_echo({{
-        'Created omnisharp.json symlink at ' .. sln_dir,
-        'WarningMsg'
-      }}, true, {})
-    end
-
-    -- 創建 .editorconfig symlink
-    if vim.fn.filereadable(editorconfig) == 0 and vim.fn.filereadable(editorconfig_template) == 1 then
-      vim.fn.system(string.format('ln -s %s %s',
-        vim.fn.shellescape(editorconfig_template),
-        vim.fn.shellescape(editorconfig)))
-      vim.api.nvim_echo({{
-        'Created .editorconfig symlink at ' .. sln_dir,
-        'WarningMsg'
-      }}, true, {})
-    end
-  end
-end
-
 -- C# 檔案類型自動命令
 vim.api.nvim_create_augroup('omnisharp_commands', { clear = true })
-
--- 進入 C# 檔案時自動設定
-vim.api.nvim_create_autocmd('BufEnter', {
-  group = 'omnisharp_commands',
-  pattern = '*.cs',
-  callback = setup_omnisharp_config,
-})
 
 -- 游標停止時顯示類型資訊
 vim.api.nvim_create_autocmd('CursorHold', {
