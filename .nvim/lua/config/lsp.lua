@@ -131,7 +131,7 @@ local servers = {
       "--clang-tidy",
       "--header-insertion=iwyu",
       "--completion-style=detailed",
-      "--function-arg-placeholders",
+      "--function-arg-placeholders=1",
     },
   },
   pyright = {},
@@ -148,98 +148,3 @@ for server, config in pairs(servers) do
   lspconfig[server].setup(config)
 end
 
--- 下面是舊的 handlers 程式碼，保留作為備用
---[[
-if status_ok2 and mason_lspconfig.setup_handlers then
-  mason_lspconfig.setup_handlers({
-    -- 預設處理器（適用於所有 LSP servers）
-    function(server_name)
-      lspconfig[server_name].setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-      })
-    end,
-
-    -- Lua LSP 特殊設定
-    ["lua_ls"] = function()
-      lspconfig.lua_ls.setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-        settings = {
-          Lua = {
-            diagnostics = {
-              globals = { "vim" },
-            },
-            workspace = {
-              library = {
-                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                [vim.fn.stdpath("config") .. "/lua"] = true,
-              },
-            },
-            telemetry = {
-              enable = false,
-            },
-          },
-        },
-      })
-    end,
-
-    -- C/C++ LSP 特殊設定（ccls 整合）
-    ["clangd"] = function()
-      lspconfig.clangd.setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-        cmd = {
-          "clangd",
-          "--background-index",
-          "--clang-tidy",
-          "--header-insertion=iwyu",
-          "--completion-style=detailed",
-          "--function-arg-placeholders",
-        },
-      })
-    end,
-  })
-else
-  -- 舊版 mason-lspconfig 的方式
-  local servers = { "lua_ls", "clangd", "pyright", "ts_ls", "bashls", "jsonls", "yamlls" }
-  for _, server in ipairs(servers) do
-    if server == "lua_ls" then
-      lspconfig.lua_ls.setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-        settings = {
-          Lua = {
-            diagnostics = { globals = { "vim" } },
-            workspace = {
-              library = {
-                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                [vim.fn.stdpath("config") .. "/lua"] = true,
-              },
-            },
-            telemetry = { enable = false },
-          },
-        },
-      })
-    elseif server == "clangd" then
-      lspconfig.clangd.setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-        cmd = {
-          "clangd",
-          "--background-index",
-          "--clang-tidy",
-          "--header-insertion=iwyu",
-          "--completion-style=detailed",
-          "--function-arg-placeholders",
-        },
-      })
-    else
-      lspconfig[server].setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-      })
-    end
-  end
-end
---]]
