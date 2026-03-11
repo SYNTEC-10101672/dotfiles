@@ -133,6 +133,7 @@ local servers = {
       "--completion-style=detailed",
       "--function-arg-placeholders=1",
     },
+    capabilities = { offsetEncoding = { "utf-16" } },
   },
   pyright = {},
   tsserver = {},  -- 改成 tsserver（原本是 ts_ls）
@@ -144,7 +145,9 @@ local servers = {
 -- 設定所有 LSP servers
 for server, config in pairs(servers) do
   config.on_attach = on_attach
-  config.capabilities = capabilities
+  config.capabilities = config.capabilities
+    and vim.tbl_deep_extend("force", capabilities, config.capabilities)
+    or capabilities
   lspconfig[server].setup(config)
 end
 
