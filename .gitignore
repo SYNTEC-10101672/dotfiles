@@ -24,6 +24,11 @@
 .claude/telemetry/
 .claude/cache/
 .claude/paste-cache/
+.claude/backups/
+.claude/sessions/
+.claude/mcp-needs-auth-cache.json
+.claude/commands/opsx/
+.claude/skills/openspec-*/
 
 # Local environment files (these are in ~/ not in repo, listed for documentation)
 # .env - environment variables (API tokens, credentials, etc.)
