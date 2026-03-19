@@ -25,10 +25,12 @@
   "alwaysThinkingEnabled": true,
   "hooks": {
     "Stop": [{"matcher": "", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-stop.sh"}]}],
-    "Notification": [{"matcher": "", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-waiting.sh"}]}],
+    "Notification": [
+      {"matcher": "permission_prompt",  "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-waiting.sh"}]},
+      {"matcher": "elicitation_dialog", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-waiting.sh"}]}
+    ],
     "PreToolUse": [
-      {"matcher": "AskUserQuestion", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-waiting.sh"}]},
-      {"matcher": "", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-clear.sh"}]}
+      {"matcher": "AskUserQuestion", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-waiting.sh"}]}
     ]
   }
 }

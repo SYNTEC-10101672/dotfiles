@@ -8,9 +8,13 @@ Claude Code hook 驅動的 tmux window bar 等待指示機制。當 Claude Code 
 當 Claude Code 需要使用者回應（permission dialog 或 AskUserQuestion）時，系統 SHALL 在 tmux window bar 顯示綠色 `?` 指示符。
 
 #### Scenario: Permission dialog 出現時顯示 ?
-- **WHEN** Claude Code 觸發 `Notification` hook 且 `notification_type` 為 `permission_prompt`
+- **WHEN** Claude Code 觸發 `Notification` hook 且 `notification_type` 為 `permission_prompt` 或 `elicitation_dialog`
 - **THEN** `claude-notify-waiting.sh` 將當前 window 的 `@claude_state` 設為 `"waiting"`
 - **THEN** tmux window bar 在 window 名稱後顯示綠色 `?`
+
+#### Scenario: 其他 Notification 類型不觸發狀態變更
+- **WHEN** Claude Code 觸發 `Notification` hook 且 `notification_type` 為 `idle_prompt`、`auth_success` 或其他類型
+- **THEN** `claude-notify-waiting.sh` 不執行任何狀態變更並正常退出
 
 #### Scenario: AskUserQuestion 執行前顯示 ?
 - **WHEN** Claude Code 觸發 `PreToolUse` hook 且 tool 名稱為 `AskUserQuestion`
