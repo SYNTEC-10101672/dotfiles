@@ -10,7 +10,7 @@
   "model": "sonnet",
   "statusLine": {
     "type": "command",
-    "command": "~/.dotfiles/.claude/scripts/claude-code-statusline",
+    "command": "~/.claude/scripts/claude-code-statusline",
     "padding": 0
   },
   "enabledPlugins": {
@@ -24,6 +24,11 @@
   },
   "alwaysThinkingEnabled": true,
   "hooks": {
-    "Stop": [{"matcher": "", "hooks": [{"type": "command", "command": "~/.dotfiles/.claude/scripts/claude-notify-stop.sh"}]}]
+    "Stop": [{"matcher": "", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-stop.sh"}]}],
+    "Notification": [{"matcher": "", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-waiting.sh"}]}],
+    "PreToolUse": [
+      {"matcher": "AskUserQuestion", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-waiting.sh"}]},
+      {"matcher": "", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-clear.sh"}]}
+    ]
   }
 }
