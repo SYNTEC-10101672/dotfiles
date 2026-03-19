@@ -22,5 +22,8 @@
     "atlassian@claude-plugins-official": true,
     "Notion@claude-plugins-official": true
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "hooks": {
+    "Stop": [{"matcher": "", "hooks": [{"type": "command", "command": "~/.dotfiles/.claude/scripts/claude-notify-stop.sh"}]}]
+  }
 }
