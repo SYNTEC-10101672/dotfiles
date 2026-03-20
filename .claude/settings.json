@@ -8,6 +8,50 @@
     "deny": []
   },
   "model": "sonnet",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/claude-notify-stop.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/claude-notify-waiting.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/claude-notify-waiting.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/claude-notify-waiting.sh"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/scripts/claude-code-statusline",
@@ -20,17 +64,13 @@
     "context7@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "atlassian@claude-plugins-official": true,
-    "Notion@claude-plugins-official": true
+    "Notion@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "vercel@claude-plugins-official": true,
+    "csharp-lsp@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true
   },
-  "alwaysThinkingEnabled": true,
-  "hooks": {
-    "Stop": [{"matcher": "", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-stop.sh"}]}],
-    "Notification": [
-      {"matcher": "permission_prompt",  "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-waiting.sh"}]},
-      {"matcher": "elicitation_dialog", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-waiting.sh"}]}
-    ],
-    "PreToolUse": [
-      {"matcher": "AskUserQuestion", "hooks": [{"type": "command", "command": "~/.claude/scripts/claude-notify-waiting.sh"}]}
-    ]
-  }
+  "alwaysThinkingEnabled": true
 }
