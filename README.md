@@ -434,7 +434,7 @@ make restore BACKUP=<備份目錄>
 - Git 2.0+
 - Tig 2.0+（可選，用於 Git 圖形介面）
 - fzf（必需，用於 Tig 互動式檔案選擇器）
-- Docker（若使用 Claude Code MCP 功能）
+- jq（必需，用於 Claude Code statusline JSON 解析）
 
 ### 安裝 Neovim
 
@@ -449,6 +449,19 @@ sudo apt install neovim
 ```
 
 ## 問題排除
+
+### Claude Code Statusline 未顯示模型名稱或 Context 用量
+
+`~/.claude/scripts/claude-code-statusline` 依賴 `jq` 解析 Claude Code 傳入的 JSON。
+若未安裝 `jq`，模型名稱欄位將顯示為空白，context 使用量不會出現。
+
+```bash
+# Arch Linux
+sudo pacman -S jq
+
+# Ubuntu/Debian
+sudo apt install jq
+```
 
 ### fzf 未安裝
 
