@@ -16,7 +16,8 @@
 #   Get your API key from: https://api.z.ai
 #
 # Models:
-#   - GLM-4.7: Used for Opus and Sonnet tier (high quality)
+#   - GLM-5-Turbo: Used for Opus tier (high quality)
+#   - GLM-4.7: Used for Sonnet tier (high quality)
 #   - GLM-4.5-Air: Used for Haiku tier (fast)
 
 set -euo pipefail
@@ -46,9 +47,8 @@ export ANTHROPIC_AUTH_TOKEN="$GLM_API_KEY"
 export API_TIMEOUT_MS="3000000"
 
 # Configure model mappings
-# GLM-4.7 for high-quality tasks (Opus/Sonnet tier)
-# GLM-4.5-Air for fast tasks (Haiku tier)
-export ANTHROPIC_DEFAULT_OPUS_MODEL="GLM-4.7"
+# GLM-5-Turbo for Opus tier, GLM-4.7 for Sonnet tier, GLM-4.5-Air for Haiku tier
+export ANTHROPIC_DEFAULT_OPUS_MODEL="GLM-5-Turbo"
 export ANTHROPIC_DEFAULT_SONNET_MODEL="GLM-4.7"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="GLM-4.5-Air"
 
