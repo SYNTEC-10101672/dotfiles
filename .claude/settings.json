@@ -7,7 +7,7 @@
     ],
     "deny": []
   },
-  "model": "opusplan",
+  "model": "sonnet",
   "hooks": {
     "Stop": [
       {

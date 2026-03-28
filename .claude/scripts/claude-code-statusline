@@ -4,7 +4,7 @@
 # This script generates the status line display for Claude Code,
 # showing different information based on how Claude was launched:
 # - Native Claude Code: shows "[Model] 📁 dir | 🌿 branch"
-# - GLM mode: shows "[GLM: model-name] 📁 dir | 🌿 branch"
+# - GLM mode: shows "[GLM model-name] 📁 dir | 🌿 branch"
 
 # Read JSON input from stdin
 input=$(cat)
@@ -18,15 +18,22 @@ RATE_LIMIT_RESETS_AT=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at /
 
 # Determine display prefix based on mode
 if [ "$CLAUDE_PROXY_MODE" = "glm" ]; then
-  # GLM mode: show the actual model being used
-  if [ -n "$CLAUDE_PROXY_MODEL" ]; then
-    PREFIX="Claude Code GLM: $CLAUDE_PROXY_MODEL"
+  # GLM mode: use display_name directly if it's a GLM model name,
+  # otherwise map Anthropic tier names (opus/sonnet/haiku) to ANTHROPIC_DEFAULT_* env vars
+  MODEL_LOWER="${MODEL_DISPLAY,,}"
+  if [[ $MODEL_LOWER == *glm* ]]; then
+    PREFIX="GLM $MODEL_DISPLAY"
+  elif [[ $MODEL_LOWER == *opus* ]]; then
+    PREFIX="GLM ${ANTHROPIC_DEFAULT_OPUS_MODEL:-}"
+  elif [[ $MODEL_LOWER == *sonnet* ]]; then
+    PREFIX="GLM ${ANTHROPIC_DEFAULT_SONNET_MODEL:-}"
+  elif [[ $MODEL_LOWER == *haiku* ]]; then
+    PREFIX="GLM ${ANTHROPIC_DEFAULT_HAIKU_MODEL:-}"
   else
-    PREFIX="Claude Code GLM"
+    PREFIX="GLM"
   fi
 else
-  # Native mode: show the model display name from Claude
-  PREFIX="Claude Code Native ($MODEL_DISPLAY)"
+  PREFIX="$MODEL_DISPLAY"
 fi
 
 # Show git branch if in a git repo

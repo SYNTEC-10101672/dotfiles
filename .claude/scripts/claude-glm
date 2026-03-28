@@ -16,8 +16,8 @@
 #   Get your API key from: https://api.z.ai
 #
 # Models:
-#   - GLM-5-Turbo: Used for Opus tier (high quality)
-#   - GLM-4.7: Used for Sonnet tier (high quality)
+#   - glm-5.1: Used for Opus tier (high quality)
+#   - glm-5-turbo: Used for Sonnet tier (balanced)
 #   - GLM-4.5-Air: Used for Haiku tier (fast)
 
 set -euo pipefail
@@ -47,14 +47,14 @@ export ANTHROPIC_AUTH_TOKEN="$GLM_API_KEY"
 export API_TIMEOUT_MS="3000000"
 
 # Configure model mappings
-# GLM-5-Turbo for Opus tier, GLM-4.7 for Sonnet tier, GLM-4.5-Air for Haiku tier
-export ANTHROPIC_DEFAULT_OPUS_MODEL="GLM-5-Turbo"
-export ANTHROPIC_DEFAULT_SONNET_MODEL="GLM-4.7"
+# glm-5.1 for Opus tier, glm-5-turbo for Sonnet tier, GLM-4.5-Air for Haiku tier
+export ANTHROPIC_DEFAULT_OPUS_MODEL="glm-5.1"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="glm-5-turbo"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="GLM-4.5-Air"
 
 # Mark that we're using GLM mode for statusline display
+# CLAUDE_PROXY_MODEL is resolved dynamically by the statusline script
 export CLAUDE_PROXY_MODE="glm"
-export CLAUDE_PROXY_MODEL="GLM-4.7"
 
 # Forward all arguments to claude
 exec claude "$@"
