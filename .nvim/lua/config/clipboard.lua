@@ -25,13 +25,9 @@ local function osc52_yank()
     osc52_sequence = string.format('\x1b]52;c;%s\x07', base64_content)
   end
 
-  -- 發送到終端機
-  -- 使用 io.write 更安全地處理特殊字元
-  local tty = io.open('/dev/tty', 'w')
-  if tty then
-    tty:write(osc52_sequence)
-    tty:close()
-  end
+  -- Write to stdout (works in SSH+tmux where /dev/tty is inaccessible)
+  io.stdout:write(osc52_sequence)
+  io.stdout:flush()
 end
 
 -- 自動在 yank 後複製到系統剪貼簿
