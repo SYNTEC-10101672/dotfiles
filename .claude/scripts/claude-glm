@@ -56,5 +56,10 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL="GLM-4.5-Air"
 # CLAUDE_PROXY_MODEL is resolved dynamically by the statusline script
 export CLAUDE_PROXY_MODE="glm"
 
+# Rename tmux window for visual distinction from native claude
+if [[ -n "${TMUX:-}" ]]; then
+  tmux rename-window "claude-glm"
+fi
+
 # Forward all arguments to claude
 exec claude "$@"
