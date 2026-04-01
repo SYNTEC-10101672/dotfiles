@@ -3,6 +3,9 @@ SHELL := bash
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 BACKUP_DIR:=$(HOME)/.dotfiles_backup_$(shell date +%Y%m%d_%H%M%S)
 
+CLAUDE_FILES := settings.json CLAUDE.md
+CLAUDE_DIRS  := commands skills scripts
+
 .PHONY: all install bashrc nvim claude gemini opencode git tig tmux scripts backup uninstall clean check help
 
 all: install
@@ -60,7 +63,14 @@ nvim:
 
 claude:
 	@echo "Installing Claude Code configuration..."
-	@ln -sf $(ROOT_DIR)/.claude $(HOME)/.claude
+	@if [ -L "$(HOME)/.claude" ]; then \
+		echo "✗ ~/.claude is a directory symlink (old layout) — migration required:"; \
+		echo "  rm ~/.claude && mkdir ~/.claude && make claude"; \
+		exit 1; \
+	fi
+	@mkdir -p $(HOME)/.claude
+	@for f in $(CLAUDE_FILES); do ln -sf $(ROOT_DIR)/.claude/$$f $(HOME)/.claude/$$f; done
+	@for d in $(CLAUDE_DIRS); do ln -sfn $(ROOT_DIR)/.claude/$$d $(HOME)/.claude/$$d; done
 	@echo "✓ Claude Code configuration installed"
 
 gemini:
@@ -110,10 +120,17 @@ scripts:
 
 uninstall:
 	@echo "Removing dotfiles symlinks..."
-	@for file in .aliases .bashrc .bash_profile .bash_prompt .claude .gitconfig .gitignore_global .tigrc .tmux.conf; do \
+	@for file in .aliases .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc .tmux.conf; do \
 		if [ -L "$(HOME)/$$file" ]; then \
 			echo "  Removing $$file"; \
 			rm "$(HOME)/$$file"; \
+		fi; \
+	done
+	@echo "Removing Claude Code configuration symlinks..."
+	@for item in $(CLAUDE_FILES) $(CLAUDE_DIRS); do \
+		if [ -L "$(HOME)/.claude/$$item" ]; then \
+			echo "  Removing .claude/$$item"; \
+			rm "$(HOME)/.claude/$$item"; \
 		fi; \
 	done
 	@echo "Removing neovim symlinks..."
@@ -160,7 +177,7 @@ clean:
 check:
 	@echo "Checking dotfiles installation..."
 	@echo ""
-	@for file in .aliases .bashrc .bash_profile .bash_prompt .claude .gitconfig .gitignore_global .tigrc .tmux.conf; do \
+	@for file in .aliases .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc .tmux.conf; do \
 		if [ -L "$(HOME)/$$file" ]; then \
 			target=$$(readlink "$(HOME)/$$file"); \
 			if [ "$$target" = "$(ROOT_DIR)/$$file" ]; then \
@@ -174,6 +191,28 @@ check:
 			echo "✗ $$file (not found)"; \
 		fi; \
 	done
+	@echo ""
+	@echo "Checking Claude Code installation..."
+	@if [ -d "$(HOME)/.claude" ] && [ ! -L "$(HOME)/.claude" ]; then \
+		for item in $(CLAUDE_FILES) $(CLAUDE_DIRS); do \
+			if [ -L "$(HOME)/.claude/$$item" ]; then \
+				target=$$(readlink "$(HOME)/.claude/$$item"); \
+				if [ "$$target" = "$(ROOT_DIR)/.claude/$$item" ]; then \
+					echo "✓ .claude/$$item -> $$target"; \
+				else \
+					echo "⚠ .claude/$$item -> $$target (unexpected target)"; \
+				fi; \
+			elif [ -e "$(HOME)/.claude/$$item" ]; then \
+				echo "✗ .claude/$$item (exists but not a symlink)"; \
+			else \
+				echo "✗ .claude/$$item (not found)"; \
+			fi; \
+		done; \
+	elif [ -L "$(HOME)/.claude" ]; then \
+		echo "⚠ ~/.claude is a directory symlink (old layout) — run migration first"; \
+	else \
+		echo "✗ ~/.claude (not found)"; \
+	fi
 	@echo ""
 	@echo "Checking neovim installation..."
 	@if [ -L "$(HOME)/.config/nvim" ]; then \

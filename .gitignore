@@ -6,27 +6,6 @@
 *~
 
 # Claude Code
-.claude/.env
-.claude/.credentials.json
-.claude/debug/
-.claude/file-history/
-.claude/history.jsonl
-.claude/shell-snapshots/
-.claude/statsig/
-.claude/todos/
-.claude/tasks/
-.claude/.claude.json
-.claude/settings.local.json
-.claude/logs/
-.claude/plans/
-.claude/plugins/
-.claude/stats-cache.json
-.claude/telemetry/
-.claude/cache/
-.claude/paste-cache/
-.claude/backups/
-.claude/sessions/
-.claude/mcp-needs-auth-cache.json
 .claude/commands/opsx/
 .claude/skills/openspec-*/
 
