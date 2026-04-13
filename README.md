@@ -436,17 +436,8 @@ make restore BACKUP=<備份目錄>
 - fzf（必需，用於 Tig 互動式檔案選擇器）
 - jq（必需，用於 Claude Code statusline JSON 解析）
 
-### 安裝 Neovim
+詳細套件清單與安裝指引請參考 [doc/PACKAGES.md](doc/PACKAGES.md)。
 
-```bash
-# Ubuntu/Debian
-sudo apt install neovim
-
-# 或從官方獲取最新版本
-sudo add-apt-repository ppa:neovim-ppa/unstable
-sudo apt update
-sudo apt install neovim
-```
 
 ## 問題排除
 
