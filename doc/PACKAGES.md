@@ -90,6 +90,12 @@ nvm install 16
 curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 ```
 
+`.bashrc` 依賴 `bash-preexec` 讓 atuin 攔截每次指令，需另外下載：
+
+```bash
+curl -sS https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh -o ~/.bash-preexec.sh
+```
+
 ## 快速檢查
 
 確認目前系統上已安裝哪些套件：
