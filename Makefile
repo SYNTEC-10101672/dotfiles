@@ -6,7 +6,7 @@ BACKUP_DIR:=$(HOME)/.dotfiles_backup_$(shell date +%Y%m%d_%H%M%S)
 CLAUDE_FILES := settings.json CLAUDE.md
 CLAUDE_DIRS  := commands skills scripts
 
-.PHONY: all install bashrc nvim claude gemini git tig tmux scripts backup uninstall clean check help
+.PHONY: all install bashrc nvim claude git tig tmux scripts backup uninstall clean check help
 
 all: install
 
@@ -24,19 +24,18 @@ help:
 	@echo "  make bashrc    - Install bash configuration"
 	@echo "  make nvim      - Install neovim configuration"
 	@echo "  make claude    - Install Claude Code configuration"
-	@echo "  make gemini    - Install Gemini configuration (links to Claude config)"
 	@echo "  make git       - Install git configuration"
 	@echo "  make tig       - Install tig configuration"
 	@echo "  make tmux      - Install tmux configuration"
 	@echo "  make scripts   - Install utility scripts to ~/bin"
 
-install: backup bashrc nvim claude gemini git tig tmux scripts
+install: backup bashrc nvim claude git tig tmux scripts
 	@echo "✓ Dotfiles installed successfully"
 
 backup:
 	@echo "Creating backup at $(BACKUP_DIR)..."
 	@mkdir -p $(BACKUP_DIR)
-	@for file in .aliases .bashrc .bash_profile .bash_prompt .config/nvim .claude .gemini .gitconfig .gitignore_global .tigrc .tmux.conf; do \
+	@for file in .aliases .bashrc .bash_profile .bash_prompt .config/nvim .claude .gitconfig .gitignore_global .tigrc .tmux.conf; do \
 		if [ -e "$(HOME)/$$file" ] && [ ! -L "$(HOME)/$$file" ]; then \
 			echo "  Backing up $$file"; \
 			mkdir -p "$(BACKUP_DIR)/$$(dirname $$file)"; \
@@ -71,13 +70,6 @@ claude:
 	@for f in $(CLAUDE_FILES); do ln -sf $(ROOT_DIR)/.claude/$$f $(HOME)/.claude/$$f; done
 	@for d in $(CLAUDE_DIRS); do ln -sfn $(ROOT_DIR)/.claude/$$d $(HOME)/.claude/$$d; done
 	@echo "✓ Claude Code configuration installed"
-
-gemini:
-	@echo "Installing Gemini configuration..."
-	@mkdir -p $(HOME)/.gemini
-	@ln -sf $(ROOT_DIR)/.claude/CLAUDE.md $(HOME)/.gemini/GEMINI.md
-	@echo "✓ Gemini configuration installed"
-	@echo "  Note: GEMINI.md links to Claude configuration"
 
 git:
 	@echo "Installing git configuration..."
@@ -126,11 +118,6 @@ uninstall:
 	@if [ -L "$(HOME)/.config/nvim" ]; then \
 		echo "  Removing .config/nvim"; \
 		rm "$(HOME)/.config/nvim"; \
-	fi
-	@echo "Removing gemini symlinks..."
-	@if [ -L "$(HOME)/.gemini/GEMINI.md" ]; then \
-		echo "  Removing .gemini/GEMINI.md"; \
-		rm "$(HOME)/.gemini/GEMINI.md"; \
 	fi
 	@echo "Removing scripts..."
 	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector claude-glm claude-code-statusline; do \
@@ -211,20 +198,6 @@ check:
 		echo "✗ .config/nvim (exists but not a symlink)"; \
 	else \
 		echo "✗ .config/nvim (not found)"; \
-	fi
-	@echo ""
-	@echo "Checking gemini installation..."
-	@if [ -L "$(HOME)/.gemini/GEMINI.md" ]; then \
-		target=$$(readlink "$(HOME)/.gemini/GEMINI.md"); \
-		if [ "$$target" = "$(ROOT_DIR)/.claude/CLAUDE.md" ]; then \
-			echo "✓ .gemini/GEMINI.md -> $$target"; \
-		else \
-			echo "⚠ .gemini/GEMINI.md -> $$target (unexpected target)"; \
-		fi; \
-	elif [ -e "$(HOME)/.gemini/GEMINI.md" ]; then \
-		echo "✗ .gemini/GEMINI.md (exists but not a symlink)"; \
-	else \
-		echo "✗ .gemini/GEMINI.md (not found)"; \
 	fi
 	@echo ""
 	@echo "Checking scripts installation..."
