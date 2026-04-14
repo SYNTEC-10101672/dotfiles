@@ -6,7 +6,7 @@ BACKUP_DIR:=$(HOME)/.dotfiles_backup_$(shell date +%Y%m%d_%H%M%S)
 CLAUDE_FILES := settings.json CLAUDE.md
 CLAUDE_DIRS  := commands skills scripts
 
-.PHONY: all install bashrc nvim claude gemini opencode git tig tmux scripts backup uninstall clean check help
+.PHONY: all install bashrc nvim claude gemini git tig tmux scripts backup uninstall clean check help
 
 all: install
 
@@ -25,19 +25,18 @@ help:
 	@echo "  make nvim      - Install neovim configuration"
 	@echo "  make claude    - Install Claude Code configuration"
 	@echo "  make gemini    - Install Gemini configuration (links to Claude config)"
-	@echo "  make opencode  - Install OpenCode configuration"
 	@echo "  make git       - Install git configuration"
 	@echo "  make tig       - Install tig configuration"
 	@echo "  make tmux      - Install tmux configuration"
 	@echo "  make scripts   - Install utility scripts to ~/bin"
 
-install: backup bashrc nvim claude gemini opencode git tig tmux scripts
+install: backup bashrc nvim claude gemini git tig tmux scripts
 	@echo "✓ Dotfiles installed successfully"
 
 backup:
 	@echo "Creating backup at $(BACKUP_DIR)..."
 	@mkdir -p $(BACKUP_DIR)
-	@for file in .aliases .bashrc .bash_profile .bash_prompt .config/nvim .claude .gemini .config/opencode .gitconfig .gitignore_global .tigrc .tmux.conf; do \
+	@for file in .aliases .bashrc .bash_profile .bash_prompt .config/nvim .claude .gemini .gitconfig .gitignore_global .tigrc .tmux.conf; do \
 		if [ -e "$(HOME)/$$file" ] && [ ! -L "$(HOME)/$$file" ]; then \
 			echo "  Backing up $$file"; \
 			mkdir -p "$(BACKUP_DIR)/$$(dirname $$file)"; \
@@ -79,16 +78,6 @@ gemini:
 	@ln -sf $(ROOT_DIR)/.claude/CLAUDE.md $(HOME)/.gemini/GEMINI.md
 	@echo "✓ Gemini configuration installed"
 	@echo "  Note: GEMINI.md links to Claude configuration"
-
-opencode:
-	@echo "Installing OpenCode configuration..."
-	@mkdir -p $(HOME)/.config
-	@if [ -d "$(HOME)/.config/opencode" ] && [ ! -L "$(HOME)/.config/opencode" ]; then \
-		echo "  Removing existing opencode directory..."; \
-		rm -rf $(HOME)/.config/opencode; \
-	fi
-	@ln -sf $(ROOT_DIR)/.opencode $(HOME)/.config/opencode
-	@echo "✓ OpenCode configuration installed"
 
 git:
 	@echo "Installing git configuration..."
@@ -142,11 +131,6 @@ uninstall:
 	@if [ -L "$(HOME)/.gemini/GEMINI.md" ]; then \
 		echo "  Removing .gemini/GEMINI.md"; \
 		rm "$(HOME)/.gemini/GEMINI.md"; \
-	fi
-	@echo "Removing opencode symlinks..."
-	@if [ -L "$(HOME)/.config/opencode" ]; then \
-		echo "  Removing .config/opencode"; \
-		rm "$(HOME)/.config/opencode"; \
 	fi
 	@echo "Removing scripts..."
 	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector claude-glm claude-code-statusline; do \
@@ -218,13 +202,10 @@ check:
 	@if [ -L "$(HOME)/.config/nvim" ]; then \
 		target=$$(readlink "$(HOME)/.config/nvim"); \
 		echo "✓ .config/nvim -> $$target"; \
-		if [ -L "$$target/init.vim" ]; then \
-			init_target=$$(readlink "$$target/init.vim"); \
-			echo "✓ .nvim/init.vim -> $$init_target"; \
-		elif [ -e "$$target/init.vim" ]; then \
-			echo "✗ .nvim/init.vim (exists but not a symlink)"; \
+		if [ -e "$$target/init.lua" ]; then \
+			echo "✓ .nvim/init.lua (found)"; \
 		else \
-			echo "✗ .nvim/init.vim (not found)"; \
+			echo "✗ .nvim/init.lua (not found)"; \
 		fi; \
 	elif [ -e "$(HOME)/.config/nvim" ]; then \
 		echo "✗ .config/nvim (exists but not a symlink)"; \
@@ -244,33 +225,6 @@ check:
 		echo "✗ .gemini/GEMINI.md (exists but not a symlink)"; \
 	else \
 		echo "✗ .gemini/GEMINI.md (not found)"; \
-	fi
-	@echo ""
-	@echo "Checking opencode installation..."
-	@if [ -L "$(HOME)/.config/opencode" ]; then \
-		target=$$(readlink "$(HOME)/.config/opencode"); \
-		if [ "$$target" = "$(ROOT_DIR)/.opencode" ]; then \
-			echo "✓ .config/opencode -> $$target"; \
-			if [ -L "$$target/AGENTS.md" ]; then \
-				agents_target=$$(readlink "$$target/AGENTS.md"); \
-				echo "✓ .opencode/AGENTS.md -> $$agents_target"; \
-			elif [ -e "$$target/AGENTS.md" ]; then \
-				echo "✗ .opencode/AGENTS.md (exists but not a symlink)"; \
-			else \
-				echo "✗ .opencode/AGENTS.md (not found)"; \
-			fi; \
-			if [ -e "$$target/opencode.json" ]; then \
-				echo "✓ .opencode/opencode.json (found)"; \
-			else \
-				echo "✗ .opencode/opencode.json (not found)"; \
-			fi; \
-		else \
-			echo "⚠ .config/opencode -> $$target (unexpected target)"; \
-		fi; \
-	elif [ -e "$(HOME)/.config/opencode" ]; then \
-		echo "✗ .config/opencode (exists but not a symlink)"; \
-	else \
-		echo "✗ .config/opencode (not found)"; \
 	fi
 	@echo ""
 	@echo "Checking scripts installation..."
