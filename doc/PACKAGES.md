@@ -11,6 +11,7 @@
 | tmux | Terminal multiplexer | `apt install tmux` |
 | jq | Claude Code statusline JSON 解析 | `apt install jq` |
 | curl | 下載工具 | `apt install curl` |
+| bash-completion | Bash tab 補全 | `apt install bash-completion` |
 
 ## 強烈建議
 
