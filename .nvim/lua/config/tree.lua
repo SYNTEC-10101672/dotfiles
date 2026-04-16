@@ -11,7 +11,25 @@ end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+local function on_attach(bufnr)
+  local api = require("nvim-tree.api")
+  local telescope = require("telescope.builtin")
+  local buf_opts = { buffer = bufnr, noremap = true, silent = true, nowait = true }
+
+  api.config.mappings.default_on_attach(bufnr)
+
+  vim.keymap.set("n", "FF", function()
+    local node = api.tree.get_node_under_cursor()
+    if node then
+      local dir = node.type == "directory" and node.absolute_path
+               or vim.fn.fnamemodify(node.absolute_path, ":h")
+      telescope.live_grep({ search_dirs = { dir } })
+    end
+  end, buf_opts)
+end
+
 nvim_tree.setup({
+  on_attach = on_attach,
   disable_netrw = true,
   hijack_netrw = true,
   respect_buf_cwd = true,
