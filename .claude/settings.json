@@ -73,5 +73,6 @@
     "notion@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
-  "autoDreamEnabled": true
+  "autoDreamEnabled": true,
+  "tui": "fullscreen"
 }
