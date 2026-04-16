@@ -131,7 +131,7 @@ chmod +x ~/.omnisharp/OmniSharp
 ln -sf ~/.omnisharp/OmniSharp ~/.omnisharp/omnisharp
 ```
 
-> **注意**：neovim config 期望 binary 位於 `~/.omnisharp/omnisharp`，但 release zip 中的執行檔名為 `OmniSharp`（大寫 O），需建立 symlink。
+> **注意**：neovim config 期望 binary 位於 `~/.omnisharp/omnisharp`，但 release zip 中的執行檔名為 `OmniSharp`（大寫 O），需建立 symlink。安裝後需在專案目錄執行一次 `dotnet build`（或 `dotnet restore`）讓 NuGet packages 還原，OmniSharp 才能正確解析專案。
 
 ### atuin
 
