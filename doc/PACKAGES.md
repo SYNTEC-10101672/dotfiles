@@ -12,6 +12,7 @@
 | jq | Claude Code statusline JSON 解析 | `apt install jq` |
 | curl | 下載工具 | `apt install curl` |
 | bash-completion | Bash tab 補全 | `apt install bash-completion` |
+| Claude Code plugins | skills、MCP servers、工作流自動化 | 見下方說明 |
 
 ## 強烈建議
 
@@ -29,7 +30,8 @@
 | 套件 | 用途 | 安裝方式 |
 |------|------|----------|
 | python3 | Python LSP (pyright) | `apt install python3` |
-| .NET SDK | C# 開發 (OmniSharp) | 參考 Microsoft 官方文件 |
+| .NET SDK 6.0+ | C# 開發 (OmniSharp) | 見下方說明 |
+| OmniSharp | C# LSP server（neovim） | 見下方說明 |
 | sshpass | CNC 硬體控制 | `apt install sshpass` |
 
 ## 特殊安裝說明
@@ -83,6 +85,54 @@ nvm install 16
 
 > **注意**：Node.js v18+ 需要 glibc 2.28+。Ubuntu 18.04 只能使用 v16。
 
+### Claude Code Plugins
+
+`~/.claude/settings.json` 的 `enabledPlugins` 列出所有啟用的 plugins，但部署設定檔不會自動安裝它們，需手動執行以下指令：
+
+```bash
+claude plugin install code-simplifier@claude-plugins-official
+claude plugin install superpowers@claude-plugins-official
+claude plugin install code-review@claude-plugins-official
+claude plugin install context7@claude-plugins-official
+claude plugin install commit-commands@claude-plugins-official
+claude plugin install atlassian@claude-plugins-official
+claude plugin install frontend-design@claude-plugins-official
+claude plugin install skill-creator@claude-plugins-official
+claude plugin install claude-code-setup@claude-plugins-official
+claude plugin install vercel@claude-plugins-official
+claude plugin install csharp-lsp@claude-plugins-official
+claude plugin install clangd-lsp@claude-plugins-official
+claude plugin install notion@claude-plugins-official
+```
+
+安裝後 `settings.json` 的 `enabledPlugins` 會自動生效，無需額外設定。
+
+### .NET SDK
+
+使用 Microsoft 官方 install script 安裝：
+
+```bash
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 6.0
+# 加入 PATH
+echo 'export PATH="$HOME/.dotnet:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+### OmniSharp
+
+neovim 的 C# LSP server，需要先安裝 .NET SDK：
+
+```bash
+curl -L https://github.com/OmniSharp/omnisharp-roslyn/releases/latest/download/omnisharp-linux-x64-net6.0.zip \
+  -o /tmp/omnisharp.zip
+mkdir -p ~/.omnisharp
+unzip -o /tmp/omnisharp.zip -d ~/.omnisharp/
+chmod +x ~/.omnisharp/OmniSharp
+ln -sf ~/.omnisharp/OmniSharp ~/.omnisharp/omnisharp
+```
+
+> **注意**：neovim config 期望 binary 位於 `~/.omnisharp/omnisharp`，但 release zip 中的執行檔名為 `OmniSharp`（大寫 O），需建立 symlink。
+
 ### atuin
 
 安裝後 binary 位於 `~/.atuin/bin/`，需重開 terminal 讓 `.bashrc` 自動載入：
@@ -107,4 +157,19 @@ for cmd in bash git make nvim tmux jq curl fzf tig rg fd node python3; do
 done
 # atuin 安裝在 ~/.atuin/bin/，需開新 terminal 後才能用 command -v 查到
 ~/.atuin/bin/atuin --version &>/dev/null && echo "✓ atuin" || echo "✗ atuin: NOT FOUND"
+# dotnet 安裝在 ~/.dotnet/，需開新 terminal 或 source ~/.bashrc 後才能用
+~/.dotnet/dotnet --version &>/dev/null && echo "✓ dotnet" || echo "✗ dotnet: NOT FOUND"
+# OmniSharp 安裝在 ~/.omnisharp/
+~/.omnisharp/omnisharp --version &>/dev/null && echo "✓ omnisharp" || echo "✗ omnisharp: NOT FOUND"
+```
+
+確認 Claude Code plugins 是否已全部安裝：
+
+```bash
+for plugin in code-simplifier superpowers code-review context7 commit-commands \
+              atlassian frontend-design skill-creator claude-code-setup vercel \
+              csharp-lsp clangd-lsp notion; do
+  claude plugin list 2>/dev/null | grep -q "$plugin" \
+    && echo "✓ $plugin" || echo "✗ $plugin: NOT INSTALLED"
+done
 ```
