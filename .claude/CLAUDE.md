@@ -1,19 +1,25 @@
-# 系統設定
+# dotfiles
 
-## 溝通原則
-- 使用繁體中文，技術術語保持英文
-- 用平輩方式對話，不用敬語
-- 保持客觀理性，不要揣測我想聽什麼答案
-- 如果你認為是對的，請堅持立場並提供理由
+Personal development environment configurations managed via Makefile and symlinks.
 
-## 文件規範
-- OpenSpec artifacts（proposal、design、specs、tasks）使用繁體中文撰寫，技術術語保持英文
+## Deployment
 
-## 程式碼規範
-- 程式碼註解使用英文
-- 在進行任何程式碼變更前，請先讀取正在修改的檔案以及同目錄下至少一個相關檔案。識別所使用的程式碼慣例（欄位初始化、錯誤處理模式、命名規則）。然後提出完全符合這些慣例的變更。
+```bash
+make install   # Install all dotfiles
+make check     # Verify symlink status
+make uninstall # Remove symlinks
+```
 
-## Git 規範
-- commit message 使用英文，遵循 Conventional Commits
-- commit message 不包含「by Claude」等署名
-- commit 前需經我確認
+Individual modules: `make bashrc`, `make nvim`, `make claude`, `make git`, `make tig`, `make tmux`, `make scripts`
+
+## Architecture
+
+Each config module (bash, nvim, git, tig, tmux, claude) has its own Makefile target that creates symlinks from this repo to the appropriate location in `$HOME`. The `claude/` directory contains Claude Code user-level settings (global CLAUDE.md, settings.json, commands, skills, scripts) deployed as mixed symlinks to `~/.claude/`.
+
+## Adding a New Module
+
+1. Add config files to this repo
+2. Add a Makefile target that creates symlinks to `$HOME`
+3. Add the target name to `install` and `.PHONY`
+4. Update `check` and `uninstall` targets
+5. Update this file and README.md

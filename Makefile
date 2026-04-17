@@ -1,12 +1,11 @@
 SHELL := bash
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-BACKUP_DIR:=$(HOME)/.dotfiles_backup_$(shell date +%Y%m%d_%H%M%S)
 
 CLAUDE_FILES := settings.json CLAUDE.md
 CLAUDE_DIRS  := commands skills scripts
 
-.PHONY: all install bashrc nvim claude git tig tmux scripts backup uninstall clean check help
+.PHONY: all install bashrc nvim claude git tig tmux scripts uninstall check help
 
 all: install
 
@@ -14,11 +13,9 @@ help:
 	@echo "Dotfiles Management"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make install   - Install all dotfiles (with backup)"
-	@echo "  make backup    - Backup existing dotfiles"
-	@echo "  make uninstall - Remove symlinks and restore backups"
+	@echo "  make install   - Install all dotfiles"
+	@echo "  make uninstall - Remove symlinks"
 	@echo "  make check     - Check installation status"
-	@echo "  make clean     - Remove backup files"
 	@echo ""
 	@echo "Individual targets:"
 	@echo "  make bashrc    - Install bash configuration"
@@ -29,20 +26,8 @@ help:
 	@echo "  make tmux      - Install tmux configuration"
 	@echo "  make scripts   - Install utility scripts to ~/bin"
 
-install: backup bashrc nvim claude git tig tmux scripts
+install: bashrc nvim claude git tig tmux scripts
 	@echo "✓ Dotfiles installed successfully"
-
-backup:
-	@echo "Creating backup at $(BACKUP_DIR)..."
-	@mkdir -p $(BACKUP_DIR)
-	@for file in .aliases .bashrc .bash_profile .bash_prompt .config/nvim .claude .gitconfig .gitignore_global .tigrc .tmux.conf; do \
-		if [ -e "$(HOME)/$$file" ] && [ ! -L "$(HOME)/$$file" ]; then \
-			echo "  Backing up $$file"; \
-			mkdir -p "$(BACKUP_DIR)/$$(dirname $$file)"; \
-			cp -r "$(HOME)/$$file" "$(BACKUP_DIR)/$$file"; \
-		fi; \
-	done
-	@echo "✓ Backup completed"
 
 bashrc:
 	@echo "Installing bash configuration..."
@@ -62,13 +47,13 @@ nvim:
 claude:
 	@echo "Installing Claude Code configuration..."
 	@if [ -L "$(HOME)/.claude" ]; then \
-		echo "✗ ~/.claude is a directory symlink (old layout) — migration required:"; \
-		echo "  rm ~/.claude && mkdir ~/.claude && make claude"; \
-		exit 1; \
-	fi
+			echo "✗ ~/.claude is a directory symlink (old layout) — migration required:"; \
+			echo "  rm ~/.claude && mkdir ~/.claude && make claude"; \
+			exit 1; \
+		fi
 	@mkdir -p $(HOME)/.claude
-	@for f in $(CLAUDE_FILES); do ln -sf $(ROOT_DIR)/.claude/$$f $(HOME)/.claude/$$f; done
-	@for d in $(CLAUDE_DIRS); do ln -sfn $(ROOT_DIR)/.claude/$$d $(HOME)/.claude/$$d; done
+	@for f in $(CLAUDE_FILES); do ln -sf $(ROOT_DIR)/claude/$$f $(HOME)/.claude/$$f; done
+	@for d in $(CLAUDE_DIRS); do ln -sfn $(ROOT_DIR)/claude/$$d $(HOME)/.claude/$$d; done
 	@echo "✓ Claude Code configuration installed"
 
 git:
@@ -94,120 +79,103 @@ scripts:
 	@ln -sf $(ROOT_DIR)/scripts/setup-git-credentials.sh $(HOME)/bin/setup-git-credentials
 	@ln -sf $(ROOT_DIR)/scripts/tig-mark-commit.sh $(HOME)/bin/tig-mark-commit
 	@ln -sf $(ROOT_DIR)/scripts/tig-diff-selector.sh $(HOME)/bin/tig-diff-selector
-	@ln -sf $(ROOT_DIR)/.claude/scripts/claude-glm $(HOME)/bin/claude-glm
-	@ln -sf $(ROOT_DIR)/.claude/scripts/claude-code-statusline $(HOME)/bin/claude-code-statusline
+	@ln -sf $(ROOT_DIR)/claude/scripts/claude-glm $(HOME)/bin/claude-glm
+	@ln -sf $(ROOT_DIR)/claude/scripts/claude-code-statusline $(HOME)/bin/claude-code-statusline
 	@echo "✓ Scripts installed to ~/bin"
 	@echo "  Note: Ensure ~/bin is in your PATH"
 
 uninstall:
 	@echo "Removing dotfiles symlinks..."
 	@for file in .aliases .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc .tmux.conf; do \
-		if [ -L "$(HOME)/$$file" ]; then \
-			echo "  Removing $$file"; \
-			rm "$(HOME)/$$file"; \
-		fi; \
-	done
+			if [ -L "$(HOME)/$$file" ]; then \
+				echo "  Removing $$file"; \
+				rm "$(HOME)/$$file"; \
+			fi; \
+		done
 	@echo "Removing Claude Code configuration symlinks..."
 	@for item in $(CLAUDE_FILES) $(CLAUDE_DIRS); do \
-		if [ -L "$(HOME)/.claude/$$item" ]; then \
-			echo "  Removing .claude/$$item"; \
-			rm "$(HOME)/.claude/$$item"; \
-		fi; \
-	done
+			if [ -L "$(HOME)/.claude/$$item" ]; then \
+				echo "  Removing .claude/$$item"; \
+				rm "$(HOME)/.claude/$$item"; \
+			fi; \
+		done
 	@echo "Removing neovim symlinks..."
 	@if [ -L "$(HOME)/.config/nvim" ]; then \
-		echo "  Removing .config/nvim"; \
-		rm "$(HOME)/.config/nvim"; \
-	fi
+			echo "  Removing .config/nvim"; \
+			rm "$(HOME)/.config/nvim"; \
+		fi
 	@echo "Removing scripts..."
 	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector claude-glm claude-code-statusline; do \
-		if [ -L "$(HOME)/bin/$$script" ]; then \
-			echo "  Removing ~/bin/$$script"; \
-			rm "$(HOME)/bin/$$script"; \
-		fi; \
-	done
+			if [ -L "$(HOME)/bin/$$script" ]; then \
+				echo "  Removing ~/bin/$$script"; \
+				rm "$(HOME)/bin/$$script"; \
+			fi; \
+		done
 	@echo "✓ Symlinks removed"
-	@echo "Note: Run 'make restore' to restore from latest backup"
-
-restore:
-	@if [ -z "$(BACKUP)" ]; then \
-		echo "Error: Please specify backup directory with BACKUP=<dir>"; \
-		echo "Available backups:"; \
-		ls -d $(HOME)/.dotfiles_backup_* 2>/dev/null || echo "  No backups found"; \
-		exit 1; \
-	fi
-	@echo "Restoring from $(BACKUP)..."
-	@cp -r $(BACKUP)/* $(HOME)/
-	@echo "✓ Restored from backup"
-
-clean:
-	@echo "Removing backup files..."
-	@rm -rf $(HOME)/.dotfiles_backup_*
-	@echo "✓ Backup files removed"
 
 check:
 	@echo "Checking dotfiles installation..."
 	@echo ""
 	@for file in .aliases .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc .tmux.conf; do \
-		if [ -L "$(HOME)/$$file" ]; then \
-			target=$$(readlink "$(HOME)/$$file"); \
-			if [ "$$target" = "$(ROOT_DIR)/$$file" ]; then \
-				echo "✓ $$file -> $$target"; \
+			if [ -L "$(HOME)/$$file" ]; then \
+				target=$$(readlink "$(HOME)/$$file"); \
+				if [ "$$target" = "$(ROOT_DIR)/$$file" ]; then \
+					echo "✓ $$file -> $$target"; \
+				else \
+					echo "⚠ $$file -> $$target (unexpected target)"; \
+				fi; \
+			elif [ -e "$(HOME)/$$file" ]; then \
+				echo "✗ $$file (exists but not a symlink)"; \
 			else \
-				echo "⚠ $$file -> $$target (unexpected target)"; \
+				echo "✗ $$file (not found)"; \
 			fi; \
-		elif [ -e "$(HOME)/$$file" ]; then \
-			echo "✗ $$file (exists but not a symlink)"; \
-		else \
-			echo "✗ $$file (not found)"; \
-		fi; \
-	done
+		done
 	@echo ""
 	@echo "Checking Claude Code installation..."
 	@if [ -d "$(HOME)/.claude" ] && [ ! -L "$(HOME)/.claude" ]; then \
-		for item in $(CLAUDE_FILES) $(CLAUDE_DIRS); do \
-			if [ -L "$(HOME)/.claude/$$item" ]; then \
-				target=$$(readlink "$(HOME)/.claude/$$item"); \
-				if [ "$$target" = "$(ROOT_DIR)/.claude/$$item" ]; then \
-					echo "✓ .claude/$$item -> $$target"; \
+			for item in $(CLAUDE_FILES) $(CLAUDE_DIRS); do \
+				if [ -L "$(HOME)/.claude/$$item" ]; then \
+					target=$$(readlink "$(HOME)/.claude/$$item"); \
+					if [ "$$target" = "$(ROOT_DIR)/claude/$$item" ]; then \
+						echo "✓ .claude/$$item -> $$target"; \
+					else \
+						echo "⚠ .claude/$$item -> $$target (unexpected target)"; \
+					fi; \
+				elif [ -e "$(HOME)/.claude/$$item" ]; then \
+					echo "✗ .claude/$$item (exists but not a symlink)"; \
 				else \
-					echo "⚠ .claude/$$item -> $$target (unexpected target)"; \
+					echo "✗ .claude/$$item (not found)"; \
 				fi; \
-			elif [ -e "$(HOME)/.claude/$$item" ]; then \
-				echo "✗ .claude/$$item (exists but not a symlink)"; \
-			else \
-				echo "✗ .claude/$$item (not found)"; \
-			fi; \
-		done; \
+			done; \
 	elif [ -L "$(HOME)/.claude" ]; then \
-		echo "⚠ ~/.claude is a directory symlink (old layout) — run migration first"; \
+			echo "⚠ ~/.claude is a directory symlink (old layout) — run migration first"; \
 	else \
-		echo "✗ ~/.claude (not found)"; \
+			echo "✗ ~/.claude (not found)"; \
 	fi
 	@echo ""
 	@echo "Checking neovim installation..."
 	@if [ -L "$(HOME)/.config/nvim" ]; then \
-		target=$$(readlink "$(HOME)/.config/nvim"); \
-		echo "✓ .config/nvim -> $$target"; \
-		if [ -e "$$target/init.lua" ]; then \
-			echo "✓ .nvim/init.lua (found)"; \
-		else \
-			echo "✗ .nvim/init.lua (not found)"; \
-		fi; \
+			target=$$(readlink "$(HOME)/.config/nvim"); \
+			echo "✓ .config/nvim -> $$target"; \
+			if [ -e "$$target/init.lua" ]; then \
+				echo "✓ .nvim/init.lua (found)"; \
+			else \
+				echo "✗ .nvim/init.lua (not found)"; \
+			fi; \
 	elif [ -e "$(HOME)/.config/nvim" ]; then \
-		echo "✗ .config/nvim (exists but not a symlink)"; \
+			echo "✗ .config/nvim (exists but not a symlink)"; \
 	else \
-		echo "✗ .config/nvim (not found)"; \
+			echo "✗ .config/nvim (not found)"; \
 	fi
 	@echo ""
 	@echo "Checking scripts installation..."
 	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector claude-glm claude-code-statusline; do \
-		if [ -L "$(HOME)/bin/$$script" ]; then \
-			target=$$(readlink "$(HOME)/bin/$$script"); \
-			echo "✓ ~/bin/$$script -> $$target"; \
-		elif [ -e "$(HOME)/bin/$$script" ]; then \
-			echo "✗ ~/bin/$$script (exists but not a symlink)"; \
-		else \
-			echo "✗ ~/bin/$$script (not found)"; \
-		fi; \
-	done
+			if [ -L "$(HOME)/bin/$$script" ]; then \
+				target=$$(readlink "$(HOME)/bin/$$script"); \
+				echo "✓ ~/bin/$$script -> $$target"; \
+			elif [ -e "$(HOME)/bin/$$script" ]; then \
+				echo "✗ ~/bin/$$script (exists but not a symlink)"; \
+			else \
+				echo "✗ ~/bin/$$script (not found)"; \
+			fi; \
+		done

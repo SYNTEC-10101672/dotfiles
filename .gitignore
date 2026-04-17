@@ -6,6 +6,8 @@
 *~
 
 # Claude Code
+.claude/*
+!.claude/CLAUDE.md
 
 # Local environment files (these are in ~/ not in repo, listed for documentation)
 # .env - environment variables (API tokens, credentials, etc.)

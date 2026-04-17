@@ -18,7 +18,7 @@
 git clone <your-repo-url> ~/dotfiles
 cd ~/dotfiles
 
-# 安裝所有設定（自動備份現有檔案）
+# 安裝所有設定
 make install
 
 # 安裝 fzf（Tig 檔案選擇器需要）
@@ -41,7 +41,7 @@ cd ~/dotfiles
 ### 2. 安裝設定檔
 
 ```bash
-# 完整安裝（包含自動備份）
+# 完整安裝
 make install
 
 # 或分別安裝個別模組
@@ -57,12 +57,9 @@ make tmux      # 安裝 Tmux 設定
 
 | 指令 | 說明 |
 |------|------|
-| `make install` | 安裝所有設定檔（自動備份現有檔案） |
-| `make backup` | 手動備份現有設定檔 |
+| `make install` | 安裝所有設定檔 |
 | `make check` | 檢查安裝狀態 |
 | `make uninstall` | 移除所有符號連結 |
-| `make restore BACKUP=<dir>` | 從指定備份還原 |
-| `make clean` | 清除所有備份檔案 |
 | `make help` | 顯示說明 |
 
 ## 專案結構
@@ -84,8 +81,10 @@ dotfiles/
 │   ├── plugin/           # 插件設定
 │   ├── colors/           # 配色方案
 │   └── autoload/         # vim-plug 套件管理器
-├── .claude/              # Claude Code 模板
-│   ├── CLAUDE.md         # 主模板設定
+├── .claude/              # Claude Code project-level 設定
+│   └── CLAUDE.md         # 專案層級指令
+├── claude/               # Claude Code user-level 設定
+│   ├── CLAUDE.md         # 全域模板設定
 │   └── scripts/          # Claude 相關腳本（含 MCP 伺服器管理）
 ├── scripts/              # 一般工具腳本
 │   └── ...
@@ -386,45 +385,11 @@ git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
 
-## 備份與還原
-
-### 自動備份
-
-`make install` 會自動備份現有的設定檔到：
-```
-~/.dotfiles_backup_YYYYMMDD_HHMMSS/
-```
-
-### 手動備份
-
-```bash
-make backup
-```
-
-### 還原備份
-
-```bash
-# 查看可用的備份
-ls -d ~/.dotfiles_backup_*
-
-# 從指定備份還原
-make restore BACKUP=~/.dotfiles_backup_20241002_123456
-```
-
-### 清除備份
-
-```bash
-make clean
-```
-
 ## 解除安裝
 
 ```bash
 # 移除所有符號連結
 make uninstall
-
-# 還原備份（可選）
-make restore BACKUP=<備份目錄>
 ```
 
 ## 環境需求
