@@ -26,7 +26,7 @@
 ### Requirement: Makefile claude target 使用混合 symlink
 Makefile 的 `claude` target SHALL 建立 `~/.claude/` 為真實目錄，然後為 config 檔案建立單檔 symlink，為 config 目錄建立目錄 symlink。symlink 來源 SHALL 使用 `$(ROOT_DIR)/claude/` 而非寫死路徑。
 
-#### Scenario: make claude 冪等性
+#### Scenario: make claude 冗等性
 - **WHEN** `make claude` 被執行多次
 - **THEN** symlink 被正確建立或更新，不產生錯誤
 
