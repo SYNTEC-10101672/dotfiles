@@ -68,7 +68,8 @@ if [ -n "$RATE_LIMIT_USED" ]; then
             fi
         fi
     fi
-    RATE_LIMIT_DISPLAY=" | 🔋 ${RATE_LIMIT_USED}%${RATE_LIMIT_TIME}"
+    RATE_LIMIT_REMAINING=$(( 100 - RATE_LIMIT_USED ))
+    RATE_LIMIT_DISPLAY=" | 🔋 ${RATE_LIMIT_REMAINING}%${RATE_LIMIT_TIME}"
 fi
 
 # Output the status line

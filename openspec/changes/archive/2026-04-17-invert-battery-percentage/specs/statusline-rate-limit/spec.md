@@ -1,10 +1,4 @@
-# Spec: statusline-rate-limit
-
-## Purpose
-
-Display Claude API rate limit remaining quota and reset time in the tmux statusline, allowing users to monitor their 5-hour quota at a glance.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: 顯示 5 小時額度使用量與剩餘重置時間
 Statusline script 應從 JSON 輸入解析 `rate_limits.five_hour.used_percentage` 與 `rate_limits.five_hour.resets_at`，計算剩餘配額（`100 - used_percentage`），並在值存在時將格式化結果附加至 statusline 輸出。N SHALL 為剩餘配額百分比。
