@@ -5,7 +5,7 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 CLAUDE_FILES := settings.json CLAUDE.md
 CLAUDE_DIRS  := commands skills scripts
 
-.PHONY: all install bashrc nvim claude git tig tmux scripts uninstall check help
+.PHONY: all install bashrc nvim claude opencode git tig tmux scripts uninstall check help
 
 all: install
 
@@ -21,12 +21,13 @@ help:
 	@echo "  make bashrc    - Install bash configuration"
 	@echo "  make nvim      - Install neovim configuration"
 	@echo "  make claude    - Install Claude Code configuration"
+	@echo "  make opencode  - Install OpenCode commands (symlink from claude/commands)"
 	@echo "  make git       - Install git configuration"
 	@echo "  make tig       - Install tig configuration"
 	@echo "  make tmux      - Install tmux configuration"
 	@echo "  make scripts   - Install utility scripts to ~/bin"
 
-install: bashrc nvim claude git tig tmux scripts
+install: bashrc nvim claude opencode git tig tmux scripts
 	@echo "✓ Dotfiles installed successfully"
 
 bashrc:
@@ -55,6 +56,12 @@ claude:
 	@for f in $(CLAUDE_FILES); do ln -sf $(ROOT_DIR)/claude/$$f $(HOME)/.claude/$$f; done
 	@for d in $(CLAUDE_DIRS); do ln -sfn $(ROOT_DIR)/claude/$$d $(HOME)/.claude/$$d; done
 	@echo "✓ Claude Code configuration installed"
+
+opencode:
+	@echo "Installing OpenCode commands..."
+	@mkdir -p $(HOME)/.config/opencode
+	@ln -sfn $(ROOT_DIR)/claude/commands $(HOME)/.config/opencode/commands
+	@echo "✓ OpenCode commands installed"
 
 git:
 	@echo "Installing git configuration..."
@@ -99,6 +106,11 @@ uninstall:
 				rm "$(HOME)/.claude/$$item"; \
 			fi; \
 		done
+	@echo "Removing OpenCode commands symlink..."
+	@if [ -L "$(HOME)/.config/opencode/commands" ]; then \
+			echo "  Removing .config/opencode/commands"; \
+			rm "$(HOME)/.config/opencode/commands"; \
+		fi
 	@echo "Removing neovim symlinks..."
 	@if [ -L "$(HOME)/.config/nvim" ]; then \
 			echo "  Removing .config/nvim"; \
@@ -151,6 +163,20 @@ check:
 			echo "⚠ ~/.claude is a directory symlink (old layout) — run migration first"; \
 	else \
 			echo "✗ ~/.claude (not found)"; \
+	fi
+	@echo ""
+	@echo "Checking OpenCode commands..."
+	@if [ -L "$(HOME)/.config/opencode/commands" ]; then \
+			target=$$(readlink "$(HOME)/.config/opencode/commands"); \
+			if [ "$$target" = "$(ROOT_DIR)/claude/commands" ]; then \
+				echo "✓ .config/opencode/commands -> $$target"; \
+			else \
+				echo "⚠ .config/opencode/commands -> $$target (unexpected target)"; \
+			fi; \
+	elif [ -e "$(HOME)/.config/opencode/commands" ]; then \
+			echo "✗ .config/opencode/commands (exists but not a symlink)"; \
+	else \
+			echo "✗ .config/opencode/commands (not found)"; \
 	fi
 	@echo ""
 	@echo "Checking neovim installation..."
