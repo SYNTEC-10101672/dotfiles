@@ -24,6 +24,7 @@
 | fd | 快速檔案搜尋 | 見下方說明 |
 | node.js (via nvm) | LSP servers、MCP servers | 見下方說明 |
 | atuin | Shell history 魔法搜尋 | 見下方說明 |
+| opencode | AI coding agent | 見下方說明 |
 
 ## 選用（依開發語言）
 
@@ -147,12 +148,51 @@ curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 curl -sS https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh -o ~/.bash-preexec.sh
 ```
 
+### opencode
+
+需先安裝 node.js（via nvm）。透過 npm global 安裝：
+
+```bash
+npm install -g opencode@latest
+```
+
+安裝後執行 `make opencode` 會建立 `~/.config/opencode/commands` symlink，讓 opencode 與 Claude Code 共用相同指令集。
+
+### oh-my-openagent（opencode 外掛）
+
+需先安裝 bun runtime：
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+再執行安裝指令（依實際訂閱調整 flags）：
+
+```bash
+# Claude only
+bunx oh-my-opencode install --no-tui --claude=no --gemini=no --copilot=yes
+# 驗證安裝與設定
+bunx oh-my-opencode doctor
+```
+
+安裝後會在 `~/.config/opencode/opencode.json` 的 `plugin` 陣列加入 `oh-my-openagent`。
+
+內建 agents：
+- **Sisyphus** — orchestrator，任務路由
+- **Prometheus** — 規劃模式（Tab 鍵啟動）
+- **Hephaestus** — 深度自主執行
+- **Oracle** — 架構分析與除錯
+- **Librarian** — 文件與程式碼搜尋
+- **Explore** — codebase grep
+
+在 prompt 加入 `ultrawork`（或縮寫 `ulw`）可啟動完整 agent 協作流程。
+
 ## 快速檢查
 
 確認目前系統上已安裝哪些套件：
 
 ```bash
-for cmd in bash git make nvim tmux jq curl fzf tig rg fd node python3; do
+for cmd in bash git make nvim tmux jq curl fzf tig rg fd node python3 opencode; do
   command -v $cmd &>/dev/null && echo "✓ $cmd" || echo "✗ $cmd: NOT FOUND"
 done
 # atuin 安裝在 ~/.atuin/bin/，需開新 terminal 後才能用 command -v 查到
@@ -161,6 +201,8 @@ done
 ~/.dotnet/dotnet --version &>/dev/null && echo "✓ dotnet" || echo "✗ dotnet: NOT FOUND"
 # OmniSharp 安裝在 ~/.omnisharp/
 ~/.omnisharp/omnisharp --version &>/dev/null && echo "✓ omnisharp" || echo "✗ omnisharp: NOT FOUND"
+# oh-my-openagent
+bunx oh-my-opencode doctor &>/dev/null && echo "✓ oh-my-openagent" || echo "✗ oh-my-openagent: NOT INSTALLED"
 ```
 
 確認 Claude Code plugins 是否已全部安裝：
