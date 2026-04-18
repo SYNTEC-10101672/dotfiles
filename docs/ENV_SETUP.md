@@ -5,7 +5,7 @@
 本專案使用 `~/.env` 檔案統一管理所有環境變數，包括：
 - Git 使用者設定
 - GitLab 認證 token
-- MCP Server 認證資訊（SYNTEC Confluence/JIRA、Notion）
+- MCP Server 認證資訊（Notion、Context7）
 
 ## 快速設定
 
@@ -42,7 +42,6 @@ source ~/.bashrc
 echo $GIT_USER_NAME
 echo $GIT_USER_EMAIL
 echo $GITLAB_TOKEN
-echo $SYNTEC_EMAIL
 echo $NOTION_TOKEN
 echo $CONTEXT7_API_KEY
 ```
@@ -70,16 +69,6 @@ echo $CONTEXT7_API_KEY
 - **格式**: `glpat-xxxxxxxxxxxxxxxxxxxx`
 
 ### MCP Server 設定
-
-#### SYNTEC_EMAIL
-- **用途**: SYNTEC Confluence/JIRA MCP 認證
-- **範例**: `your.email@syntecclub.com.tw`
-- **說明**: 你的 Atlassian 帳號 email
-
-#### SYNTEC_API_TOKEN
-- **用途**: SYNTEC Confluence/JIRA MCP API 認證
-- **產生位置**: https://id.atlassian.com/manage-profile/security/api-tokens
-- **格式**: 一串隨機字元
 
 #### NOTION_TOKEN
 - **用途**: Notion MCP Server 認證
@@ -173,20 +162,13 @@ nano ~/.env
 
 ## MCP Server 設定
 
-### SYNTEC Confluence/JIRA MCP
-
-```bash
-# 啟動 MCP Server
-cd ~/dotfiles/.claude
-./scripts/start-mcp-server.sh
-
-# 檢查連線狀態
-./scripts/check-mcp-connection.sh
-```
-
 ### Notion MCP
 
 Notion MCP 會在 Claude Code 啟動時自動透過 npx 執行，無需手動啟動。
+
+### Atlassian MCP（Claude Code Plugin）
+
+Atlassian（Confluence/JIRA）整合透過 Claude Code atlassian plugin 提供，使用 OAuth 認證，無需手動設定環境變數。
 
 ## 硬體控制工具
 
@@ -292,23 +274,6 @@ cat ~/.git-credentials
 ~/dotfiles/scripts/setup-git-credentials.sh
 ```
 
-### MCP Server 無法連接
-
-```bash
-# 檢查環境變數
-echo $SYNTEC_EMAIL
-echo $SYNTEC_API_TOKEN
-echo $NOTION_TOKEN
-echo $CONTEXT7_API_KEY
-
-# 重新載入環境變數
-source ~/.env
-
-# 重新啟動 MCP Server
-cd ~/dotfiles/.claude
-./scripts/start-mcp-server.sh
-```
-
 ### 權限問題
 
 ```bash
@@ -340,9 +305,8 @@ source ~/.bashrc
 
 ## 參考資料
 
-- [dotfiles/.bashrc:19](/home/10101672/dotfiles/.bashrc:19) - 環境變數自動載入
-- [dotfiles/env.example](/home/10101672/dotfiles/env.example) - 環境變數範本
-- [dotfiles/.gitconfig:40-41](/home/10101672/dotfiles/.gitconfig:40) - Git 使用者設定
-- [dotfiles/scripts/setup-git-credentials.sh](/home/10101672/dotfiles/scripts/setup-git-credentials.sh) - Git 認證設定腳本
-- [dotfiles/scripts/resetcnc](/home/10101672/dotfiles/scripts/resetcnc) - CNC 控制器重置腳本
-- [dotfiles/.claude/scripts/start-mcp-server.sh:12](/home/10101672/dotfiles/.claude/scripts/start-mcp-server.sh:12) - MCP Server 環境變數載入
+- [dotfiles/.bashrc](../.bashrc) - 環境變數自動載入
+- [dotfiles/env.example](../env.example) - 環境變數範本
+- [dotfiles/.gitconfig](../.gitconfig) - Git 使用者設定
+- [dotfiles/scripts/setup-git-credentials.sh](../scripts/setup-git-credentials.sh) - Git 認證設定腳本
+- [dotfiles/scripts/resetcnc](../scripts/resetcnc) - CNC 控制器重置腳本

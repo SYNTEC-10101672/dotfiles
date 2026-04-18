@@ -9,7 +9,7 @@
 - 🔧 **Git**: 顏色配置、別名、自動 rebase
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
 - 🖥️ **Tmux**: 終端機多工器，支援 Vim 風格操作和美化狀態列
-- 🤖 **Claude Code**: SYNTEC 嵌入式開發模板（支援多專案類型）
+- 🤖 **Claude Code**: 全域開發環境設定，含 13 個 plugins 與 skills 工作流
 
 ## 快速安裝
 
@@ -88,8 +88,9 @@ dotfiles/
 │   └── scripts/          # Claude 相關腳本（含 MCP 伺服器管理）
 ├── scripts/              # 一般工具腳本
 │   └── ...
-├── doc/                  # 文件目錄
-│   └── ENV_SETUP.md      # 環境設定指南
+├── docs/                 # 文件目錄
+│   ├── SETUP.md          # 新機器完整建置指南
+│   └── ENV_SETUP.md      # 環境變數設定指南
 ├── Makefile              # 安裝管理腳本
 └── README.md             # 本說明文件
 ```
@@ -401,7 +402,7 @@ make uninstall
 - fzf（必需，用於 Tig 互動式檔案選擇器）
 - jq（必需，用於 Claude Code statusline JSON 解析）
 
-詳細套件清單與安裝指引請參考 [doc/PACKAGES.md](doc/PACKAGES.md)。
+新機器完整建置指引請參考 [docs/SETUP.md](docs/SETUP.md)。
 
 
 ## 問題排除

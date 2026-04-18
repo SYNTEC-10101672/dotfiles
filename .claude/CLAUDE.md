@@ -16,6 +16,10 @@ Individual modules: `make bashrc`, `make nvim`, `make claude`, `make git`, `make
 
 Each config module (bash, nvim, git, tig, tmux, claude) has its own Makefile target that creates symlinks from this repo to the appropriate location in `$HOME`. The `claude/` directory contains Claude Code user-level settings (global CLAUDE.md, settings.json, commands, skills, scripts) deployed as mixed symlinks to `~/.claude/`.
 
+## New Machine Setup
+
+When setting up a new machine, follow the complete step-by-step guide in [`docs/SETUP.md`](../docs/SETUP.md). It covers system packages, language runtimes, Claude Code plugins, opencode, oh-my-openagent, environment variables, and verification.
+
 ## Adding a New Module
 
 1. Add config files to this repo
