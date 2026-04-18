@@ -56,7 +56,7 @@ echo "[$TIMESTAMP] Sending greeting to $DISPLAY_NAME..." >> "$LOG_FILE"
 echo "[$TIMESTAMP] Message: $GREETING" >> "$LOG_FILE"
 
 # Call CLI with 60s timeout
-RESPONSE=$(timeout 60s "$CLI_COMMAND" --print "$GREETING" 2>&1)
+RESPONSE=$(timeout 60s "$CLI_COMMAND" --model haiku --print "$GREETING" 2>&1)
 EXIT_CODE=$?
 
 if [ "$EXIT_CODE" -eq 0 ]; then
