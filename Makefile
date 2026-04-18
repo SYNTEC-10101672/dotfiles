@@ -40,9 +40,9 @@ bashrc:
 nvim:
 	@echo "Installing neovim configuration..."
 	@mkdir -p $(HOME)/.config
-	@ln -sf $(ROOT_DIR)/.nvim $(HOME)/.config/nvim
+	@ln -sf $(ROOT_DIR)/nvim $(HOME)/.config/nvim
 	@echo "✓ Neovim configuration installed"
-	@echo "  Note: Configuration stored in ~/.dotfiles/.nvim/"
+	@echo "  Note: Configuration stored in $(ROOT_DIR)/nvim/"
 
 claude:
 	@echo "Installing Claude Code configuration..."
@@ -158,9 +158,9 @@ check:
 			target=$$(readlink "$(HOME)/.config/nvim"); \
 			echo "✓ .config/nvim -> $$target"; \
 			if [ -e "$$target/init.lua" ]; then \
-				echo "✓ .nvim/init.lua (found)"; \
+				echo "✓ nvim/init.lua (found)"; \
 			else \
-				echo "✗ .nvim/init.lua (not found)"; \
+				echo "✗ nvim/init.lua (not found)"; \
 			fi; \
 	elif [ -e "$(HOME)/.config/nvim" ]; then \
 			echo "✗ .config/nvim (exists but not a symlink)"; \

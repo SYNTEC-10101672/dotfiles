@@ -75,7 +75,7 @@ dotfiles/
 ├── .gitignore            # 本專案忽略檔案
 ├── .tigrc                # Tig 設定檔（Git 文字介面）
 ├── .tmux.conf            # Tmux 設定檔（終端機多工器）
-├── .nvim/                # Neovim 設定目錄
+├── nvim/                 # Neovim 設定目錄
 │   ├── vimrc             # 主設定檔
 │   ├── init.vim          # Neovim 進入點（指向 vimrc）
 │   ├── plugin/           # 插件設定
@@ -128,7 +128,7 @@ alias my_alias="command"
 - **GitHub Copilot**: AI 程式碼助手
 - **OmniSharp**: C# 語言伺服器
 - **EditorConfig**: 統一程式碼風格
-- 更多插件請參考 `.nvim/vimrc`
+- 更多插件請參考 `nvim/vimrc`
 
 ### 首次使用
 
@@ -143,12 +143,12 @@ nvim
 - `,` - Leader 鍵
 - `jj` / `11` - 退出插入模式（ESC 替代）
 - `<F2>` / `22` - 切換 NERDTree
-- 詳細快捷鍵設定請參考 `.nvim/plugin/keymappings.vim`
+- 詳細快捷鍵設定請參考 `nvim/plugin/keymappings.vim`
 
 ### 配置結構
 
 ```
-.nvim/                      # Neovim 配置目錄
+nvim/                       # Neovim 配置目錄
 ├── vimrc                   # 主配置檔
 ├── init.vim                # Neovim 進入點（指向 vimrc）
 ├── plugin/                 # 插件配置
@@ -161,7 +161,7 @@ nvim
 ```
 
 安裝後：
-- Neovim 配置：`~/.config/nvim/` → `~/.dotfiles/.nvim/`
+- Neovim 配置：`~/.config/nvim/` → `dotfiles/nvim/`
 
 ## Claude Code 設定
 
@@ -440,7 +440,7 @@ sudo apt-get install fzf  # Ubuntu/Debian
 
 ```bash
 # 手動安裝 vim-plug
-curl -fLo ~/.dotfiles/.nvim/autoload/plug.vim --create-dirs \
+curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 # 重新安裝插件
