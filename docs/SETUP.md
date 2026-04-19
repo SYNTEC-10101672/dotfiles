@@ -167,24 +167,7 @@ opencode --version
 
 ---
 
-## 8. oh-my-openagent
-
-需先安裝 bun（步驟 4）。透過 bunx 安裝：
-
-```bash
-# 依實際訂閱調整 flags
-bunx oh-my-opencode install --no-tui --claude=no --gemini=no --copilot=yes
-```
-
-驗證：
-
-```bash
-bunx oh-my-opencode doctor
-```
-
----
-
-## 9. Claude Code CLI 與 Plugins
+## 8. Claude Code CLI 與 Plugins
 
 安裝 Claude Code CLI：
 
@@ -219,7 +202,7 @@ claude plugin list
 
 ---
 
-## 10. ~/.env 設定
+## 9. ~/.env 設定
 
 複製範本並填入 credentials：
 
@@ -234,7 +217,7 @@ source ~/.bashrc
 
 ---
 
-## 11. 選用 — .NET SDK 與 OmniSharp（C# 開發）
+## 10. 選用 — .NET SDK 與 OmniSharp（C# 開發）
 
 ### .NET SDK
 
@@ -262,7 +245,7 @@ ln -sf ~/.omnisharp/OmniSharp ~/.omnisharp/omnisharp
 
 ---
 
-## 12. 驗證
+## 11. 驗證
 
 執行 `make check` 確認 symlink 狀態：
 

@@ -18,7 +18,7 @@ Each config module (bash, nvim, git, tig, tmux, claude) has its own Makefile tar
 
 ## New Machine Setup
 
-When setting up a new machine, follow the complete step-by-step guide in [`docs/SETUP.md`](../docs/SETUP.md). It covers system packages, language runtimes, Claude Code plugins, opencode, oh-my-openagent, environment variables, and verification.
+When setting up a new machine, follow the complete step-by-step guide in [`docs/SETUP.md`](../docs/SETUP.md). It covers system packages, language runtimes, Claude Code plugins, opencode, environment variables, and verification.
 
 ## Adding a New Module
 

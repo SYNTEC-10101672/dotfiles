@@ -15,11 +15,10 @@ Define requirements for the new machine setup guide (`docs/SETUP.md` and related
 5. 安裝 neovim（若系統版本不足）
 6. 安裝 atuin
 7. 安裝 opencode 並執行 `make opencode`
-8. 安裝 oh-my-openagent
-9. 安裝 Claude Code CLI 並安裝所有 enabled plugins
-10. 設定 `~/.env`（指向 `docs/ENV_SETUP.md` 取得詳細說明）
-11. Optional：安裝 .NET SDK 與 OmniSharp（C# 開發用）
-12. 執行驗證（`make check` + 套件 check script）
+8. 安裝 Claude Code CLI 並安裝所有 enabled plugins
+9. 設定 `~/.env`（指向 `docs/ENV_SETUP.md` 取得詳細說明）
+10. Optional：安裝 .NET SDK 與 OmniSharp（C# 開發用）
+11. 執行驗證（`make check` + 套件 check script）
 
 #### Scenario: AI 可線性執行 SETUP.md
 - **WHEN** AI 在全新 Linux 機器上閱讀 `docs/SETUP.md`
