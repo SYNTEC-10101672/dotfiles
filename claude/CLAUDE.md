@@ -17,3 +17,7 @@
 - commit message 使用英文，遵循 Conventional Commits
 - commit message 不包含「by Claude」等署名
 - commit 前需經我確認
+
+## OpenSpec 規範
+- 產生 tasks.md 時，每個 task 必須包含 `> 驗證：` 區塊定義驗收條件；無法自動驗證時須注記原因，格式：`> 驗證：無法自動驗證（原因：<說明>）`
+- 使用 `opsx:apply` 完成每個 task 實作後，必須呼叫 `openspec-tdd-verify` skill 執行驗證，通過才 mark `[x]`
