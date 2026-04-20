@@ -41,7 +41,7 @@ bashrc:
 nvim:
 	@echo "Installing neovim configuration..."
 	@mkdir -p $(HOME)/.config
-	@ln -sf $(ROOT_DIR)/nvim $(HOME)/.config/nvim
+	@ln -sfn $(ROOT_DIR)/nvim $(HOME)/.config/nvim
 	@echo "✓ Neovim configuration installed"
 	@echo "  Note: Configuration stored in $(ROOT_DIR)/nvim/"
 
@@ -59,6 +59,7 @@ claude:
 
 opencode:
 	@echo "Installing OpenCode commands..."
+	@[ -L "$(HOME)/.config/opencode" ] && rm "$(HOME)/.config/opencode" || true
 	@mkdir -p $(HOME)/.config/opencode
 	@ln -sfn $(ROOT_DIR)/claude/commands $(HOME)/.config/opencode/commands
 	@echo "✓ OpenCode commands installed"
