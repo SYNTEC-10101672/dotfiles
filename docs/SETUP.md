@@ -98,7 +98,15 @@ bun --version
 若系統套件版本為 0.9+，可直接使用套件管理器安裝。否則從 GitHub 官方 release 安裝：
 
 ```bash
-# 適用 glibc 2.17+（如 Ubuntu 18.04）— 使用 v0.9.x
+# glibc 2.28+（如 Ubuntu 22.04）— 使用 v0.10+，tarball 名稱為 nvim-linux-x86_64
+curl -L https://github.com/neovim/neovim/releases/download/v0.10.4/nvim-linux-x86_64.tar.gz \
+  -o /tmp/nvim-linux64.tar.gz
+sudo tar -xzf /tmp/nvim-linux64.tar.gz -C /opt/
+sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+```
+
+```bash
+# glibc 2.17+（如 Ubuntu 18.04）— 最高只能裝 v0.9.x，tarball 名稱為 nvim-linux64
 curl -L https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-linux64.tar.gz \
   -o /tmp/nvim-linux64.tar.gz
 sudo tar -xzf /tmp/nvim-linux64.tar.gz -C /opt/
@@ -150,7 +158,7 @@ curl -sS https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-pre
 需先安裝 Node.js（步驟 3）。透過 npm 全域安裝：
 
 ```bash
-npm install -g opencode@latest
+npm install -g opencode-ai@latest
 ```
 
 建立 `~/.config/opencode/commands` symlink，讓 opencode 與 Claude Code 共用相同指令集：
