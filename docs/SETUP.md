@@ -221,7 +221,7 @@ chmod 600 ~/.env
 source ~/.bashrc
 ```
 
-各變數說明與 credentials 管理方式，請參考 [`docs/ENV_SETUP.md`](ENV_SETUP.md)。
+各變數說明請直接參考 `env.example` 中的註解。
 
 ---
 
