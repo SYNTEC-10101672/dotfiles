@@ -81,18 +81,6 @@ echo $CONTEXT7_API_KEY
 - **格式**: `ctx7sk-xxxxxxxxxxxxxxxxxxxx`
 - **說明**: Upstash Context7 的 API 金鑰，用於語意搜尋和上下文管理
 
-### 硬體控制設定
-
-#### TASMOTA_IP
-- **用途**: Tasmota 智能插座 IP 位址（用於 CNC 控制器重置）
-- **範例**: `10.10.90.50`
-- **說明**: 控制 CNC 控制器電源的智能插座 IP
-
-#### TASMOTA_PORT
-- **用途**: Tasmota HTTP 服務 port
-- **預設**: `8080`
-- **說明**: Tasmota Web UI 和 API 的連接埠
-
 ## Git 設定詳細步驟
 
 ### 方法一：自動設定（推薦）
@@ -169,25 +157,6 @@ Notion MCP 會在 Claude Code 啟動時自動透過 npx 執行，無需手動啟
 ### Atlassian MCP（Claude Code Plugin）
 
 Atlassian（Confluence/JIRA）整合透過 Claude Code atlassian plugin 提供，使用 OAuth 認證，無需手動設定環境變數。
-
-## 硬體控制工具
-
-### CNC 控制器重置
-
-使用 `resetcnc` 腳本透過 Tasmota 智能插座重置 CNC 控制器：
-
-```bash
-# 執行 CNC 控制器重置
-~/dotfiles/scripts/resetcnc
-```
-
-這個腳本會：
-1. 讀取 `~/.env` 中的 `TASMOTA_IP` 和 `TASMOTA_PORT`
-2. 向 Tasmota 智能插座發送關機指令
-3. 等待 2 秒
-4. 發送開機指令
-
-**注意**：確保 Tasmota 智能插座已正確設定並連接到網路。
 
 ## 檔案說明
 
@@ -309,4 +278,3 @@ source ~/.bashrc
 - [dotfiles/env.example](../env.example) - 環境變數範本
 - [dotfiles/.gitconfig](../.gitconfig) - Git 使用者設定
 - [dotfiles/scripts/setup-git-credentials.sh](../scripts/setup-git-credentials.sh) - Git 認證設定腳本
-- [dotfiles/scripts/resetcnc](../scripts/resetcnc) - CNC 控制器重置腳本

@@ -83,7 +83,6 @@ tmux:
 scripts:
 	@echo "Installing utility scripts..."
 	@mkdir -p $(HOME)/bin
-	@ln -sf $(ROOT_DIR)/scripts/resetcnc $(HOME)/bin/resetcnc
 	@ln -sf $(ROOT_DIR)/scripts/setup-git-credentials.sh $(HOME)/bin/setup-git-credentials
 	@ln -sf $(ROOT_DIR)/scripts/tig-mark-commit.sh $(HOME)/bin/tig-mark-commit
 	@ln -sf $(ROOT_DIR)/scripts/tig-diff-selector.sh $(HOME)/bin/tig-diff-selector
@@ -118,7 +117,7 @@ uninstall:
 			rm "$(HOME)/.config/nvim"; \
 		fi
 	@echo "Removing scripts..."
-	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector claude-glm claude-code-statusline; do \
+	@for script in setup-git-credentials tig-mark-commit tig-diff-selector claude-glm claude-code-statusline; do \
 			if [ -L "$(HOME)/bin/$$script" ]; then \
 				echo "  Removing ~/bin/$$script"; \
 				rm "$(HOME)/bin/$$script"; \
@@ -196,7 +195,7 @@ check:
 	fi
 	@echo ""
 	@echo "Checking scripts installation..."
-	@for script in resetcnc setup-git-credentials tig-mark-commit tig-diff-selector claude-glm claude-code-statusline; do \
+	@for script in setup-git-credentials tig-mark-commit tig-diff-selector claude-glm claude-code-statusline; do \
 			if [ -L "$(HOME)/bin/$$script" ]; then \
 				target=$$(readlink "$(HOME)/bin/$$script"); \
 				echo "✓ ~/bin/$$script -> $$target"; \
