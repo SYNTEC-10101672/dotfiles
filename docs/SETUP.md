@@ -62,12 +62,13 @@ sudo cp "/tmp/fd-${FD_VER}-x86_64-unknown-linux-musl/fd" /usr/local/bin/fd
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 source ~/.bashrc
-nvm install --lts
-nvm use --lts
+nvm install 22
+nvm use 22
+nvm alias default 22
 ```
 
-> **注意**：glibc < 2.28 的系統（如 Ubuntu 18.04）無法執行 Node.js v18+。
-> 請改用 `nvm install 16`，支援 glibc 2.17+。
+> **注意**：GitHub Copilot 需要 Node.js 22+，請勿安裝舊版 LTS（如 20.x）。
+> glibc < 2.28 的系統（如 Ubuntu 18.04）無法執行 Node.js v18+，最高只能安裝 v16，但將無法使用 GitHub Copilot。
 
 驗證：
 
@@ -231,6 +232,7 @@ source ~/.bashrc
 
 ```bash
 curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 6.0
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0
 echo 'export PATH="$HOME/.dotnet:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
