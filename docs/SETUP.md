@@ -176,7 +176,23 @@ opencode --version
 
 ---
 
-## 8. Claude Code CLI 與 Plugins
+## 8. openspec
+
+需先安裝 Node.js（步驟 3）。透過 npm 全域安裝：
+
+```bash
+npm install -g @fission-ai/openspec@latest
+```
+
+驗證：
+
+```bash
+openspec --version
+```
+
+---
+
+## 9. Claude Code CLI 與 Plugins
 
 安裝 Claude Code CLI：
 
@@ -211,7 +227,7 @@ claude plugin list
 
 ---
 
-## 9. ~/.env 設定
+## 10. ~/.env 設定
 
 複製範本並填入 credentials：
 
@@ -226,7 +242,7 @@ source ~/.bashrc
 
 ---
 
-## 10. 選用 — .NET SDK 與 OmniSharp（C# 開發）
+## 11. 選用 — .NET SDK 與 OmniSharp（C# 開發）
 
 ### .NET SDK
 
@@ -255,7 +271,7 @@ ln -sf ~/.omnisharp/OmniSharp ~/.omnisharp/omnisharp
 
 ---
 
-## 11. 驗證
+## 12. 驗證
 
 執行 `make check` 確認 symlink 狀態：
 
