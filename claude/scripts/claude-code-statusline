@@ -6,6 +6,15 @@
 # - Native Claude Code: shows "[Model] 📁 dir | 🌿 branch"
 # - GLM mode: shows "[GLM model-name] 📁 dir | 🌿 branch"
 
+# Format epoch seconds as countdown string: " (Xh Ym)" or " (Ym)" or ""
+format_countdown() {
+  local remaining=$(( $1 - $(date +%s) ))
+  if [ "$remaining" -gt 0 ]; then
+    local h=$(( remaining / 3600 )) m=$(( (remaining % 3600) / 60 ))
+    [ "$h" -gt 0 ] && echo " (${h}h${m}m)" || echo " (${m}m)"
+  fi
+}
+
 # Read JSON input from stdin
 input=$(cat)
 
@@ -15,6 +24,9 @@ CURRENT_DIR=$(echo "$input" | jq -r '.workspace.current_dir')
 CONTEXT_USED=$(echo "$input" | jq -r '.context_window.used_percentage // "null"')
 RATE_LIMIT_USED=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage | if . then floor | tostring else empty end')
 RATE_LIMIT_RESETS_AT=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
+
+# Initialize rate limit display
+RATE_LIMIT_DISPLAY=""
 
 # Determine display prefix based on mode
 if [ "$CLAUDE_PROXY_MODE" = "glm" ]; then
@@ -31,6 +43,14 @@ if [ "$CLAUDE_PROXY_MODE" = "glm" ]; then
     PREFIX="GLM ${ANTHROPIC_DEFAULT_HAIKU_MODEL:-}"
   else
     PREFIX="GLM"
+  fi
+  # Read GLM quota cache for statusline display
+  if [ -f /tmp/glm-quota-cache.json ]; then
+    read -r GLM_REMAINING GLM_RESET_AT <<< "$(jq -r '"\(.tokens_remaining // "") \(.tokens_reset_at // "")"' /tmp/glm-quota-cache.json)"
+    if [ -n "$GLM_REMAINING" ] && [ "$GLM_REMAINING" != "null" ]; then
+      GLM_TIME=$(format_countdown "${GLM_RESET_AT:-0}")
+      RATE_LIMIT_DISPLAY=" | 🔋 ${GLM_REMAINING}%${GLM_TIME}"
+    fi
   fi
 else
   PREFIX="$MODEL_DISPLAY"
@@ -51,23 +71,9 @@ if [ "$CONTEXT_USED" != "null" ] && [ -n "$CONTEXT_USED" ]; then
     CONTEXT_DISPLAY=" | 🧠 ${CONTEXT_USED}%"
 fi
 
-# Show rate limit usage and reset time if available
-RATE_LIMIT_DISPLAY=""
+# Show rate limit usage and reset time if available (native mode)
 if [ -n "$RATE_LIMIT_USED" ]; then
-    RATE_LIMIT_TIME=""
-    if [ -n "$RATE_LIMIT_RESETS_AT" ]; then
-        NOW=$(date +%s)
-        REMAINING=$(( RATE_LIMIT_RESETS_AT - NOW ))
-        if [ "$REMAINING" -gt 0 ]; then
-            HOURS=$(( REMAINING / 3600 ))
-            MINS=$(( (REMAINING % 3600) / 60 ))
-            if [ "$HOURS" -gt 0 ]; then
-                RATE_LIMIT_TIME=" (${HOURS}h${MINS}m)"
-            else
-                RATE_LIMIT_TIME=" (${MINS}m)"
-            fi
-        fi
-    fi
+    RATE_LIMIT_TIME=$(format_countdown "${RATE_LIMIT_RESETS_AT:-0}")
     RATE_LIMIT_REMAINING=$(( 100 - RATE_LIMIT_USED ))
     RATE_LIMIT_DISPLAY=" | 🔋 ${RATE_LIMIT_REMAINING}%${RATE_LIMIT_TIME}"
 fi
