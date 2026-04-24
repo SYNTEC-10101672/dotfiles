@@ -73,6 +73,7 @@
     "notion@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
+  "tui": "fullscreen",
   "autoDreamEnabled": true,
-  "tui": "fullscreen"
+  "editorMode": "vim"
 }
