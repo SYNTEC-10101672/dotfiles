@@ -61,18 +61,21 @@ if [[ -n "${TMUX:-}" ]]; then
   tmux rename-window "claude-glm"
 fi
 
-# Background: fetch GLM quota and cache it for statusline display
+# Background: periodically fetch GLM quota and cache it for statusline display
 (
-  response=$(curl -sf -H "Authorization: Bearer $GLM_API_KEY" \
-    "https://api.z.ai/api/monitor/usage/quota/limit" 2>/dev/null) || exit 0
-  read -r tokens_pct reset_ms <<< "$(echo "$response" | jq -r \
-    '[.data.limits[] | select(.type == "TOKENS_LIMIT")][0] | "\(.percentage // "") \(.nextResetTime // "")"')"
-  if [[ -n "$tokens_pct" && -n "$reset_ms" && "$tokens_pct" != "null" && "$reset_ms" != "null" ]]; then
-    remaining=$((100 - tokens_pct))
-    now=$(date +%s)
-    printf '{"tokens_remaining":%d,"tokens_reset_at":%d,"fetched_at":%d}\n' \
-      "$remaining" "$((reset_ms / 1000))" "$now" > /tmp/glm-quota-cache.json
-  fi
+  while true; do
+    response=$(curl -sf -H "Authorization: Bearer $GLM_API_KEY" \
+      "https://api.z.ai/api/monitor/usage/quota/limit" 2>/dev/null) || { sleep 180; continue; }
+    read -r tokens_pct reset_ms <<< "$(echo "$response" | jq -r \
+      '[.data.limits[] | select(.type == "TOKENS_LIMIT")][0] | "\(.percentage // "") \(.nextResetTime // "")"')"
+    if [[ -n "$tokens_pct" && -n "$reset_ms" && "$tokens_pct" != "null" && "$reset_ms" != "null" ]]; then
+      remaining=$((100 - tokens_pct))
+      now=$(date +%s)
+      printf '{"tokens_remaining":%d,"tokens_reset_at":%d,"fetched_at":%d}\n' \
+        "$remaining" "$((reset_ms / 1000))" "$now" > /tmp/glm-quota-cache.json
+    fi
+    sleep 180
+  done
 ) &
 
 # Forward all arguments to claude
