@@ -6,6 +6,10 @@
 
 MARK_FILE="/tmp/tig-marked-commit-${USER}"
 
+copy_to_clipboard() {
+    printf '\033]52;c;%s\a' "$(printf '%s' "$1" | base64 -w0)"
+}
+
 case "$1" in
     mark)
         if [ -z "$2" ]; then
@@ -13,7 +17,8 @@ case "$1" in
             exit 1
         fi
         echo "$2" > "$MARK_FILE"
-        echo "Marked commit: $2"
+        copy_to_clipboard "$2"
+        echo "Marked commit: $2 (copied to clipboard)"
         read -p "Press Enter to continue..."
         ;;
 
@@ -59,7 +64,8 @@ case "$1" in
     status)
         if [ -f "$MARK_FILE" ]; then
             MARKED_COMMIT=$(cat "$MARK_FILE")
-            echo "Currently marked commit: $MARKED_COMMIT"
+            copy_to_clipboard "$MARKED_COMMIT"
+            echo "Currently marked commit: $MARKED_COMMIT (copied to clipboard)"
         else
             echo "No commit marked"
         fi
