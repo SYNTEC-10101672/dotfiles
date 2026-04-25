@@ -76,7 +76,7 @@ fi
     fi
     sleep 60
   done
-) &
+) > /dev/null 2>&1 &
 
 # Forward all arguments to claude
 exec claude "$@"
