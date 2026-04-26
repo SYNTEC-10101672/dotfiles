@@ -10,11 +10,11 @@ make check     # Verify symlink status
 make uninstall # Remove symlinks
 ```
 
-Individual modules: `make bashrc`, `make nvim`, `make claude`, `make git`, `make tig`, `make tmux`, `make scripts`
+Individual modules: `make bashrc`, `make nvim`, `make claude`, `make opencode`, `make git`, `make tig`, `make tmux`, `make scripts`
 
 ## Architecture
 
-Each config module (bash, nvim, git, tig, tmux, claude) has its own Makefile target that creates symlinks from this repo to the appropriate location in `$HOME`. The `claude/` directory contains Claude Code user-level settings (global CLAUDE.md, settings.json, commands, skills, scripts) deployed as mixed symlinks to `~/.claude/`.
+Each config module (bash, nvim, git, tig, tmux, claude) has its own Makefile target that creates symlinks from this repo to the appropriate location in `$HOME`. The `claude/` directory contains Claude Code user-level settings (global CLAUDE.md, settings.json, commands, skills, scripts) deployed as mixed symlinks to `~/.claude/`. The `opencode/` directory contains opencode settings (`opencode.json`, `package.json`) symlinked to `~/.config/opencode/`; commands are shared with Claude Code via the same `claude/commands` symlink.
 
 ## New Machine Setup
 

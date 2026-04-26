@@ -10,6 +10,7 @@
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
 - 🖥️ **Tmux**: 終端機多工器，支援 Vim 風格操作和美化狀態列
 - 🤖 **Claude Code**: 全域開發環境設定，含 13 個 plugins 與 skills 工作流
+- 🖥️ **opencode**: AI 編程工具設定（`opencode.json`、`package.json`），與 Claude Code 共用 commands
 
 ## 快速安裝
 
@@ -48,6 +49,7 @@ make install
 make bashrc    # 安裝 Bash 設定
 make nvim      # 安裝 Neovim 設定
 make claude    # 安裝 Claude Code 設定
+make opencode  # 安裝 opencode 設定
 make git       # 安裝 Git 設定
 make tig       # 安裝 Tig 設定
 make tmux      # 安裝 Tmux 設定
@@ -83,6 +85,9 @@ dotfiles/
 │   └── autoload/         # vim-plug 套件管理器
 ├── .claude/              # Claude Code project-level 設定
 │   └── CLAUDE.md         # 專案層級指令
+├── opencode/             # opencode 設定（symlink 到 ~/.config/opencode/）
+│   ├── opencode.json     # 主設定與 plugin 宣告
+│   └── package.json      # plugin SDK 依賴
 ├── claude/               # Claude Code user-level 設定
 │   ├── CLAUDE.md         # 全域模板設定
 │   └── scripts/          # Claude 相關腳本（含 MCP 伺服器管理）

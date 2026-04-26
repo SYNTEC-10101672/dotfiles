@@ -162,11 +162,13 @@ curl -sS https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-pre
 npm install -g opencode-ai@latest
 ```
 
-建立 `~/.config/opencode/commands` symlink，讓 opencode 與 Claude Code 共用相同指令集：
+建立設定 symlink（`opencode.json`、`package.json`、`commands/`）：
 
 ```bash
 make opencode
 ```
+
+> **注意**：`opencode.json` 宣告的 plugin（`@slkiser/opencode-quota`）將在首次啟動 opencode 時自動下載，無需手動執行 `npm install`。
 
 驗證：
 
