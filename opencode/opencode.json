@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "@slkiser/opencode-quota"
+  ],
+  "experimental": {
+    "quotaToast": {
+      "enableToast": true,
+      "showSessionTokens": true,
+      "enabledProviders": "auto",
+      "formatStyle": "singleWindow",
+      "percentDisplayMode": "remaining"
+    }
+  }
+}

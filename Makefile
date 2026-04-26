@@ -21,7 +21,7 @@ help:
 	@echo "  make bashrc    - Install bash configuration"
 	@echo "  make nvim      - Install neovim configuration"
 	@echo "  make claude    - Install Claude Code configuration"
-	@echo "  make opencode  - Install OpenCode commands (symlink from claude/commands)"
+	@echo "  make opencode  - Install OpenCode configuration (opencode.json, package.json, commands/)"
 	@echo "  make git       - Install git configuration"
 	@echo "  make tig       - Install tig configuration"
 	@echo "  make tmux      - Install tmux configuration"
@@ -58,11 +58,13 @@ claude:
 	@echo "✓ Claude Code configuration installed"
 
 opencode:
-	@echo "Installing OpenCode commands..."
+	@echo "Installing OpenCode configuration..."
 	@[ -L "$(HOME)/.config/opencode" ] && rm "$(HOME)/.config/opencode" || true
 	@mkdir -p $(HOME)/.config/opencode
 	@ln -sfn $(ROOT_DIR)/claude/commands $(HOME)/.config/opencode/commands
-	@echo "✓ OpenCode commands installed"
+	@ln -sf $(ROOT_DIR)/opencode/opencode.json $(HOME)/.config/opencode/opencode.json
+	@ln -sf $(ROOT_DIR)/opencode/package.json $(HOME)/.config/opencode/package.json
+	@echo "✓ OpenCode configuration installed"
 
 git:
 	@echo "Installing git configuration..."
@@ -105,11 +107,13 @@ uninstall:
 				rm "$(HOME)/.claude/$$item"; \
 			fi; \
 		done
-	@echo "Removing OpenCode commands symlink..."
-	@if [ -L "$(HOME)/.config/opencode/commands" ]; then \
-			echo "  Removing .config/opencode/commands"; \
-			rm "$(HOME)/.config/opencode/commands"; \
-		fi
+	@echo "Removing OpenCode configuration symlinks..."
+	@for f in commands opencode.json package.json; do \
+			if [ -L "$(HOME)/.config/opencode/$$f" ]; then \
+				echo "  Removing .config/opencode/$$f"; \
+				rm "$(HOME)/.config/opencode/$$f"; \
+			fi; \
+		done
 	@echo "Removing neovim symlinks..."
 	@if [ -L "$(HOME)/.config/nvim" ]; then \
 			echo "  Removing .config/nvim"; \
@@ -164,7 +168,7 @@ check:
 			echo "✗ ~/.claude (not found)"; \
 	fi
 	@echo ""
-	@echo "Checking OpenCode commands..."
+	@echo "Checking OpenCode configuration..."
 	@if [ -L "$(HOME)/.config/opencode/commands" ]; then \
 			target=$$(readlink "$(HOME)/.config/opencode/commands"); \
 			if [ "$$target" = "$(ROOT_DIR)/claude/commands" ]; then \
@@ -177,6 +181,20 @@ check:
 	else \
 			echo "✗ .config/opencode/commands (not found)"; \
 	fi
+	@for f in opencode.json package.json; do \
+			if [ -L "$(HOME)/.config/opencode/$$f" ]; then \
+				target=$$(readlink "$(HOME)/.config/opencode/$$f"); \
+				if [ "$$target" = "$(ROOT_DIR)/opencode/$$f" ]; then \
+					echo "✓ .config/opencode/$$f -> $$target"; \
+				else \
+					echo "⚠ .config/opencode/$$f -> $$target (unexpected target)"; \
+				fi; \
+			elif [ -e "$(HOME)/.config/opencode/$$f" ]; then \
+				echo "✗ .config/opencode/$$f (exists but not a symlink)"; \
+			else \
+				echo "✗ .config/opencode/$$f (not found)"; \
+			fi; \
+		done
 	@echo ""
 	@echo "Checking neovim installation..."
 	@if [ -L "$(HOME)/.config/nvim" ]; then \
