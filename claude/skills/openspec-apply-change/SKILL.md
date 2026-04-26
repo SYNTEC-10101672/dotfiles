@@ -6,7 +6,7 @@ compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
-  generatedBy: "1.3.0"
+  generatedBy: "1.3.1"
 ---
 
 Implement tasks from an OpenSpec change.
@@ -39,7 +39,7 @@ Implement tasks from an OpenSpec change.
    ```
 
    This returns:
-   - Context file paths (varies by schema - could be proposal/specs/design/tasks or spec/tests/implementation/docs)
+   - `contextFiles`: artifact ID -> array of concrete file paths (varies by schema - could be proposal/specs/design/tasks or spec/tests/implementation/docs)
    - Progress (total, complete, remaining)
    - Task list with status
    - Dynamic instruction based on current state
@@ -51,7 +51,7 @@ Implement tasks from an OpenSpec change.
 
 4. **Read context files**
 
-   Read the files listed in `contextFiles` from the apply instructions output.
+   Read every file path listed under `contextFiles` from the apply instructions output.
    The files depend on the schema being used:
    - **spec-driven**: proposal, specs, design, tasks
    - Other schemas: follow the contextFiles from CLI output
@@ -64,14 +64,33 @@ Implement tasks from an OpenSpec change.
    - Remaining tasks overview
    - Dynamic instruction from CLI
 
-6. **Implement tasks (loop until done or blocked)**
+5.5. **單元測試評估（apply 開始時）**
 
-   For each pending task:
-   - Show which task is being worked on
-   - Make the code changes required
-   - Keep changes minimal and focused
-   - Mark task complete in the tasks file: `- [ ]` → `- [x]`
-   - Continue to next task
+   掃描 codebase，評估哪些實作 task 值得補充單元測試（基於複雜度、分支邏輯、純函數等判斷）。
+
+   若發現有價值的測試機會，使用 AskUserQuestion 詢問使用者是否補充 T* 項目至 tasks.md 的 `## 測試` 區塊。
+
+   視使用者回應：在 tasks.md 補充對應 T* 項目，或跳過繼續實作。
+
+6. **TDD 三階段實作流程**
+
+   **Red phase（實作前）**：
+   - 呼叫 `openspec-tdd-verify` skill，傳入 Red phase，執行 tasks.md `## 測試` 區塊中全部 T* 項目
+   - 確認所有 T* 尚未通過（預期 fail）
+   - 若有 T* 已通過，回報並詢問使用者是否繼續
+
+   **逐 task 實作（Green phase）**：
+
+   對每個待實作的 task：
+   - 顯示目前處理的 task
+   - 進行最小化的程式碼變更
+   - 實作完成後，呼叫 `openspec-tdd-verify` skill，傳入 Green phase，執行對應的 T*（以 `→ T<n>` 標注）
+   - T* 通過後，將 tasks.md 中該實作 task 的 `- [ ]` 改為 `- [x]`
+   - 繼續下一個 task
+
+   **Final phase（全部實作完成後）**：
+   - 呼叫 `openspec-tdd-verify` skill，傳入 Final phase，執行全部 T* 項目
+   - 確認所有 T* 皆通過
 
    **Pause if:**
    - Task is unclear → ask for clarification

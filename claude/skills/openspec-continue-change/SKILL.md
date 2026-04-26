@@ -6,7 +6,7 @@ compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
-  generatedBy: "1.3.0"
+  generatedBy: "1.3.1"
 ---
 
 Continue working on a change by creating the next artifact.
@@ -102,7 +102,7 @@ Common artifact patterns:
   - The Capabilities section is critical - each capability listed will need a spec file.
 - **specs/<capability>/spec.md**: Create one spec per capability listed in the proposal's Capabilities section (use the capability name, not the change name).
 - **design.md**: Document technical decisions, architecture, and implementation approach.
-- **tasks.md**: Break down implementation into checkboxed tasks.
+- **tasks.md**: Break down implementation into checkboxed tasks. 使用 `## 測試` / `## 實作` 雙區塊格式：`## 測試` 區塊包含 T* 項目（每項含 `> 指令：` 與 `> 預期：`），`## 實作` 區塊每個項目以 `（→ T<n>）` 標注對應測試。
 
 For other schemas, follow the `instruction` field from the CLI output.
 

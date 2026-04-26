@@ -1,12 +1,12 @@
 ---
 name: "OPSX: TDD Verify"
-description: Execute the verification block of the current OpenSpec task and mark it complete
+description: Execute TDD verification for OpenSpec tasks using T* items (Red/Green/Final phase). Use after implementing a task to confirm it works before marking [x].
 category: Workflow
 tags: [workflow, tdd, verify]
 ---
 
-執行當前 task 的 `> 驗證：` 區塊，依結果決定是否 mark `[x]`。
+執行 tasks.md `## 測試` 區塊中 T* 項目的驗證，依結果決定是否 mark `[x]`。
 
-**Input**: 當前正在實作的 task（從對話 context 推斷，或明確指定）。
+**Input**: 執行階段（Red / Green / Final）與對應的 T* 編號，或從對話 context 推斷。
 
 Use the `openspec-tdd-verify` skill to execute verification.
