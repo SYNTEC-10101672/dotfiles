@@ -3,7 +3,8 @@
     "allow": [
       "Write",
       "MultiEdit",
-      "Edit"
+      "Edit",
+      "Bash(openspec *)"
     ],
     "deny": []
   },
