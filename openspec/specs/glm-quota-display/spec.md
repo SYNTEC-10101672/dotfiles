@@ -35,6 +35,8 @@
 `weekly_remaining` SHALL 為 `100 - data.limits[type=TOKENS_LIMIT, unit=6].percentage`（無條件捨去）。
 `weekly_reset_at` SHALL 為 `data.limits[type=TOKENS_LIMIT, unit=6].nextResetTime / 1000`（epoch ms 轉 seconds）。
 
+`claude-glm` 腳本 SHALL 在啟動背景子程序時記錄其 PID，並透過 `trap ... EXIT INT TERM` 註冊清理函數，確保在腳本退出時（無論是正常退出、Ctrl+C、或收到 TERM signal）殺掉背景子程序。`claude` SHALL 以一般呼叫（非 `exec`）方式啟動，使 bash process 在 claude 退出後仍存在以執行清理。
+
 #### Scenario: API fetch 成功（Pro 方案，含 weekly quota）
 - **WHEN** `claude-glm` 啟動且 Z.ai API 回傳 200 含 unit=3 與 unit=6 的 TOKENS_LIMIT 資料
 - **THEN** `/tmp/glm-quota-cache.json` 被建立或覆寫，包含 `tokens_remaining`、`tokens_reset_at`、`weekly_remaining`、`weekly_reset_at`、`fetched_at` 五個欄位
@@ -58,6 +60,18 @@
 #### Scenario: command substitution 呼叫不會 hang
 - **WHEN** `claude-glm --version` 在 command substitution 中被呼叫（例如 `result=$(claude-glm --version 2>&1)`）
 - **THEN** command substitution 在 `claude --version` 輸出結果後正常返回，不會因為背景 quota loop 持有 pipe fd 而永久阻塞
+
+#### Scenario: Ctrl+C 退出時清理背景子程序
+- **WHEN** 使用者在 claude-glm 運行中按下 Ctrl+C
+- **THEN** claude 正常退出，bash 執行 EXIT trap 殺掉背景 quota fetch 子程序，不留殘留 process
+
+#### Scenario: 正常退出時清理背景子程序
+- **WHEN** 使用者在 claude 中輸入 `/exit` 或 claude 自行結束
+- **THEN** bash 執行 EXIT trap 殺掉背景 quota fetch 子程序，不留殘留 process
+
+#### Scenario: 收到 TERM signal 時清理背景子程序
+- **WHEN** `claude-glm` 的 bash process 收到 SIGTERM
+- **THEN** bash 執行 TERM trap 殺掉背景 quota fetch 子程序，不留殘留 process
 
 ### Requirement: statusline 在 GLM 模式下顯示 TOKENS_LIMIT 剩餘配額與 reset 倒數
 `claude-code-statusline` SHALL 在 `CLAUDE_PROXY_MODE=glm` 時讀取 `/tmp/glm-quota-cache.json`，使用 `tokens_remaining` 與 `tokens_reset_at` 產生與 `statusline-rate-limit` 相同格式的 quota 顯示段（`| 🔋 N% (Xh Ym)` 或 `| 🔋 N% (Ym)`）。快取不存在時 SHALL 靜默略過，不輸出錯誤。
