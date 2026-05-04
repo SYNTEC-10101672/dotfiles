@@ -6,12 +6,18 @@
 # - Native Claude Code: shows "[Model] 📁 dir | 🌿 branch"
 # - GLM mode: shows "[GLM model-name] 📁 dir | 🌿 branch"
 
-# Format epoch seconds as countdown string: " (Xh Ym)" or " (Ym)" or ""
+# Format epoch seconds as countdown string: " (Xd Yh)" or " (Xh Ym)" or " (Ym)" or ""
 format_countdown() {
   local remaining=$(( $1 - $(date +%s) ))
   if [ "$remaining" -gt 0 ]; then
-    local h=$(( remaining / 3600 )) m=$(( (remaining % 3600) / 60 ))
-    [ "$h" -gt 0 ] && echo " (${h}h${m}m)" || echo " (${m}m)"
+    local d=$(( remaining / 86400 )) h=$(( (remaining % 86400) / 3600 )) m=$(( (remaining % 3600) / 60 ))
+    if [ "$d" -gt 0 ]; then
+      echo " (${d}d${h}h)"
+    elif [ "$h" -gt 0 ]; then
+      echo " (${h}h${m}m)"
+    else
+      echo " (${m}m)"
+    fi
   fi
 }
 
@@ -45,11 +51,16 @@ if [ "$CLAUDE_PROXY_MODE" = "glm" ]; then
     PREFIX="GLM"
   fi
   # Read GLM quota cache for statusline display
+  WEEKLY_DISPLAY=""
   if [ -f /tmp/glm-quota-cache.json ]; then
-    read -r GLM_REMAINING GLM_RESET_AT <<< "$(jq -r '"\(.tokens_remaining // "") \(.tokens_reset_at // "")"' /tmp/glm-quota-cache.json)"
+    read -r GLM_REMAINING GLM_RESET_AT WEEKLY_REMAINING WEEKLY_RESET_AT <<< "$(jq -r '"\(.tokens_remaining // "") \(.tokens_reset_at // "") \(.weekly_remaining // "") \(.weekly_reset_at // "")"' /tmp/glm-quota-cache.json)"
     if [ -n "$GLM_REMAINING" ] && [ "$GLM_REMAINING" != "null" ]; then
       GLM_TIME=$(format_countdown "${GLM_RESET_AT:-0}")
       RATE_LIMIT_DISPLAY=" | 🔋 ${GLM_REMAINING}%${GLM_TIME}"
+    fi
+    if [ -n "$WEEKLY_REMAINING" ] && [ "$WEEKLY_REMAINING" != "null" ]; then
+      WEEKLY_TIME=$(format_countdown "${WEEKLY_RESET_AT:-0}")
+      WEEKLY_DISPLAY=" | 📊 ${WEEKLY_REMAINING}%${WEEKLY_TIME}"
     fi
   fi
 else
@@ -79,4 +90,4 @@ if [ -n "$RATE_LIMIT_USED" ]; then
 fi
 
 # Output the status line
-echo "[$PREFIX] 📁 ${CURRENT_DIR##*/}$GIT_BRANCH$CONTEXT_DISPLAY$RATE_LIMIT_DISPLAY"
+echo "[$PREFIX] 📁 ${CURRENT_DIR##*/}$GIT_BRANCH$CONTEXT_DISPLAY$RATE_LIMIT_DISPLAY$WEEKLY_DISPLAY"

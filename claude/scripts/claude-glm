@@ -66,13 +66,23 @@ fi
   while true; do
     response=$(curl -sf -H "Authorization: Bearer $GLM_API_KEY" \
       "https://api.z.ai/api/monitor/usage/quota/limit" 2>/dev/null) || { sleep 60; continue; }
-    read -r tokens_pct reset_ms <<< "$(echo "$response" | jq -r \
-      '[.data.limits[] | select(.type == "TOKENS_LIMIT")][0] | "\(.percentage // "") \(.nextResetTime // "")"')"
-    if [[ -n "$tokens_pct" && -n "$reset_ms" && "$tokens_pct" != "null" && "$reset_ms" != "null" ]]; then
-      remaining=$((100 - tokens_pct))
-      now=$(date +%s)
-      printf '{"tokens_remaining":%d,"tokens_reset_at":%d,"fetched_at":%d}\n' \
-        "$remaining" "$((reset_ms / 1000))" "$now" > /tmp/glm-quota-cache.json
+    now=$(date +%s)
+    read -r tokens_pct tokens_reset_ms weekly_pct weekly_reset_ms <<< "$(echo "$response" | jq -r '
+      [.data.limits[] | select(.type == "TOKENS_LIMIT" and .unit == 3)][0] as $t |
+      [.data.limits[] | select(.type == "TOKENS_LIMIT" and .unit == 6)][0] as $w |
+      "\($t.percentage // "") \($t.nextResetTime // "") \($w.percentage // "") \($w.nextResetTime // "")"
+    ')"
+    if [[ -n "$tokens_pct" && "$tokens_pct" != "null" && -n "$tokens_reset_ms" && "$tokens_reset_ms" != "null" ]]; then
+      tokens_remaining=$((100 - tokens_pct))
+      tokens_reset_at=$((tokens_reset_ms / 1000))
+      weekly_remaining=0
+      weekly_reset_at=0
+      if [[ -n "$weekly_pct" && "$weekly_pct" != "null" && -n "$weekly_reset_ms" && "$weekly_reset_ms" != "null" ]]; then
+        weekly_remaining=$((100 - weekly_pct))
+        weekly_reset_at=$((weekly_reset_ms / 1000))
+      fi
+      printf '{"tokens_remaining":%d,"tokens_reset_at":%d,"weekly_remaining":%d,"weekly_reset_at":%d,"fetched_at":%d}\n' \
+        "$tokens_remaining" "$tokens_reset_at" "$weekly_remaining" "$weekly_reset_at" "$now" > /tmp/glm-quota-cache.json
     fi
     sleep 60
   done
