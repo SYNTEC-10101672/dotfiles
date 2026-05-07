@@ -202,22 +202,13 @@ openspec --version
 npm install -g @anthropic-ai/claude-code
 ```
 
-安裝全部 13 個 enabled plugins：
+安裝 4 個 user-level plugins：
 
 ```bash
-claude plugin install code-simplifier@claude-plugins-official
 claude plugin install superpowers@claude-plugins-official
-claude plugin install code-review@claude-plugins-official
+claude plugin install code-simplifier@claude-plugins-official
 claude plugin install context7@claude-plugins-official
-claude plugin install commit-commands@claude-plugins-official
-claude plugin install atlassian@claude-plugins-official
-claude plugin install frontend-design@claude-plugins-official
 claude plugin install skill-creator@claude-plugins-official
-claude plugin install claude-code-setup@claude-plugins-official
-claude plugin install vercel@claude-plugins-official
-claude plugin install csharp-lsp@claude-plugins-official
-claude plugin install clangd-lsp@claude-plugins-official
-claude plugin install notion@claude-plugins-official
 ```
 
 驗證：
@@ -294,9 +285,7 @@ done
 確認 Claude Code plugins 是否全部安裝：
 
 ```bash
-for plugin in code-simplifier superpowers code-review context7 commit-commands \
-              atlassian frontend-design skill-creator claude-code-setup vercel \
-              csharp-lsp clangd-lsp notion; do
+for plugin in superpowers code-simplifier context7 skill-creator; do
   claude plugin list 2>/dev/null | grep -q "$plugin" \
     && echo "✓ $plugin" || echo "✗ $plugin: NOT INSTALLED"
 done
