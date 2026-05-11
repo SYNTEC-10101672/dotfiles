@@ -36,6 +36,7 @@ make check
 - `bash-completion` — Bash tab 補全
 - `python3` — 部分 LSP server 需要
 - `sshpass` — 透過密碼 SSH（CNC 硬體控制腳本使用）
+- `silversearcher-ag` — 快速全文搜尋（`ag` 指令，Neovim 備用搜尋工具）
 
 若系統套件版本過舊或不存在，`fzf` 可從 source 安裝：
 
@@ -53,6 +54,18 @@ curl -L "https://github.com/sharkdp/fd/releases/download/${FD_VER}/fd-${FD_VER}-
   -o /tmp/fd.tar.gz
 tar -xzf /tmp/fd.tar.gz -C /tmp/
 sudo cp "/tmp/fd-${FD_VER}-x86_64-unknown-linux-musl/fd" /usr/local/bin/fd
+```
+
+若系統無 `ripgrep` 套件（如 Ubuntu 18.04），下載 musl 靜態 binary：
+
+> **注意**：`rg` 必須是真正的 binary（不能只靠 Claude Code 的 shell function wrapper），否則 Neovim 的 `executable()` 找不到它。
+
+```bash
+RG_VER=$(curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest | jq -r '.tag_name')
+curl -L "https://github.com/BurntSushi/ripgrep/releases/download/${RG_VER}/ripgrep-${RG_VER}-x86_64-unknown-linux-musl.tar.gz" \
+  -o /tmp/rg.tar.gz
+tar -xzf /tmp/rg.tar.gz -C /tmp/
+sudo cp "/tmp/ripgrep-${RG_VER}-x86_64-unknown-linux-musl/rg" /usr/local/bin/rg
 ```
 
 ---
@@ -275,7 +288,7 @@ make check
 確認所有必要工具已安裝：
 
 ```bash
-for cmd in bash git make nvim tmux jq curl fzf tig rg fd node python3 opencode sshpass; do
+for cmd in bash git make nvim tmux jq curl fzf tig rg fd ag node python3 opencode sshpass; do
   command -v $cmd &>/dev/null && echo "✓ $cmd" || echo "✗ $cmd: NOT FOUND"
 done
 # atuin 安裝在 ~/.atuin/bin/，需開新 terminal 或 source ~/.bashrc 後才能查到
