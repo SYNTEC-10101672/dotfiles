@@ -34,7 +34,6 @@ while true; do
     # 1. 收集檔案資訊並建立格式化列表
     TEMP_FILES=$(mktemp)
     TEMP_LIST=$(mktemp)
-    TEMP_SORTED=$(mktemp)
 
     # 取得變更統計（added/deleted 行數）
     git diff --numstat "$COMMIT1" "$COMMIT2" > "$TEMP_FILES"
@@ -52,10 +51,8 @@ while true; do
             actual_filename="$old_filename"
         fi
 
-        # 從 numstat 找到對應的行數統計（使用實際檔名）
-        stats=$(grep -F "$actual_filename" "$TEMP_FILES" | awk '{print $1 " " $2}')
-        added=$(echo "$stats" | awk '{print $1}')
-        deleted=$(echo "$stats" | awk '{print $2}')
+        # exact match on filename to avoid substring collisions in numstat lookup
+        read -r added deleted < <(awk -F'\t' -v f="$actual_filename" '$3 == f {print $1, $2}' "$TEMP_FILES")
 
         # 處理 binary 檔案（numstat 顯示為 "-"）
         if [ "$added" = "-" ]; then
@@ -88,7 +85,7 @@ while true; do
         printf "%s%s %s | %s\t%s\n" "$viewed_mark" "$status_display" "$stat_display" "$display_filename" "$actual_filename"
     done > "$TEMP_LIST"
 
-    rm -f "$TEMP_FILES" "$TEMP_SORTED"
+    rm -f "$TEMP_FILES"
 
     # 檢查是否有檔案
     if [ ! -s "$TEMP_LIST" ]; then
@@ -106,8 +103,7 @@ while true; do
     #   --no-mouse: 禁用滑鼠以避免控制字符問題
     #   --with-nth=1: 只顯示第 1 欄（狀態、統計、顯示檔名），第 2 欄（實際檔名）隱藏
     #   全螢幕模式（移除 --height 參數）
-    SELECTED=$(cat "$TEMP_LIST" | \
-        "$FZF_BIN" \
+    SELECTED=$("$FZF_BIN" \
             --disabled \
             --bind 'change:first,/:enable-search+clear-query,ctrl-u:clear-query' \
             --bind 'j:down,k:up,q:abort' \
@@ -118,7 +114,7 @@ while true; do
             --no-mouse \
             --delimiter='\t' \
             --with-nth=1 \
-            --color="fg:white,bg:black,hl:cyan,fg+:black,bg+:white,hl+:blue,info:green,prompt:cyan,pointer:cyan,marker:cyan,spinner:cyan,header:white")
+            --color="fg:white,bg:black,hl:cyan,fg+:black,bg+:white,hl+:blue,info:green,prompt:cyan,pointer:cyan,marker:cyan,spinner:cyan,header:white" < "$TEMP_LIST")
 
     EXIT_CODE=$?
     rm -f "$TEMP_LIST"
@@ -148,9 +144,6 @@ while true; do
     if [ "$already_viewed" = false ]; then
         VIEWED_FILES+=("$SELECTED_FILE")
     fi
-
-    # 記錄為上次查看的檔案
-    LAST_VIEWED="$SELECTED_FILE"
 
     # 4. 執行 difftool 針對選定的檔案
     echo ""
