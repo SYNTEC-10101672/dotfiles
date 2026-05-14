@@ -113,10 +113,17 @@ gitsigns.setup({
         return
       end
 
-      local hash = vim.fn.trim(vim.fn.system(
-        string.format("git -C %s blame --porcelain -L %d,%d -- %s | head -1 | awk '{print $1}'",
+      -- parse porcelain to get both hash and the path at that commit (handles renames)
+      local blame_out = vim.fn.systemlist(
+        string.format("git -C %s blame --porcelain -L %d,%d -- %s",
           vim.fn.shellescape(file_dir), line, line, vim.fn.shellescape(abs_file))
-      ))
+      )
+      local hash = blame_out[1] and blame_out[1]:match("^(%x+)") or ""
+      local blame_rel = git_rel
+      for _, l in ipairs(blame_out) do
+        local f = l:match("^filename (.+)")
+        if f then blame_rel = f; break end
+      end
       if hash == "" or hash == NULL_SHA then
         vim.notify("Line not committed yet", vim.log.levels.WARN)
         return
@@ -125,15 +132,20 @@ gitsigns.setup({
       -- hash^ may not have this file if hash is the first commit introducing it
       vim.fn.system(
         "git -C " .. vim.fn.shellescape(file_dir) ..
-        " cat-file -e " .. vim.fn.shellescape(hash .. "^:" .. git_rel) .. " 2>/dev/null"
+        " cat-file -e " .. vim.fn.shellescape(hash .. "^:" .. blame_rel) .. " 2>/dev/null"
       )
       if vim.v.shell_error ~= 0 then
-        vim.notify("First commit of this file — no parent to diff against", vim.log.levels.INFO)
+        vim.cmd("Gedit " .. hash .. ":" .. vim.fn.fnameescape(blame_rel))
+        vim.cmd("diffthis")
+        vim.cmd("leftabove vnew")
+        vim.cmd("setlocal buftype=nofile bufhidden=wipe noswapfile")
+        vim.cmd("diffthis")
+        vim.cmd("wincmd p")
         return
       end
 
       -- open blob at hash so Gvdiffsplit diffs hash^ against hash, not the working tree
-      vim.cmd("Gedit " .. hash .. ":" .. vim.fn.fnameescape(git_rel))
+      vim.cmd("Gedit " .. hash .. ":" .. vim.fn.fnameescape(blame_rel))
       vim.cmd("Gvdiffsplit " .. hash .. "^")
     end
     map("n", "<leader>hv", blame_commit_diff, { desc = "Blame commit diff" })
