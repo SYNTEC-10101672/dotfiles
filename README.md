@@ -90,7 +90,7 @@ dotfiles/
 │   └── package.json      # plugin SDK 依賴
 ├── claude/               # Claude Code user-level 設定
 │   ├── CLAUDE.md         # 全域模板設定
-│   └── scripts/          # Claude 相關腳本（含 MCP 伺服器管理）
+│   └── scripts/          # Claude 相關腳本（通知、statusline）
 ├── scripts/              # 一般工具腳本
 │   └── ...
 ├── docs/                 # 文件目錄
@@ -171,7 +171,7 @@ nvim/                       # Neovim 配置目錄
 
 ## Claude Code 設定
 
-Claude Code 的基本設定檔，包含 CLAUDE.md 和 MCP 伺服器管理腳本。
+Claude Code 的基本設定檔，包含 CLAUDE.md、hooks 通知腳本與 statusline 腳本。
 
 ## Tmux 設定
 
