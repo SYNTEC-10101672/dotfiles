@@ -1,188 +1,159 @@
 ---
-description: Creates handover document for next AI session by consolidating remaining tasks, checking for and removing any existing HANDOVER.md first
+description: Creates handover document for next AI session — auto-detects active OpenSpec change and switches between thin-entry and full mode
 ---
 
 # Handover Command
 
-你現在要為下一個 AI session 創建工作交接文件。請依照以下步驟執行：
+你現在要為下一個 AI session 創建工作交接文件。
 
-## Step 1: 檢查並清理現有 HANDOVER.md
+## Step 1: 清理現有 HANDOVER.md
 
-1. 檢查當前工作目錄是否有 `HANDOVER.md`：
-   ```bash
-   ls -la HANDOVER.md 2>/dev/null && echo "Found" || echo "Not found"
-   ```
+```bash
+rm -f HANDOVER.md
+```
 
-2. **如果檔案存在**：
-   - 讀取檔案內容（使用 Read tool）
-   - 向用戶展示現有內容的摘要
-   - 使用 AskUserQuestion 詢問：「發現現有的 HANDOVER.md，是否要刪除並創建新的？」
-   - 如果用戶同意，執行 `rm HANDOVER.md`
+HANDOVER.md 是 session 層文件，每次交接直接覆寫。
 
-## Step 2: 收集當前上下文
+## Step 2: 偵測 Active Change
 
-並行執行以下命令收集資訊：
+```bash
+for f in openspec/changes/*/proposal.md; do [ -f "$f" ] && basename "$(dirname "$f")"; done
+```
 
-1. **Git 狀態**：
-   ```bash
-   git status
-   ```
+根據輸出決定模式：
 
-2. **最近的 commits**：
-   ```bash
-   git log --oneline -10
-   ```
+- **無輸出**（無 active change）→ 完整模式，跳至 Step 5
+- **一個 change** → 記錄名稱，薄入口模式，繼續 Step 3
+- **多個 change** → 使用 AskUserQuestion 讓使用者選擇要交接哪個 change，然後繼續 Step 3
 
-3. **當前分支資訊**：
-   ```bash
-   git branch --show-current
-   ```
+## Step 3: 同步 OpenSpec Artifacts（薄入口模式）
 
-4. **任務列表**（如果有使用 TaskList）：
-   - 使用 TaskList tool 獲取所有任務
-   - 區分已完成和未完成的任務
+在產生 HANDOVER.md 前，先同步更新持久層 artifacts。
 
-## Step 3: 分析並整理資訊
+### 3a. 更新 tasks.md 勾選狀態
 
-根據收集到的資訊，整理以下內容：
+1. 回顧本次 session 完成的工作
+2. 讀取 `<change-dir>/tasks.md`
+3. 對於本次 session 已完成的 task（`## 實作` 區塊中的 `- [ ]`），使用 Edit tool 精確替換為 `- [x]`
+4. 未完成的項目不動
 
-1. **Session Summary**（本次 session 完成了什麼）：
-   - 從 git log 分析最近的 commits
-   - 從對話歷史總結主要工作
-   - 列出已達成的目標
+### 3b. 追加 design.md 決策
 
-2. **Completed Tasks**（已完成的任務）：
-   - 從 TaskList 獲取已完成的任務
-   - 從 commits 推斷完成的工作
-   - 使用 checkbox 格式：`- [x] Task description`
+1. 回顧本次 session 是否有新的技術決策
+2. 讀取 `<change-dir>/design.md`，確認 Decisions 區段
+3. 如果有新決策，使用 Edit tool 在 `## Decisions` 區段末尾追加 `### N. 決策標題` + 說明
+4. 沒有新決策則跳過
 
-3. **Remaining Work**（剩餘工作）：
-   - 從 TaskList 獲取待完成的任務
-   - 從對話歷史找出提到但未完成的工作
-   - 按優先級排序（P0/P1/P2）
-   - 使用 checkbox 格式：`- [ ] Task description`
+### 3c. 更新 proposal.md（僅在 scope 變動時）
 
-4. **Important Context**（重要上下文）：
-   - **Recent Decisions**：關鍵技術決策、架構選擇
-   - **Blockers**：遇到的問題或阻礙
-   - **Modified Files**：列出主要修改的檔案路徑
-   - **Dependencies**：新增或更新的依賴
-   - **Notes**：任何需要注意的事項
+1. 判斷本次 session 是否變更了 scope（新增/移除/修改 capabilities）
+2. 如果有，使用 Edit tool 更新 proposal.md 對應區段
+3. 沒有變動則跳過
 
-5. **Next Steps**（下一步行動）：
-   - 明確列出下一個 AI 應該做什麼
-   - 按順序列出優先執行的任務
-   - 提供必要的 context（為什麼要做、怎麼做）
+## Step 4: 產生薄入口 HANDOVER.md
 
-## Step 4: 創建 HANDOVER.md
+使用 Write tool 創建 `HANDOVER.md`，模板如下。填入實際內容，確保總長度 ≤ 50 行。
 
-使用 Write tool 創建 `HANDOVER.md`，結構如下：
+```
+# Handover
 
-```markdown
-# Handover Document
+**Session**: <YYYY-MM-DD>
+**Active Change**: <change-name>
+**Mode**: Thin Entry（OpenSpec-aware）
 
-**Created**: YYYY-MM-DD HH:MM
-**Current Branch**: <branch-name>
-**Last Commit**: <commit-hash> - <commit-message>
+## Session 簡述
 
-## Session Summary
+<1-2 句話描述本次 session 做了什麼>
+
+## 進度
+
+- Tasks: <N>/<M> complete
+- Current: <正在處理的 task 或「全部完成」>
+
+## 本次 Session 決策
+
+- <決策 1>（無則省略此區段）
+
+## 下一步
+
+1. <下一個 task 及其要點>
+
+## Context 指引
+
+讀取以下 artifacts 恢復完整 context：
+- `openspec/changes/<change-name>/proposal.md`
+- `openspec/changes/<change-name>/design.md`
+- `openspec/changes/<change-name>/tasks.md`
+- `openspec/changes/<change-name>/specs/`
+```
+
+跳至 Step 6。
+
+## Step 5: 產生完整模式 HANDOVER.md（無 active change）
+
+收集 context：
+
+```bash
+git log --oneline -10
+git branch --show-current
+```
+
+使用 TaskList tool 獲取任務狀態（如果有）。
+
+使用 Write tool 創建 `HANDOVER.md`，模板如下。只記錄「為什麼」而非只有「什麼」。
+
+```
+# Handover
+
+**Session**: <YYYY-MM-DD>
+**Branch**: <branch-name>
+**Mode**: Full（無 active OpenSpec change）
+
+## Session 摘要
 
 <總結本次 session 的主要工作和成果>
 
-## Completed Tasks
+## 已完成工作
 
-- [x] Task 1 description
-- [x] Task 2 description
-- [x] Task 3 description
+- [x] Task 1
+- [x] Task 2
 
-## Remaining Work
+## 剩餘工作
 
-### P0 (Critical)
-- [ ] High priority task 1
-- [ ] High priority task 2
+### P0
+- [ ] ...
 
-### P1 (Important)
-- [ ] Medium priority task 1
-- [ ] Medium priority task 2
+### P1
+- [ ] ...
 
-### P2 (Nice to have)
-- [ ] Low priority task 1
+## 決策
 
-## Important Context
+- Decision: Rationale
 
-### Recent Decisions
-- Decision 1: Rationale
-- Decision 2: Rationale
+## 開放問題
 
-### Blockers
-- Blocker 1: Description and potential solution
-- Blocker 2: Description and potential solution
+- Issue（無則省略此區段）
 
-### Modified Files
-- `path/to/file1.ext` - Brief description of changes
-- `path/to/file2.ext` - Brief description of changes
+## 下一步
 
-### Dependencies
-- Added: package-name@version
-- Updated: package-name (old-ver -> new-ver)
+1. **Action**: Description
+   - Context: Why
+   - Approach: How
 
-### Notes
-- Important note 1
-- Important note 2
+<若探索已有明確方向，建議使用 /opsx:propose 正式化結論>
+```
 
-## Next Steps
+注意：不包含 Modified Files、Reference Commands、Dependencies、Links and Resources。
 
-1. **First Action**: Detailed description of what to do and why
-   - Context: Why this is important
-   - Approach: How to approach this task
-
-2. **Second Action**: Description
-   - Context: ...
-   - Approach: ...
-
-3. **Third Action**: Description
-   - Context: ...
-   - Approach: ...
-
-## Reference Commands
+## Step 6: 確認完成
 
 ```bash
-# Useful commands for the next session
-git status
-git log --oneline -10
-npm test
+ls -lh HANDOVER.md
 ```
 
-## Links and Resources
+向用戶報告 HANDOVER.md 已創建及其模式。
 
-- [Relevant Documentation](url)
-- [Related Issue/PR](url)
-```
+## 語言規範
 
-## Step 5: 確認完成
-
-1. 執行 `ls -lh HANDOVER.md` 確認檔案創建成功
-2. 向用戶報告：
-   - HANDOVER.md 已創建
-   - 檔案大小
-   - 包含的主要內容（摘要）
-3. 建議用戶：
-   - 在啟動新 session 時先讀取 HANDOVER.md
-   - 如果需要可以手動編輯補充資訊
-
-## 重要原則
-
-- **完整性**：確保所有重要資訊都被記錄
-- **可執行性**：Next Steps 要足夠具體，讓下一個 AI 可以直接開始工作
-- **優先級**：清楚標記任務優先級，避免浪費時間在次要工作
-- **語言規範**：
-  - HANDOVER.md 內容使用繁體中文
-  - 技術術語、檔案路徑、command 保持英文
-- **上下文保存**：記錄「為什麼」而非只有「什麼」，幫助下一個 AI 理解決策背景
-
-## 使用時機
-
-- 當前 session 的 context 快滿了
-- 需要切換到新的 AI session
-- 階段性工作完成，準備交接給其他人或未來的自己
-- 遇到需要暫停的長期任務
+- HANDOVER.md 內容使用繁體中文
+- 技術術語、檔案路徑、command 保持英文
