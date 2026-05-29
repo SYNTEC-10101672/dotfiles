@@ -95,5 +95,5 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-# Forward all arguments to claude
-claude "$@"
+# Forward all arguments to pinned claude v2.1.153 (GLM compatibility workaround)
+"$HOME/.local/share/claude/versions/2.1.153" "$@"
