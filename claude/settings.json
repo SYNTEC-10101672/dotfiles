@@ -67,5 +67,6 @@
   "alwaysThinkingEnabled": true,
   "tui": "fullscreen",
   "autoDreamEnabled": true,
-  "editorMode": "vim"
+  "editorMode": "vim",
+  "skipDangerousModePermissionPrompt": true
 }
