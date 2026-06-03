@@ -13,3 +13,5 @@
 ######## Python files ########
 ##############################
 *.pyc
+
+**/.claude/settings.local.json
