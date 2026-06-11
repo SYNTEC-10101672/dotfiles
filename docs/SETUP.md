@@ -1,6 +1,36 @@
 # 新機器建置指南
 
-在全新 Linux 機器上的完整建置流程，請依序執行每個步驟。
+在全新機器上的完整建置流程，請依序執行每個步驟。
+
+---
+
+## 0. zsh 安裝
+
+macOS 已預設使用 zsh，跳過此步驟。
+
+**Ubuntu / Debian：**
+
+```bash
+sudo apt-get install -y zsh
+chsh -s /usr/bin/zsh
+```
+
+**Arch Linux：**
+
+```bash
+sudo pacman -S zsh
+chsh -s /usr/bin/zsh
+```
+
+重新登入後確認：
+
+```bash
+echo $SHELL  # should output /usr/bin/zsh
+```
+
+> **注意**：Powerlevel10k 需要 Nerd Font 才能正確顯示圖示。請在終端機 emulator 中安裝 Nerd Font 並設定為預設字型：
+> - macOS iTerm2 / Ghostty：下載 [MesloLGS NF](https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k) 並在 Preferences > Profiles > Text 中設定
+> - Linux terminal emulator：同上，或使用套件管理器安裝 `ttf-meslo-nerd-font-powerlevel10k`（Arch）
 
 ---
 
@@ -74,7 +104,11 @@ sudo cp "/tmp/ripgrep-${RG_VER}-x86_64-unknown-linux-musl/rg" /usr/local/bin/rg
 
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-source ~/.bashrc
+```
+
+開新 terminal 或 `source ~/.zshrc`，然後：
+
+```bash
 nvm install 22
 nvm use 22
 nvm alias default 22
@@ -96,8 +130,10 @@ npm --version
 
 ```bash
 curl -fsSL https://bun.sh/install | bash
-source ~/.bashrc
 ```
+
+開新 terminal 或 `source ~/.zshrc`。
+
 
 驗證：
 
@@ -151,13 +187,7 @@ atuin 是 shell history 管理工具，使用官方腳本安裝：
 curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 ```
 
-安裝 `bash-preexec`（atuin 攔截指令所需）：
-
-```bash
-curl -sS https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh -o ~/.bash-preexec.sh
-```
-
-開啟新 terminal 讓 atuin 生效（`.bashrc` 會自動載入）。
+開啟新 terminal 讓 atuin 生效（`.zshrc` 會自動載入）。
 
 驗證：
 
@@ -241,7 +271,7 @@ claude plugin list
 cp ~/dotfiles/env.example ~/.env
 nano ~/.env
 chmod 600 ~/.env
-source ~/.bashrc
+source ~/.zshrc
 ```
 
 各變數說明請直接參考 `env.example` 中的註解。
@@ -255,9 +285,10 @@ source ~/.bashrc
 ```bash
 curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 6.0
 curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0
-echo 'export PATH="$HOME/.dotnet:$PATH"' >> ~/.bashrc
-source ~/.bashrc
 ```
+
+PATH 已由 `.zshrc` 管理，開新 terminal 即生效。
+
 
 ### OmniSharp（Neovim C# LSP）
 
@@ -291,7 +322,7 @@ make check
 for cmd in bash git make nvim tmux jq curl fzf tig rg fd ag node python3 opencode sshpass; do
   command -v $cmd &>/dev/null && echo "✓ $cmd" || echo "✗ $cmd: NOT FOUND"
 done
-# atuin 安裝在 ~/.atuin/bin/，需開新 terminal 或 source ~/.bashrc 後才能查到
+# atuin 安裝在 ~/.atuin/bin/，需開新 terminal 或 source ~/.zshrc 後才能查到
 ~/.atuin/bin/atuin --version &>/dev/null && echo "✓ atuin" || echo "✗ atuin: NOT FOUND"
 ```
 

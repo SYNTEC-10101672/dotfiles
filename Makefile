@@ -5,7 +5,7 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 CLAUDE_FILES := settings.json CLAUDE.md
 CLAUDE_DIRS  := commands skills scripts
 
-.PHONY: all install bashrc nvim claude opencode git tig tmux scripts uninstall check help
+.PHONY: all install bashrc zshrc nvim claude opencode git tig tmux scripts uninstall check help
 
 all: install
 
@@ -18,7 +18,8 @@ help:
 	@echo "  make check     - Check installation status"
 	@echo ""
 	@echo "Individual targets:"
-	@echo "  make bashrc    - Install bash configuration"
+	@echo "  make zshrc     - Install zsh configuration (symlinks + clone p10k/plugins)"
+	@echo "  make bashrc    - Install bash configuration (legacy, not in install)"
 	@echo "  make nvim      - Install neovim configuration"
 	@echo "  make claude    - Install Claude Code configuration"
 	@echo "  make opencode  - Install OpenCode configuration (opencode.json, package.json, commands/)"
@@ -27,8 +28,19 @@ help:
 	@echo "  make tmux      - Install tmux configuration"
 	@echo "  make scripts   - Install utility scripts to ~/bin"
 
-install: bashrc nvim claude opencode git tig tmux scripts
+install: zshrc nvim claude opencode git tig tmux scripts
 	@echo "✓ Dotfiles installed successfully"
+
+zshrc:
+	@echo "Installing zsh configuration..."
+	@ln -sf $(ROOT_DIR)/.aliases $(HOME)/.aliases
+	@ln -sf $(ROOT_DIR)/.zshrc $(HOME)/.zshrc
+	@ln -sf $(ROOT_DIR)/.p10k.zsh $(HOME)/.p10k.zsh
+	@[ -d $(HOME)/powerlevel10k ] || git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $(HOME)/powerlevel10k
+	@mkdir -p $(HOME)/.zsh
+	@[ -d $(HOME)/.zsh/zsh-autosuggestions ] || git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions $(HOME)/.zsh/zsh-autosuggestions
+	@[ -d $(HOME)/.zsh/zsh-syntax-highlighting ] || git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting $(HOME)/.zsh/zsh-syntax-highlighting
+	@echo "✓ Zsh configuration installed"
 
 bashrc:
 	@echo "Installing bash configuration..."
@@ -94,7 +106,7 @@ scripts:
 
 uninstall:
 	@echo "Removing dotfiles symlinks..."
-	@for file in .aliases .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc .tmux.conf; do \
+	@for file in .aliases .zshrc .p10k.zsh .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc .tmux.conf; do \
 			if [ -L "$(HOME)/$$file" ]; then \
 				echo "  Removing $$file"; \
 				rm "$(HOME)/$$file"; \
@@ -131,7 +143,7 @@ uninstall:
 check:
 	@echo "Checking dotfiles installation..."
 	@echo ""
-	@for file in .aliases .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc .tmux.conf; do \
+	@for file in .zshrc .p10k.zsh .aliases .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc .tmux.conf; do \
 			if [ -L "$(HOME)/$$file" ]; then \
 				target=$$(readlink "$(HOME)/$$file"); \
 				if [ "$$target" = "$(ROOT_DIR)/$$file" ]; then \
