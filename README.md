@@ -87,7 +87,8 @@ dotfiles/
 │   └── CLAUDE.md         # 專案層級指令
 ├── opencode/             # opencode 設定（symlink 到 ~/.config/opencode/）
 │   ├── opencode.json     # 主設定與 plugin 宣告
-│   └── package.json      # plugin SDK 依賴
+│   ├── package.json      # plugin SDK 依賴
+│   └── oh-my-openagent.json  # oh-my-openagent plugin 的 agent / category model 設定
 ├── claude/               # Claude Code user-level 設定
 │   ├── CLAUDE.md         # 全域模板設定
 │   └── scripts/          # Claude 相關腳本（通知、statusline）

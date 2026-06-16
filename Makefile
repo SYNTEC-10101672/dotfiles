@@ -76,6 +76,7 @@ opencode:
 	@ln -sfn $(ROOT_DIR)/claude/commands $(HOME)/.config/opencode/commands
 	@ln -sf $(ROOT_DIR)/opencode/opencode.json $(HOME)/.config/opencode/opencode.json
 	@ln -sf $(ROOT_DIR)/opencode/package.json $(HOME)/.config/opencode/package.json
+	@ln -sf $(ROOT_DIR)/opencode/oh-my-openagent.json $(HOME)/.config/opencode/oh-my-openagent.json
 	@echo "✓ OpenCode configuration installed"
 
 git:
@@ -120,7 +121,7 @@ uninstall:
 			fi; \
 		done
 	@echo "Removing OpenCode configuration symlinks..."
-	@for f in commands opencode.json package.json; do \
+	@for f in commands opencode.json package.json oh-my-openagent.json; do \
 			if [ -L "$(HOME)/.config/opencode/$$f" ]; then \
 				echo "  Removing .config/opencode/$$f"; \
 				rm "$(HOME)/.config/opencode/$$f"; \
@@ -193,7 +194,7 @@ check:
 	else \
 			echo "✗ .config/opencode/commands (not found)"; \
 	fi
-	@for f in opencode.json package.json; do \
+	@for f in opencode.json package.json oh-my-openagent.json; do \
 			if [ -L "$(HOME)/.config/opencode/$$f" ]; then \
 				target=$$(readlink "$(HOME)/.config/opencode/$$f"); \
 				if [ "$$target" = "$(ROOT_DIR)/opencode/$$f" ]; then \
