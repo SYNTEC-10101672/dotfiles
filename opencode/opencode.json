@@ -4,6 +4,13 @@
     "@slkiser/opencode-quota",
     "oh-my-openagent@latest"
   ],
+  "agent": {
+    "vision": {
+      "description": "Analyze images, screenshots, diagrams and other visual content. Use when you need to understand what is shown in an image, describe a screenshot, extract visible text or visual information, detect UI anomalies, or perform visual QA.",
+      "mode": "subagent",
+      "model": "github-copilot/gpt-5-mini"
+    }
+  },
   "experimental": {
     "quotaToast": {
       "enableToast": true,
