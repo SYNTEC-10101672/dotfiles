@@ -21,6 +21,9 @@ Thumbs.db
 *.bak
 *.backup
 
+# oh-my-opencode runtime
+.omo/
+
 # OpenCode
 .opencode/.env
 .opencode/.credentials.json
