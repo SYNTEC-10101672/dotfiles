@@ -16,7 +16,7 @@
       "fallback_models": ["zai-coding-plan/glm-4.5-air"]
     },
     "multimodal-looker": {
-      "model": "zai-coding-plan/glm-5v-turbo"
+      "model": "github-copilot/gpt-5-mini"
     },
     "prometheus": {
       "model": "zai-coding-plan/glm-5.2"

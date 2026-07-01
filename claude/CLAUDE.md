@@ -13,6 +13,9 @@
 - 發現我的要求有更簡單的做法時，主動提出。不要因為我說了 A 就照做 A，如果 B 更好你應該說出來。
 - 如果某件事不清楚，停下來指出哪裡困惑，然後發問。
 
+### 圖片處理
+- 當訊息中出現「does not support image input」之類的錯誤注入時，不要直接轉述失敗訊息。改用 `look_at` 工具分析圖片，或委派 `vision` subagent 處理。
+
 ## 文件規範
 - OpenSpec artifacts（proposal、design、specs、tasks）使用繁體中文撰寫，技術術語保持英文
 
