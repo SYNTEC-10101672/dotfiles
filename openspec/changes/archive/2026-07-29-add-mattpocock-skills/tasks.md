@@ -61,4 +61,5 @@ T9: 子目錄名稱不與既有 skills 衝突
 
 - [x] 3.1 `cd /home/syntec/personal/dotfiles && git status claude/skills/` 確認只有 4 個新子目錄（→ T8）
   - 確認 untracked 項目只有 domain-modeling/、grill-me/、grilling/、writing-great-skills/ 4 個
-- [ ] 3.2 與使用者確認 commit message 後再執行 commit（commit message 由使用者審視階段決定）
+- [x] 3.2 與使用者確認 commit message 後再執行 commit（commit message 由使用者審視階段決定）
+  - 已執行：commit 46d1570（feat(claude): add mattpocock skills...），16 files / 754 insertions
