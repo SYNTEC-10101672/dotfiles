@@ -75,11 +75,62 @@ When ready to implement, run /opsx:apply
       - Check if every artifact ID in `applyRequires` has `status: "done"` in the artifacts array
       - Stop when all `applyRequires` artifacts are done
 
-   c. **If an artifact requires user input** (unclear context):
-      - Use **AskUserQuestion tool** to clarify
-      - Then continue with creation
+   c. **When to ask the user**:
+      - Encountering a decision → use AskUserQuestion
+      - Encountering a fact but cannot find it in codebase → also use AskUserQuestion (label whether it's "external resource, please provide URL/IP" or "to be created")
+      - Never substitute a pronoun to skip the question
 
-5. **Show final status**
+5. **Fact Lookup - eliminate pronouns**
+
+   For each artifact just written (especially tasks.md), scan line-by-line to find:
+
+   **Vague references**:
+   - Demonstratives: this / that / the / some / its
+   - Under-specified concept words: controller / service / setting / function / module (without concrete filename or API name)
+   - Placeholders: <...> / appropriate / corresponding / relevant
+
+   For each vague point:
+
+   a. **Search codebase / config / docs** (grep / glob / read)
+      Priority: .env / config.*.yaml / package.json / entry files
+
+   b. **Found → inline replace**:
+      - "test controller" → "test controller (127.0.0.1:8080, config.dev.yaml)"
+      - "user service" → "src/services/user.ts createUser()"
+      - "existing router" → "src/server.ts:42"
+
+   c. **Not found → list and ask user**:
+      Use AskUserQuestion to list all not-found items at once:
+      > "The following items have no concrete value found in codebase:
+      > 1. 'X' - external resource (please provide URL/IP) / to be created / other?
+      > 2. 'Y' - ..."
+
+   d. **Cross-task shared environment facts → write into design.md `### Context` section**:
+      Avoid repeating the same IP/path in every task.
+
+6. **Self-Containment Gate - simulate fresh AI perspective**
+
+   Switch to "pretend you haven't seen the session conversation" perspective. For each task, check:
+
+   □ **Can the file to modify be located?**
+     - Concrete path (src/auth.ts) or locatable description
+       ("the service handling login, under src/services/")
+
+   □ **Is the change concrete?**
+     - Specific API / line number / change content
+     - Not verbs like "rewrite" "optimize" "improve"
+
+   □ **Is the completion criterion checkable?**
+     - The corresponding T* can be executed
+     - Or specific acceptance criteria (e.g. "calling POST /users with invalid token returns 401")
+
+   Any No → go back to Step 5 to strengthen that task
+
+   **Special note**: For "conceptual tasks" (e.g. designing new structure, new flow),
+   require concrete schema / pseudocode / file structure,
+   not just prose description.
+
+7. **Show final status**
    ```bash
    openspec status --change "<name>"
    ```
@@ -105,6 +156,9 @@ After completing all artifacts, summarize:
 **Guardrails**
 - Create ALL artifacts needed for implementation (as defined by schema's `apply.requires`)
 - Always read dependency artifacts before creating a new one
-- If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum
 - If a change with that name already exists, ask if user wants to continue it or create a new one
 - Verify each artifact file exists after writing before proceeding to next
+- Distinguish facts from decisions (inspired by Matt Pocock's grilling skill):
+  - **Fact** (environment-discoverable: file paths, API names, IP/port, existing constants) → MUST look up in codebase / config, inline concrete value, never substitute with a pronoun
+  - **Decision** (requires user judgment: algorithm choice, feature scope) → ask via AskUserQuestion
+- Prefer slowness over guessing. Never substitute a pronoun for a fact and continue.

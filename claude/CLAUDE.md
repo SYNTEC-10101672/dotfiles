@@ -45,3 +45,6 @@
 ## OpenSpec 規範
 - 產生 tasks.md 時，使用 `## 測試` / `## 實作` 雙區塊格式：`## 測試` 區塊包含 T* 項目（每項含 `> 指令：` 與 `> 預期：` 欄位），`## 實作` 區塊的每個項目以 `（→ T<n>）` 標注對應測試
 - 使用 `opsx:apply` 完成每個 task 實作後，必須呼叫 `openspec-tdd-verify` skill 執行驗證，通過才 mark `[x]`
+- 寫 tasks.md 時不可用代名詞描述環境事實，必須用具體值（例：「測試控制器」要寫成「127.0.0.1:8080 (config.dev.yaml)」）
+- design.md 應包含 `### Context` 段落，集中放跨 task 共用的環境事實（服務 URL、檔案路徑、既有 API 等）
+- 完成 `opsx:apply` 後，必須執行 `openspec-code-review`（雙軸 sub-agents）通過才能建議 archive；若 code-review 有 fix，fix 後必須重跑 Final phase tests 確認沒退化

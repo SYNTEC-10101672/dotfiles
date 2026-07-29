@@ -98,7 +98,29 @@ Implement tasks from an OpenSpec change.
    - Error or blocker encountered → report and wait for guidance
    - User interrupts
 
-7. **On completion or pause, show status**
+7. **Code Review (after Final phase passes)**
+
+   **Trigger condition**: All T* pass Final phase.
+
+   Invoke `openspec-code-review` skill to review the diff with parallel sub-agents.
+
+   **Handle findings**:
+
+   - **Standards axis CRITICAL** (violates CLAUDE.md / major Fowler smell):
+     Ask the user whether to fix. If yes → enter fix loop.
+   - **Spec axis CRITICAL** (spec requirement missing / scope creep):
+     Pause, ask the user whether to add implementation or revise spec.
+   - **WARNING / SUGGESTION**: list but don't block, let user decide.
+
+   **Fix Loop (if any CRITICAL is fixed)**:
+
+   a. Apply fix
+   b. Re-invoke `openspec-tdd-verify` skill with Final phase
+      (to avoid refactor breaking tests)
+   c. All green → proceed to Step 8
+   d. Still failing → return to fix loop
+
+8. **On completion or pause, show status**
 
    Display:
    - Tasks completed this session
