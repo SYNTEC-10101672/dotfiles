@@ -1,12 +1,4 @@
-# mattpocock-skills
-
-從 `mattpocock/skills` vendor 指定 skills 到 dotfiles 的 Claude skills 目錄，並透過既有 symlink 部署讓 opencode 可用。
-
-## Purpose
-
-提供 5 個來自 `https://github.com/mattpocock/skills` 的 productivity / engineering skills，保留 upstream 內容與 invocation 分類，且不影響既有 skills。
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: 五個 mattpocock skill 檔案存在於正確路徑
 
@@ -72,11 +64,3 @@
 #### Scenario: 子目錄名稱無衝突
 - **WHEN** 檢查新安裝的 `grill-with-docs` 子目錄名稱
 - **THEN** `grill-with-docs` 不在既有的子目錄名稱清單中
-
-### Requirement: 安裝來源可追溯
-
-系統 SHALL 保留 upstream repo URL 與對應路徑資訊，讓日後手動重新 vendor 時有明確依據；資訊可記錄於 commit message、proposal.md、design.md，或本 spec 的 requirement 內容。
-
-#### Scenario: commit message 含 upstream 資訊
-- **WHEN** 檢視 git log 此變更的 commit
-- **THEN** commit message 必須提及來源 `mattpocock/skills`（commit message 格式由 commit 階段決定，本 spec 不強制）

@@ -48,3 +48,9 @@
 - 寫 tasks.md 時不可用代名詞描述環境事實，必須用具體值（例：「測試控制器」要寫成「127.0.0.1:8080 (config.dev.yaml)」）
 - design.md 應包含 `### Context` 段落，集中放跨 task 共用的環境事實（服務 URL、檔案路徑、既有 API 等）
 - 完成 `opsx:apply` 後，必須執行 `openspec-code-review`（雙軸 sub-agents）通過才能建議 archive；若 code-review 有 fix，fix 後必須重跑 Final phase tests 確認沒退化
+
+## 領域知識規範
+- 開工前，若 repo 根目錄存在 `CONTEXT.md`，先讀取其內容
+- 輸出（issue 標題、test 名稱、refactor 提案、hypothesis）使用 `CONTEXT.md` 定義的詞彙，不漂移到同義詞
+- 若 repo 根目錄有 `CONTEXT-MAP.md`，讀取後找出與當前主題相關的 per-context `CONTEXT.md`
+- `CONTEXT.md` 不存在時靜默繼續，不報錯、不建議建立
