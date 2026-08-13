@@ -64,36 +64,39 @@ Implement tasks from an OpenSpec change.
    - Remaining tasks overview
    - Dynamic instruction from CLI
 
-5.5. **單元測試評估（apply 開始時）**
+5.5. **Unit test assessment (at apply start)**
 
-   掃描 codebase，評估哪些實作 task 值得補充單元測試（基於複雜度、分支邏輯、純函數等判斷）。
+   Fire `explore` (`run_in_background=true`) to scan the codebase and assess which implementation tasks warrant unit tests (based on complexity, branching logic, pure functions, etc.). Wait for explore results before proceeding.
 
-   若發現有價值的測試機會，使用 AskUserQuestion 詢問使用者是否補充 T* 項目至 tasks.md 的 `## 測試` 區塊。
+   If valuable test opportunities are found, use AskUserQuestion to ask the user whether to add T* items to the `## 測試` section of tasks.md.
 
-   視使用者回應：在 tasks.md 補充對應 T* 項目，或跳過繼續實作。
+   Based on user response: add corresponding T* items to tasks.md, or skip and continue implementation.
 
-6. **TDD 三階段實作流程**
+6. **TDD three-phase implementation flow**
 
-   **Red phase（實作前）**：
-   - 呼叫 `openspec-tdd-verify` skill，傳入 Red phase，執行 tasks.md `## 測試` 區塊中全部 T* 項目
-   - 確認所有 T* 尚未通過（預期 fail）
-   - 若有 T* 已通過，回報並詢問使用者是否繼續
+   **Red phase (before implementation)**:
+   - Invoke `openspec-tdd-verify` skill with Red phase; run all T* items from the `## 測試` section of tasks.md
+   - Confirm all T* are failing (expected to fail)
+   - If any T* already passes, report and ask the user whether to continue
 
-   **逐 task 實作（Green phase）**：
+   **Per-task implementation (Green phase)**:
 
-   對每個待實作的 task：
-   - 顯示目前處理的 task
-   - 進行最小化的程式碼變更
-   - 實作完成後，呼叫 `openspec-tdd-verify` skill，傳入 Green phase，執行對應的 T*（以 `→ T<n>` 標注）
-   - T* 通過後，將 tasks.md 中該實作 task 的 `- [ ]` 改為 `- [x]`
-   - 繼續下一個 task
+   For each task to implement:
+   - Show the current task being worked on
+   - Make minimal code changes
+   - After implementation, invoke `openspec-tdd-verify` skill with Green phase; run the corresponding T* (marked with `→ T<n>`)
+   - Once T* passes, change the task's `- [ ]` to `- [x]` in tasks.md
+   - Proceed to the next task
 
-   **Final phase（全部實作完成後）**：
-   - 呼叫 `openspec-tdd-verify` skill，傳入 Final phase，執行全部 T* 項目
-   - 確認所有 T* 皆通過
+   **Final phase (after all implementation complete)**:
+   - Invoke `openspec-tdd-verify` skill with Final phase; run all T* items
+   - Confirm all T* pass
 
    **Pause if:**
-   - Task is unclear → ask for clarification
+   - Task is unclear → fire `explore` (`run_in_background=true`) to research codebase context, then decide
+   - Need external API/library info → fire `librarian` (`run_in_background=true`)
+   - Stuck on a design decision → fire `oracle` for consultation
+   - Above options exhausted without resolution → ask the user
    - Implementation reveals a design issue → suggest updating artifacts
    - Error or blocker encountered → report and wait for guidance
    - User interrupts
