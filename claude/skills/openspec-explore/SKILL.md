@@ -91,6 +91,8 @@ This tells you:
 - Their names, schemas, and status
 - What the user might be working on
 
+If the user mentioned a specific change name, read its artifacts for context.
+
 ### When no change exists
 
 Think freely. When insights crystallize, you might offer:
