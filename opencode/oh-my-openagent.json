@@ -9,11 +9,11 @@
     },
     "explore": {
       "model": "github-copilot/gpt-5.6-luna",
-      "fallback_models": ["zai-coding-plan/glm-4.5-air"]
+      "fallback_models": ["zai-coding-plan/glm-4.7"]
     },
     "librarian": {
       "model": "github-copilot/gpt-5.6-luna",
-      "fallback_models": ["zai-coding-plan/glm-4.5-air"]
+      "fallback_models": ["zai-coding-plan/glm-4.7"]
     },
     "multimodal-looker": {
       "model": "github-copilot/gpt-5-mini"
@@ -48,10 +48,10 @@
       "model": "zai-coding-plan/glm-5.2"
     },
     "quick": {
-      "model": "zai-coding-plan/glm-4.5-air"
+      "model": "github-copilot/gpt-5.6-luna"
     },
     "unspecified-low": {
-      "model": "zai-coding-plan/glm-4.5-air"
+      "model": "github-copilot/gpt-5.6-luna"
     },
     "unspecified-high": {
       "model": "zai-coding-plan/glm-5.2"
