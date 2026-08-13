@@ -8,11 +8,11 @@
       "model": "zai-coding-plan/glm-5.2"
     },
     "explore": {
-      "model": "github-copilot/gpt-5.4-mini",
+      "model": "github-copilot/gpt-5.6-luna",
       "fallback_models": ["zai-coding-plan/glm-4.5-air"]
     },
     "librarian": {
-      "model": "github-copilot/gpt-5.4-mini",
+      "model": "github-copilot/gpt-5.6-luna",
       "fallback_models": ["zai-coding-plan/glm-4.5-air"]
     },
     "multimodal-looker": {
