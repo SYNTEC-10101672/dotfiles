@@ -80,6 +80,21 @@ When ready to implement, run /opsx:apply
    openspec status --change "<name>"
    ```
 
+<!-- CUSTOM: momus-plan-gate -->
+
+6. **Plan-quality gate — Momus review**
+
+   Invoke the Momus plan critic to review the generated artifacts.
+
+   ```text
+   task(subagent_type="momus", prompt="openspec/changes/<name>/")
+   ```
+
+   - **CRITICAL issues / NEEDS-REVISION**: revise the flagged artifacts, then re-invoke Momus. Loop until APPROVED.
+   - **APPROVED**: proceed to Output.
+
+<!-- /CUSTOM: momus-plan-gate -->
+
 **Output**
 
 After completing all artifacts, summarize:
