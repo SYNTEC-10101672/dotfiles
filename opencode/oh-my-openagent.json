@@ -2,10 +2,10 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "oracle": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "explore": {
       "model": "github-copilot/gpt-5.6-luna",
@@ -19,33 +19,33 @@
       "model": "github-copilot/gpt-5-mini"
     },
     "prometheus": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "metis": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "momus": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "atlas": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "sisyphus-junior": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     }
   },
   "categories": {
     "visual-engineering": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "ultrabrain": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "deep": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "artistry": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "quick": {
       "model": "github-copilot/gpt-5.6-luna"
@@ -54,10 +54,10 @@
       "model": "github-copilot/gpt-5.6-luna"
     },
     "unspecified-high": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     },
     "writing": {
-      "model": "zai-coding-plan/glm-5.2"
+      "model": "zai-coding-plan/glm-5.3"
     }
   }
 }
