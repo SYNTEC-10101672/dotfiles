@@ -1,7 +1,33 @@
-## Purpose
+# openspec-skill-command-parity Delta
 
-規範 opsx workflow 在 `claude/commands/opsx/`（slash command 進入點）與 `claude/skills/openspec-<name>/SKILL.md`（workflow 內容本體）之間的檔案分工：skill 為單一真相來源，command 為 thin wrapper；並約束保留集合與 cross-reference 的完整性。
-## Requirements
+## REMOVED Requirements
+
+### Requirement: 成對的 skill/command 檔案 SHALL 維持 body content parity
+
+**Reason**: 模型反轉 — command 不再持有 workflow 全文，改為 thin wrapper 指向 skill。雙檔等價、drift audit、10 行 delta 判定等機制隨之失效。取代於 ADDED「Thin wrapper 結構」。
+
+### Requirement: Structured output template SHALL 同時存在於 pair 的兩個檔案
+
+**Reason**: command 不再包含 output template；template 僅存在於 skill（單一真相來源）。取代於 ADDED「Skill 為單一真相來源」。
+
+### Requirement: Confirmation UX SHALL 跨 pair 一致
+
+**Reason**: 只剩一份全文（skill），無「跨檔一致」問題。
+
+### Requirement: Cross-reference style SHALL 每個檔案內部一致
+
+**Reason**: command wrapper 僅含一個指向（`openspec-<name>` skill），skill 內部 cross-reference 慣例由 ADDED 條文規範。
+
+### Requirement: Parity audit 程序 SHALL 可重現
+
+**Reason**: parity 模型移除後，pair-diff audit 程序無適用對象。新的驗證方式（wrapper 指向 + 無 dangling reference）由 ADDED 條文定義。
+
+### Requirement: 達成 parity 時 SHALL 不改 frontmatter
+
+**Reason**: 「parity edit」概念隨 parity 模型移除。frontmatter 的實質保護由 ADDED「Thin wrapper 結構」requirement 承接（明訂 command SHALL 含 `name`、`description`、`category`、`tags` frontmatter）。
+
+## MODIFIED Requirements
+
 ### Requirement: Body prose SHALL 用英文；literal format token SHALL 用英文 format identifier
 
 Skill 檔案與 command wrapper 的所有 body prose（描述、指示、解釋）SHALL 用英文撰寫。屬於 OpenSpec task-format 合約的 literal token — 特別是 section ID `## Tests` 與 `## Implementation`、field label `> Command:` 與 `> Expected:`、cross-reference marker `(→ T<n>)` — SHALL 使用英文，因為它們是 `openspec/specs/openspec-tdd-task-format/` 定義的 format identifier，英文 token 利於 model reliably match。
@@ -15,6 +41,8 @@ Skill 檔案與 command wrapper 的所有 body prose（描述、指示、解釋�
 #### Scenario: 中文 instruction body 改寫成英文
 - **WHEN** 既有 body 段落含中文描述（例如 skill 步驟用中文撰寫）
 - **THEN** 該段落 SHALL 改寫成英文，token 使用上述英文 format identifier
+
+## ADDED Requirements
 
 ### Requirement: 核心 opsx commands SHALL 為指向 skill 的 thin wrapper
 
@@ -55,4 +83,3 @@ Skill 檔案與 command wrapper 的所有 body prose（描述、指示、解釋�
 #### Scenario: apply skill 不引用 continue skill
 - **WHEN** 檢視 `claude/skills/openspec-apply-change/SKILL.md` 的 blocked-state 指引
 - **THEN** 該指引不包含 `openspec-continue-change` 字樣，且提供替代建議（如建立缺少的 artifact）
-
