@@ -98,7 +98,7 @@ Common artifact patterns:
   - The Capabilities section is critical - each capability listed will need a spec file.
 - **specs/<capability>/spec.md**: Create one spec per capability listed in the proposal's Capabilities section (use the capability name, not the change name).
 - **design.md**: Document technical decisions, architecture, and implementation approach.
-- **tasks.md**: Break down implementation into checkboxed tasks. Use the `## 測試` / `## 實作` dual-block format: the `## 測試` block lists T* items (each with `> 指令：` and `> 預期：` fields); the `## 實作` block cross-references each item with `（→ T<n>）` to its corresponding test.
+- **tasks.md**: Break down implementation into checkboxed tasks. Use the `## Tests` / `## Implementation` dual-block format: the `## Tests` block lists T* items (each with `> Command:` and `> Expected:` fields); the `## Implementation` block cross-references each item with `(→ T<n>)` to its corresponding test.
 
 For other schemas, follow the `instruction` field from the CLI output.
 

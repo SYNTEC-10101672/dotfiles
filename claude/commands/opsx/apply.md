@@ -64,14 +64,14 @@ Implement tasks from an OpenSpec change.
 
    Fire `explore` (`run_in_background=true`) to scan the codebase and assess which implementation tasks warrant unit tests (based on complexity, branching logic, pure functions, etc.). Wait for explore results before proceeding.
 
-   If valuable test opportunities are found, use AskUserQuestion to ask the user whether to add T* items to the `## 測試` section of tasks.md.
+   If valuable test opportunities are found, use AskUserQuestion to ask the user whether to add T* items to the `## Tests` section of tasks.md.
 
    Based on user response: add corresponding T* items to tasks.md, or skip and continue implementation.
 
 6. **TDD three-phase implementation flow**
 
    **Red phase (before implementation)**:
-   - Invoke `openspec-tdd-verify` skill with Red phase; run all T* items from the `## 測試` section of tasks.md
+   - Invoke `openspec-tdd-verify` skill with Red phase; run all T* items from the `## Tests` section of tasks.md
    - Confirm all T* are failing (expected to fail)
    - If any T* already passes, report and ask the user whether to continue
 

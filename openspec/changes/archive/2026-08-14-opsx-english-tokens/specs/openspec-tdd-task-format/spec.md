@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: tasks.md 測試與實作分離格式
 tasks.md SHALL 分為 `## Tests` 與 `## Implementation` 兩個頂層區塊。測試項目（T*）與實作項目分開列舉，不再使用 `> 驗證：` inline blockquote。

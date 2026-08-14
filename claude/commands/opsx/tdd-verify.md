@@ -5,8 +5,8 @@ category: Workflow
 tags: [workflow, tdd, verify]
 ---
 
-執行 tasks.md `## 測試` 區塊中 T* 項目的驗證，依結果決定是否 mark `[x]`。
+Execute verification of T* items in the tasks.md `## Tests` block; mark `[x]` based on results.
 
-**Input**: 執行階段（Red / Green / Final）與對應的 T* 編號，或從對話 context 推斷。
+**Input**: phase (Red / Green / Final) and corresponding T* numbers, or infer from context.
 
 Use the `openspec-tdd-verify` skill to execute verification.

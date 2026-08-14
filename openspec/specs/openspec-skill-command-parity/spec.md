@@ -5,7 +5,7 @@
 Prose 用語差異可接受；missing section、missing format spec、missing structured 範例不接受。
 
 #### Scenario: 格式說明同時存在於 pair 的兩個檔案
-- **WHEN** `skills/openspec-continue-change/SKILL.md` 描述 `## 測試` / `## 實作` 雙區塊 tasks.md 格式（含 token `> 指令：`、`> 預期：`、`（→ T<n>）`）
+- **WHEN** `skills/openspec-continue-change/SKILL.md` 描述 `## Tests` / `## Implementation` 雙區塊 tasks.md 格式（含 token `> Command:`、`> Expected:`、`(→ T<n>)`）
 - **THEN** `commands/opsx/continue.md` SHALL 包含一段同等描述雙區塊格式的段落，使用相同的 literal token
 
 #### Scenario: Entry-point 範例同時存在於 pair 的兩個檔案
@@ -48,19 +48,19 @@ Prose 用語差異可接受；missing section、missing format spec、missing st
 - **WHEN** `skills/openspec-apply-change/SKILL.md` 在 "blocked state" 指引中提到 continue workflow
 - **THEN** 該 reference 用 `openspec-continue-change`（不用 `/opsx:continue`）
 
-### Requirement: Body prose SHALL 用英文；literal format token SHALL 保留原貌
+### Requirement: Body prose SHALL 用英文；literal format token SHALL 用英文 format identifier
 
-成對檔案的所有 body prose（描述、指示、解釋）SHALL 用英文撰寫。屬於 OpenSpec task-format 合約的 literal token — 特別是 section ID `## 測試` 與 `## 實作`、field label `> 指令：` 與 `> 預期：`、cross-reference marker `（→ T<n>）` — SHALL 原貌保留（即中文），因為它們是 `openspec/specs/openspec-tdd-task-format/` 定義的 format identifier，不是要翻譯的 prose。
+成對檔案的所有 body prose（描述、指示、解釋）SHALL 用英文撰寫。屬於 OpenSpec task-format 合約的 literal token — 特別是 section ID `## Tests` 與 `## Implementation`、field label `> Command:` 與 `> Expected:`、cross-reference marker `(→ T<n>)` — SHALL 使用英文，因為它們是 `openspec/specs/openspec-tdd-task-format/` 定義的 format identifier，英文 token 利於 model reliably match。
 
-這個 requirement 防止 format identifier 被意外翻譯，同時讓描述 prose 統一用英文以利 upstream 相容。
+這個 requirement 確保 format identifier 與 body prose 統一用英文，同時 artifact content（tasks.md / design.md / proposal 的 prose）維持繁體中文撰寫。
 
-#### Scenario: Format identifier 在英文 prose 中保留
+#### Scenario: Format identifier 使用英文
 - **WHEN** 成對檔案描述 tasks.md 格式
-- **THEN** 描述用英文撰寫，但 literal token `## 測試`、`## 實作`、`> 指令：`、`> 預期：`、`（→ T<n>）` 在 code span 或 code block 中原貌出現
+- **THEN** 描述用英文撰寫，literal token `## Tests`、`## Implementation`、`> Command:`、`> Expected:`、`(→ T<n>)` 在 code span 或 code block 中使用英文
 
-#### Scenario: 中文 prose 改寫成英文
-- **WHEN** 既有 body 段落含中文描述（例如 `繼續` 或 `使用` 開頭的指示句）
-- **THEN** 該段落 SHALL 改寫成英文，僅 literal format token 按上述規則保留
+#### Scenario: 中文 instruction body 改寫成英文
+- **WHEN** 既有 body 段落含中文描述（例如 skill 步驟用中文撰寫）
+- **THEN** 該段落 SHALL 改寫成英文，token 使用上述英文 format identifier
 
 ### Requirement: 達成 parity 時 SHALL 不改 frontmatter
 
@@ -89,4 +89,3 @@ Parity audit 是具體、可重現的程序 — 不是判斷題。維護者 SHAL
 #### Scenario: Drift 嚴重度分類 — content drift
 - **WHEN** audit diff 顯示 missing section、missing format spec 或 missing structured template
 - **THEN** 該 pair 分類為 `DRIFTED`，MUST 透過新的 openspec change reconcile
-

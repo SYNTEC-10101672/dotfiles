@@ -34,7 +34,7 @@ for f in openspec/changes/*/proposal.md; do [ -f "$f" ] && basename "$(dirname "
 
 1. 回顧本次 session 完成的工作
 2. 讀取 `<change-dir>/tasks.md`
-3. 對於本次 session 已完成的 task（`## 實作` 區塊中的 `- [ ]`），使用 Edit tool 精確替換為 `- [x]`
+3. 對於本次 session 已完成的 task（`## Implementation` 區塊中的 `- [ ]`），使用 Edit tool 精確替換為 `- [x]`
 4. 未完成的項目不動
 
 ### 3b. 追加 design.md 決策
