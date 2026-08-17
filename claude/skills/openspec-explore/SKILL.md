@@ -288,3 +288,4 @@ But this summary is optional. Sometimes the thinking IS the value.
 - **Do visualize** - A good diagram is worth many paragraphs
 - **Do explore the codebase** - Ground discussions in reality
 - **Do question assumptions** - Including the user's and your own
+- **Do capture domain vocabulary** - When a term gets a precise agreed definition, write it into the project's `CONTEXT.md` right away (format per `/domain-modeling`'s CONTEXT-FORMAT.md; create the file lazily if absent)

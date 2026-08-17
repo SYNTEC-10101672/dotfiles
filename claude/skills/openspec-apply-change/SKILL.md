@@ -64,14 +64,6 @@ Implement tasks from an OpenSpec change.
    - Remaining tasks overview
    - Dynamic instruction from CLI
 
-5.5. **Unit test assessment (at apply start)**
-
-   Fire `explore` (`run_in_background=true`) to scan the codebase and assess which implementation tasks warrant unit tests (based on complexity, branching logic, pure functions, etc.). Wait for explore results before proceeding.
-
-   If valuable test opportunities are found, use AskUserQuestion to ask the user whether to add T* items to the `## Tests` section of tasks.md.
-
-   Based on user response: add corresponding T* items to tasks.md, or skip and continue implementation.
-
 6. **TDD three-phase implementation flow**
 
    **Red phase (before implementation)**:

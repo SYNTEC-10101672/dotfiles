@@ -21,6 +21,9 @@
 ## 文件規範
 - OpenSpec artifacts（proposal、design、specs、tasks）使用繁體中文撰寫，技術術語保持英文
 
+## Skills 維護規範
+- 修改或新增任何 agent skill（SKILL.md 及其附屬檔案）前，必須先載入 `/writing-great-skills`
+
 ## 程式碼規範
 
 ### 讀後再改

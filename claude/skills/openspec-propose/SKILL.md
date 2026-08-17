@@ -75,6 +75,20 @@ I'll create a change with artifacts:
       - Encountering a fact but cannot find it in codebase → also use AskUserQuestion (label whether it's "external resource, please provide URL/IP" or "to be created")
       - Never substitute a pronoun to skip the question
 
+4.5. **Test contract (T\*) — generated with tasks.md**
+
+   When creating the `tasks.md` artifact, also produce a `## Tests` section with T\* items — the acceptance contract — so they pass through the Momus gate and user review together with all other artifacts (never added later at apply time):
+
+   ```
+   ## Tests
+
+   - [ ] T1: <verifiable statement>
+     > Command: <exact shell command>
+     > Expected: <binary observable output>
+   ```
+
+   Format MUST be compatible with `openspec-tdd-verify` (Command/Expected blockquote fields). For docs-only changes with nothing command-verifiable, record the exemption reason in tasks.md instead of inventing placeholder commands.
+
 5. **Fact Lookup - eliminate pronouns**
 
    For each artifact just written (especially tasks.md), scan line-by-line to find:
@@ -102,6 +116,9 @@ I'll create a change with artifacts:
 
    d. **Cross-task shared environment facts → write into design.md `### Context` section**:
       Avoid repeating the same IP/path in every task.
+
+   e. **Domain vocabulary → write into CONTEXT.md immediately**:
+      When a lookup or artifact-writing discussion pins down a domain term, write it into the project's `CONTEXT.md` right away (format per `/domain-modeling`'s CONTEXT-FORMAT.md; create the file lazily if absent). Do not batch terms to the end of the session.
 
 6. **Self-Containment Gate**
 
