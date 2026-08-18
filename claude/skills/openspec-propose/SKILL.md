@@ -77,7 +77,7 @@ I'll create a change with artifacts:
 
 4.5. **Test contract (T\*) — generated with tasks.md**
 
-   When creating the `tasks.md` artifact, also produce a `## Tests` section with T\* items — the acceptance contract — so they pass through the Momus gate and user review together with all other artifacts (never added later at apply time):
+   When creating the `tasks.md` artifact, also produce a `## Tests` section with T\* items — the acceptance contract — so they pass through the artifact review gate and user review together with all other artifacts (never added later at apply time):
 
    ```
    ## Tests
@@ -147,20 +147,17 @@ I'll create a change with artifacts:
    openspec status --change "<name>"
    ```
 
-<!-- CUSTOM: momus-plan-gate -->
+<!-- CUSTOM: artifact-review-gate -->
 
-8. **Plan-quality gate — Momus review**
+8. **Artifact review gate**
 
-   Invoke the Momus plan critic to review the generated artifacts.
+   Invoke the `openspec-artifact-review` skill with the change directory `openspec/changes/<name>/` as input (spawn a general agent with that skill loaded — its brief is self-contained).
 
-   ```text
-   task(subagent_type="momus", prompt="openspec/changes/<name>/")
-   ```
+   - **[OKAY]**: proceed to Output.
+   - **[ITERATE]**: revise the flagged artifacts, then re-invoke the review. Auto-fix at most 2 rounds; if the third review still fails, stop and present the issues to the user.
+   - **[REJECT]**: present the issues to the user directly.
 
-   - **CRITICAL issues / NEEDS-REVISION**: revise the flagged artifacts, then re-invoke Momus. Loop until APPROVED.
-   - **APPROVED**: proceed to Output.
-
-<!-- /CUSTOM: momus-plan-gate -->
+<!-- /CUSTOM: artifact-review-gate -->
 
 **Output**
 
