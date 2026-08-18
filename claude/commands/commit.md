@@ -79,7 +79,7 @@ description: Interactive commit workflow - reviews changes, checks coding style,
      - 不使用句號結尾
      - 使用祈使語氣（add, fix, update）
    - **參考最近的 commits**：執行 `git log --oneline -10` 觀察專案的 commit message 風格
-   - **不包含署名**：遵循 CLAUDE.md，不添加「by Claude」等署名（Co-Authored-By 會自動加在 body）
+   - **不添加 AI 署名 trailer**：commit message 不含任何 AI 署名（attribution 已由 settings.json 全域隱藏）
 
 3. **詢問用戶確認**：
    - 展示草擬的 commit message
@@ -91,8 +91,6 @@ description: Interactive commit workflow - reviews changes, checks coding style,
      ```bash
      git commit -m "$(cat <<'EOF'
      <commit message>
-
-     Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
      EOF
      )"
      ```
@@ -101,7 +99,7 @@ description: Interactive commit workflow - reviews changes, checks coding style,
 
 ## 重要原則
 
-- **遵循 CLAUDE.md 規則**：commit 前需經用戶確認
+- **commit 前需經用戶確認**：展示 commit message 並經用戶同意後才執行
 - **每個階段都與用戶互動**：不要自動執行完所有階段
 - **語言規範**：
   - 與用戶溝通使用繁體中文
