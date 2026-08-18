@@ -1,12 +1,6 @@
-# mattpocock-skills
+# Delta Spec: mattpocock-skills
 
-從 `mattpocock/skills` vendor 指定 skills 到 dotfiles 的 Claude skills 目錄，並透過既有 symlink 部署讓 opencode 可用。
-
-## Purpose
-
-提供 5 個來自 `https://github.com/mattpocock/skills` 的 productivity / engineering skills，保留 upstream 內容與 invocation 分類，且不影響既有 skills。
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: 五個 mattpocock skill 檔案存在於正確路徑
 
@@ -33,7 +27,7 @@
 
 #### Scenario: 舊 skill 目錄與 GLOSSARY 不存在
 - **WHEN** 檢查 `/home/syntec/personal/dotfiles/claude/skills/`
-- **THEN** 必須沒有被取代的舊 skill 子目錄（已 rename 為 `writing-for-agents`）；`writing-for-agents/` 內必須沒有 `GLOSSARY.md`（新版已將定義 inline，glossary 不再存在）
+- **THEN** 必須沒有 `writing-great-skills/` 子目錄；`writing-for-agents/` 內必須沒有 `GLOSSARY.md`（新版已將定義 inline，glossary 不再存在）
 
 ### Requirement: Skill 透過 symlink 即時可被 opencode 偵測
 
@@ -71,20 +65,12 @@
 
 ### Requirement: 不影響既有 skills
 
-`dotfiles/claude/skills/` 下的既有 skill 目錄（`openspec-*` 系列、`tutoring`、`openspec-code-review`，以及 `grill-me`、`grilling`、`writing-for-agents`、`domain-modeling`、`grill-with-docs` 5 個 mattpocock skill）MUST NOT 被修改、刪除、或重新命名，除非有明確的 OpenSpec 變更提案授權（舊版 writing skill → `writing-for-agents` 的 rename 已由專門的 OpenSpec 變更授權）。
+`dotfiles/claude/skills/` 下的既有 skill 目錄（`openspec-*` 系列、`tutoring`、`openspec-code-review`，以及 `grill-me`、`grilling`、`writing-for-agents`、`domain-modeling`、`grill-with-docs` 5 個 mattpocock skill）MUST NOT 被修改、刪除、或重新命名，除非有明確的 OpenSpec 變更提案授權（`writing-great-skills` → `writing-for-agents` 的 rename 即由 `replace-writing-great-skills` 變更授權）。
 
 #### Scenario: 既有 skills 完整保留
 - **WHEN** 執行 `ls /home/syntec/personal/dotfiles/claude/skills/`
-- **THEN** 必須看到 `grill-me`、`grilling`、`writing-for-agents`、`domain-modeling`、`grill-with-docs` 5 個 mattpocock skill 目錄全部存在，且被取代的舊 skill 目錄不再出現（已由授權變更改名）
+- **THEN** 必須看到 `grill-me`、`grilling`、`writing-for-agents`、`domain-modeling`、`grill-with-docs` 5 個 mattpocock skill 目錄全部存在，且 `writing-great-skills` 不再出現（已由授權變更改名）
 
 #### Scenario: 子目錄名稱無衝突
 - **WHEN** 檢查 `dotfiles/claude/skills/` 的子目錄名稱清單
 - **THEN** 不得有重複名稱（新增目錄不得與既有目錄同名）
-
-### Requirement: 安裝來源可追溯
-
-系統 SHALL 保留 upstream repo URL 與對應路徑資訊，讓日後手動重新 vendor 時有明確依據；資訊可記錄於 commit message、proposal.md、design.md，或本 spec 的 requirement 內容。
-
-#### Scenario: commit message 含 upstream 資訊
-- **WHEN** 檢視 git log 此變更的 commit
-- **THEN** commit message 必須提及來源 `mattpocock/skills`（commit message 格式由 commit 階段決定，本 spec 不強制）
