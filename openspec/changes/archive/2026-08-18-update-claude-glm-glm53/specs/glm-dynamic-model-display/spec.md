@@ -1,10 +1,4 @@
-# GLM Dynamic Model Display
-
-## Purpose
-
-定義 `claude-code-statusline` 在 GLM proxy 模式下動態解析並顯示實際 GLM model 名稱的行為規格。
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: statusline 動態解析 GLM model 名稱
 GLM 模式下，statusline SHALL 根據當前 model tier 動態顯示對應的 GLM model 名稱，而非使用靜態環境變數。解析邏輯如下：
