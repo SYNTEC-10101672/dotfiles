@@ -1,5 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
+  "claude_code": {
+    "plugins": false,
+    "skills": false,
+    "commands": false
+  },
   "agents": {
     "sisyphus": {
       "model": "zai-coding-plan/glm-5.3"
