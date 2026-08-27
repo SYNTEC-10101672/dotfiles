@@ -117,8 +117,8 @@ I'll create a change with artifacts:
    d. **Cross-task shared environment facts → write into design.md `### Context` section**:
       Avoid repeating the same IP/path in every task.
 
-   e. **Domain vocabulary → write into CONTEXT.md immediately**:
-      When a lookup or artifact-writing discussion pins down a domain term, write it into the project's `CONTEXT.md` right away (format per `/domain-modeling`'s CONTEXT-FORMAT.md; create the file lazily if absent). Do not batch terms to the end of the session.
+   e. **Domain vocabulary → resolve via domain-modeling, then write into CONTEXT.md**:
+      When a lookup or artifact-writing discussion pins down a domain term, invoke the `domain-modeling` skill and run its challenge procedure (challenge fuzzy terms → stress-test with concrete scenarios → resolve). Only once the term is resolved, write it into the project's `CONTEXT.md` using the domain-modeling skill's `CONTEXT-FORMAT.md` (create the file lazily if absent). If you cannot invoke the skill, read the `domain-modeling` skill's `SKILL.md` and `CONTEXT-FORMAT.md` — they live in the same skills directory as this skill — first, then write. Never write on first mention — a term is captured only after it has been challenged and agreed. Once resolved, capture it in the same step rather than batching terms to the end of the session.
 
 6. **Self-Containment Gate**
 
