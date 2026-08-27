@@ -3,7 +3,8 @@
   "claude_code": {
     "plugins": false,
     "skills": false,
-    "commands": false
+    "commands": false,
+    "hooks": false
   },
   "agents": {
     "sisyphus": {

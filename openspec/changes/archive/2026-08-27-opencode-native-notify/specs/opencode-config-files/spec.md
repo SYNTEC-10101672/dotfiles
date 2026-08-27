@@ -1,10 +1,6 @@
-# Spec: Opencode Config Files
+# Delta Spec: opencode-config-files
 
-## Purpose
-
-Define requirements for opencode configuration files managed in dotfiles, ensuring `opencode.json`, `package.json`, `oh-my-openagent.json`, `plugins/`, and `scripts/` are version-controlled and deployed via symlinks as the single source of truth.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: dotfiles 包含 opencode 設定檔
 `dotfiles/opencode/` 目錄 SHALL 包含 `opencode.json`、`package.json`、`plugins/notify.ts`、`scripts/notify-stop.sh` 與 `scripts/notify-waiting.sh`，作為 opencode 設定的唯一 source of truth。

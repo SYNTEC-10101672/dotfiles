@@ -77,6 +77,13 @@ opencode:
 	@ln -sf $(ROOT_DIR)/opencode/opencode.json $(HOME)/.config/opencode/opencode.json
 	@ln -sf $(ROOT_DIR)/opencode/package.json $(HOME)/.config/opencode/package.json
 	@ln -sf $(ROOT_DIR)/opencode/oh-my-openagent.json $(HOME)/.config/opencode/oh-my-openagent.json
+	@for d in plugins scripts; do \
+			if [ -e "$(HOME)/.config/opencode/$$d" ] && [ ! -L "$(HOME)/.config/opencode/$$d" ]; then \
+				echo "⚠ .config/opencode/$$d exists and is not a symlink — remove it manually and re-run"; \
+			else \
+				ln -sfn $(ROOT_DIR)/opencode/$$d $(HOME)/.config/opencode/$$d; \
+			fi; \
+		done
 	@echo "✓ OpenCode configuration installed"
 
 git:
@@ -121,7 +128,7 @@ uninstall:
 			fi; \
 		done
 	@echo "Removing OpenCode configuration symlinks..."
-	@for f in commands opencode.json package.json oh-my-openagent.json; do \
+	@for f in commands opencode.json package.json oh-my-openagent.json plugins scripts; do \
 			if [ -L "$(HOME)/.config/opencode/$$f" ]; then \
 				echo "  Removing .config/opencode/$$f"; \
 				rm "$(HOME)/.config/opencode/$$f"; \
@@ -194,7 +201,7 @@ check:
 	else \
 			echo "✗ .config/opencode/commands (not found)"; \
 	fi
-	@for f in opencode.json package.json oh-my-openagent.json; do \
+	@for f in opencode.json package.json oh-my-openagent.json plugins scripts; do \
 			if [ -L "$(HOME)/.config/opencode/$$f" ]; then \
 				target=$$(readlink "$(HOME)/.config/opencode/$$f"); \
 				if [ "$$target" = "$(ROOT_DIR)/opencode/$$f" ]; then \
