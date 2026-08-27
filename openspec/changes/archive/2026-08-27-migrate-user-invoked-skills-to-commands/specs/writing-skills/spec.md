@@ -1,12 +1,8 @@
-# writing-skills
+# Delta Spec: writing-skills
 
-三個 writing skills（`writing-fragments` / `writing-shape` / `writing-beats`）以 slash commands 形式存在於 `claude/commands/`，並透過既有 symlink 部署到 Claude Code 與 OpenCode。
+三個 writing skills（`writing-fragments` / `writing-shape` / `writing-beats`）從 `claude/skills/` 遷移至 `claude/commands/` slash commands，user-invoked 語意改由 command 機制保證。
 
-## Purpose
-
-提供 3 個源自 `https://github.com/mattpocock/skills` main 分支 `skills/in-progress/` 的 writing commands（`writing-fragments`、`writing-shape`、`writing-beats`），保留 upstream 內容（允許 frontmatter 轉換與 `$ARGUMENTS` 行兩項偏離），user-invoked 語意由 slash command 機制保證。
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: 三個 writing skill 檔案存在於正確路徑
 
@@ -51,3 +47,9 @@
 #### Scenario: command 檔不含 skill 殘留標記
 - **WHEN** 對 3 個 command 檔執行 `grep -l "disable-model-invocation" claude/commands/writing-*.md`
 - **THEN** 無匹配（user-invoked 由 command 機制保證，無需 flag）
+
+## REMOVED Requirements
+
+### Requirement: 不影響既有 skills
+**Reason**: 此 requirement 保護的安裝一次性 context（vendor 三個 skills 到 `claude/skills/`）已結束；遷移後此 capability 的檔案不在 `claude/skills/`，對 skills 目錄的保護由 `mattpocock-skills` capability 的對應 requirement 涵蓋。
+**Migration**: 無需遷移 — 對 `claude/skills/` 的完整性要求由 `mattpocock-skills` spec 繼續規範。
