@@ -68,6 +68,19 @@ make check
 - `sshpass` — 透過密碼 SSH（CNC 硬體控制腳本使用）
 - `silversearcher-ag` — 快速全文搜尋（`ag` 指令，Neovim 備用搜尋工具）
 
+安裝 gitleaks（OpenCode secret guard 使用；未安裝 gitleaks 時，OpenCode 的 guard plugin 會拒絕所有 AI 的 git commit（fail-closed），寧可擋掉也不讓防護靜默消失）：
+
+```bash
+# gitleaks（從 releases page 取得最新版本）
+GITLEAKS_VER=<latest version from https://github.com/gitleaks/gitleaks/releases>
+mkdir -p ~/.local/bin
+curl -sL -o /tmp/gitleaks.tar.gz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VER}/gitleaks_${GITLEAKS_VER}_linux_x64.tar.gz"
+tar -xzf /tmp/gitleaks.tar.gz -C ~/.local/bin gitleaks
+gitleaks version
+```
+
+確認 `~/.local/bin` 已加入 `PATH`，讓後續的 OpenCode guard plugin 能找到 gitleaks。
+
 若系統套件版本過舊或不存在，`fzf` 可從 source 安裝：
 
 ```bash
@@ -319,7 +332,7 @@ make check
 確認所有必要工具已安裝：
 
 ```bash
-for cmd in bash git make nvim tmux jq curl fzf tig rg fd ag node python3 opencode sshpass; do
+for cmd in bash git make nvim tmux jq curl fzf tig rg fd ag node python3 opencode sshpass gitleaks; do
   command -v $cmd &>/dev/null && echo "✓ $cmd" || echo "✗ $cmd: NOT FOUND"
 done
 # atuin 安裝在 ~/.atuin/bin/，需開新 terminal 或 source ~/.zshrc 後才能查到

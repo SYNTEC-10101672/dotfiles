@@ -89,7 +89,7 @@ dotfiles/
 │   ├── opencode.json     # 主設定與 plugin 宣告
 │   ├── package.json      # plugin SDK 依賴
 │   ├── oh-my-openagent.json  # oh-my-openagent plugin 的 agent / category model 設定
-│   ├── plugins/          # opencode native plugins（notify.ts：tmux 完成通知）
+│   ├── plugins/          # opencode native plugins（notify.ts：tmux 完成通知、guard.ts：金鑰洩漏防護：gitleaks staged 掃描 + fail-closed）
 │   └── scripts/          # 通知 scripts（notify-stop / notify-waiting，tmux @claude_state + BEL）
 ├── claude/               # Claude Code user-level 設定
 │   ├── CLAUDE.md         # 全域模板設定
@@ -409,6 +409,7 @@ make uninstall
 - Tig 2.0+（可選，用於 Git 圖形介面）
 - fzf（必需，用於 Tig 互動式檔案選擇器）
 - jq（必需，用於 Claude Code statusline JSON 解析）
+- gitleaks（必需，OpenCode secret guard 掃描；未安裝時 AI 的 git commit 會被 fail-closed 擋下）
 
 新機器完整建置指引請參考 [docs/SETUP.md](docs/SETUP.md)。
 

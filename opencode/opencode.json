@@ -1,5 +1,17 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "read": {
+      "*": "allow",
+      "**/.env": "deny",
+      "**/.env.*": "deny",
+      "**/.credentials.json": "deny",
+      "**/.env.example": "allow"
+    },
+    "bash": {
+      "git push *": "ask"
+    }
+  },
   "plugin": [
     "@slkiser/opencode-quota",
     "oh-my-openagent@latest"
