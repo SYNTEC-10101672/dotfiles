@@ -3,9 +3,7 @@
 ## Purpose
 
 Define requirements for the new machine setup guide (`docs/SETUP.md` and related documentation), ensuring AI agents can follow it linearly to configure a complete development environment from scratch.
-
 ## Requirements
-
 ### Requirement: SETUP.md 涵蓋完整新機器建置流程
 `docs/SETUP.md` SHALL 涵蓋以下所有步驟，並以此順序呈現：
 1. Clone repository 並執行 `make install`
@@ -15,14 +13,17 @@ Define requirements for the new machine setup guide (`docs/SETUP.md` and related
 5. 安裝 neovim（若系統版本不足）
 6. 安裝 atuin
 7. 安裝 opencode 並執行 `make opencode`
-8. 安裝 Claude Code CLI 並安裝所有 enabled plugins
-9. 設定 `~/.env`（從 `env.example` 複製並編輯）
-10. Optional：安裝 .NET SDK 與 OmniSharp（C# 開發用）
-11. 執行驗證（`make check` + 套件 check script）
+8. 設定 `~/.env`（從 `env.example` 複製並編輯）
+9. Optional：安裝 .NET SDK 與 OmniSharp（C# 開發用）
+10. 執行驗證（`make check` + 套件 check script）
 
 #### Scenario: AI 可線性執行 SETUP.md
 - **WHEN** AI 在全新 Linux 機器上閱讀 `docs/SETUP.md`
 - **THEN** AI SHALL 能夠從第一步到最後一步依序執行，不需跳回前面步驟或參考其他文件
+
+#### Scenario: 不包含 Claude Code 安裝步驟
+- **WHEN** 檢視 `docs/SETUP.md` 全文
+- **THEN** 不存在「安裝 Claude Code CLI」或 `claude plugin` 相關步驟
 
 ### Requirement: 套件安裝指令不綁定特定發行版
 SETUP.md 中的套件安裝說明 SHALL NOT 指定特定套件管理器（apt、pacman 等），改以描述需求或提供 distro-agnostic 安裝 script。
@@ -45,9 +46,10 @@ SETUP.md 的 Optional 段落 SHALL 只包含 OmniSharp（含 .NET SDK 前置條�
 - **WHEN** AI 閱讀 SETUP.md 的 Optional 段落
 - **THEN** SHALL 只看到 OmniSharp 相關安裝說明
 
-### Requirement: `.claude/CLAUDE.md` 包含 setup 入口
-Project-level `.claude/CLAUDE.md` SHALL 包含一個段落，明確說明新機器建置時應參考 `docs/SETUP.md`。
+### Requirement: repo root `AGENTS.md` 包含 setup 入口
+repo root `AGENTS.md` SHALL 包含一個段落，明確說明新機器建置時應參考 `docs/SETUP.md`。
 
 #### Scenario: AI 開始新機器建置
-- **WHEN** AI 讀取 `.claude/CLAUDE.md` 並需要設定新機器
+- **WHEN** AI 讀取 root `AGENTS.md` 並需要設定新機器
 - **THEN** SHALL 能夠找到 `docs/SETUP.md` 的參考連結
+

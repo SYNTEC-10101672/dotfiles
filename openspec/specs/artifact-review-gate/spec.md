@@ -5,9 +5,7 @@ propose 階段的 artifact 審查門檻，由 `openspec-artifact-review` skill �
 ## Purpose
 
 定義 `openspec-propose` 完成 artifacts 後的 gate 審查契約：審查者（`openspec-artifact-review` skill spawn 的一般 agent）只找 blocker 不做設計評論、以本地 codebase 驗證 reference、輸出三值 verdict，修訂由主 AI 執行。
-
 ## Requirements
-
 ### Requirement: 審查準則為 blocker-only
 
 `openspec-artifact-review` skill 的審查準則 SHALL 移植 Momus 的 blocker-finder 紀律：approval bias（有疑慮時傾向通過）、只將 true blocker 列為問題（referenced 檔案不存在、任務完全無法起頭、artifacts 內部矛盾使計畫無法遵循）、不評論設計優劣或 edge case 完整度。單次 ITERATE 或 REJECT SHALL 最多列 3 個 issues。
@@ -42,7 +40,7 @@ propose 階段的 artifact 審查門檻，由 `openspec-artifact-review` skill �
 
 #### Scenario: 引用不存在的檔案被擋下
 
-- **WHEN** design.md 引用 `claude/skills/nonexistent/SKILL.md` 作為依據
+- **WHEN** design.md 引用 `opencode/skills/nonexistent/SKILL.md` 作為依據
 - **THEN** 審查者以本地檔案系統確認不存在後，列為 blocker issue
 
 #### Scenario: 不使用外部查證
@@ -81,3 +79,4 @@ verdict SHALL 使用 `[OKAY]` / `[ITERATE]` / `[REJECT]` 三值，發起端（`o
 
 - **WHEN** 主 AI 修訂 tasks.md 後重新送審
 - **THEN** 審查者讀到的是 disk 上的新版內容，verdict 基於新版判定
+

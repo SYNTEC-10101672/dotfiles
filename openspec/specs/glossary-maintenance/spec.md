@@ -5,9 +5,7 @@ CONTEXT.md 領域詞彙表的維護時機規則：explore / propose 階段即時
 ## Purpose
 
 規範 `CONTEXT.md` 領域詞彙表在各 openspec 工作流階段的維護責任：explore 與 propose 階段即時寫入、apply 階段不中斷任務執行，並界定 `domain-modeling` skill 的產出範圍僅限 glossary、不含 ADR。
-
 ## Requirements
-
 ### Requirement: apply 前階段即時維護 CONTEXT.md
 
 `openspec-explore` 與 `openspec-propose` 在各自階段釐清領域詞彙時，MUST 即時寫入該專案的 `CONTEXT.md`（依 `domain-modeling` 的 CONTEXT-FORMAT.md 格式；檔案不存在時 lazily 建立）。`grill` 階段經 `grill-with-docs` → `domain-modeling` 既有行為維持不變。
@@ -37,10 +35,11 @@ CONTEXT.md 領域詞彙表的維護時機規則：explore / propose 階段即時
 
 #### Scenario: domain-modeling 無 ADR 引用
 
-- **WHEN** 檢視 `claude/skills/domain-modeling/SKILL.md`
+- **WHEN** 檢視 `opencode/skills/domain-modeling/SKILL.md`
 - **THEN** 內容不含任何 ADR 相關段落或連結
 
 #### Scenario: grill-with-docs 描述與行為一致
 
-- **WHEN** 檢視 `claude/skills/grill-with-docs/SKILL.md` 的 description
+- **WHEN** 檢視 `opencode/commands/grill-with-docs.md` 的 frontmatter description
 - **THEN** 不含 ADR 字樣，僅保留 glossary（CONTEXT.md）維護
+

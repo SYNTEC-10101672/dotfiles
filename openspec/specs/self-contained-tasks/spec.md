@@ -4,10 +4,8 @@
 
 ## Purpose
 
-確保 `opsx:propose` 產出的 tasks.md 不含代名詞、所有環境事實用具體值,讓 fresh AI session (無 session context) 能獨立讀完直接執行。本規範也覆蓋 `~/.claude/CLAUDE.md` 中相關的 OpenSpec 規範。
-
+確保 `opsx:propose` 產出的 tasks.md 不含代名詞、所有環境事實用具體值,讓 fresh AI session (無 session context) 能獨立讀完直接執行。本規範也覆蓋全域指示檔 `opencode/AGENTS.md` 中相關的 OpenSpec 規範。
 ## Requirements
-
 ### Requirement: Propose 階段必須區分 fact 與 decision
 
 `openspec-propose` 在產出 artifact 時,MUST 區分「環境可查的事實(fact)」與「需要使用者決定的決策(decision)」:
@@ -80,16 +78,30 @@
 #### Scenario: 抽象 task 被抓出補強
 
 - **WHEN** Gate 發現某個 task 寫「重寫 handover 邏輯」(無具體檔案、行號、API)
-- **THEN** 該 task MUST 被退回 Fact Lookup 補強,補上具體檔案路徑(如 `claude/commands/handover.md`)、變更前後內容、驗收條件
+- **THEN** 該 task MUST 被退回 Fact Lookup 補強,補上具體檔案路徑(如 `opencode/commands/handover.md`)、變更前後內容、驗收條件
 
-### Requirement: CLAUDE.md 必須記錄 self-containment 規範
+### Requirement: AGENTS.md 必須記錄 self-containment 規範
 
-`~/.claude/CLAUDE.md` 的「OpenSpec 規範」段(第 45 行起)MUST 新增以下兩條規範:
+全域指示檔 `opencode/AGENTS.md`（部署為 `~/.config/opencode/AGENTS.md`）的「OpenSpec 規範」段 MUST 包含以下兩條規範：
 
-1. **禁代名詞**:寫 tasks.md 時不可用代名詞描述環境事實,必須用具體值(例:「測試控制器」要寫成「127.0.0.1:8080 (config.dev.yaml)」)
-2. **design.md Context 段**:design.md 應包含 `### Context` 段落,集中放跨 task 共用的環境事實(服務 URL、檔案路徑、既有 API 等)
+1. **禁代名詞**：寫 tasks.md 時不可用代名詞描述環境事實，必須用具體值（例：「測試控制器」要寫成「127.0.0.1:8080 (config.dev.yaml)」）
+2. **design.md Context 段**：design.md 應包含 `### Context` 段落，集中放跨 task 共用的環境事實（服務 URL、檔案路徑、既有 API 等）
 
-#### Scenario: CLAUDE.md 包含兩條新規範
-
-- **WHEN** 讀取 `~/.claude/CLAUDE.md` 的「OpenSpec 規範」段
+#### Scenario: AGENTS.md 包含兩條規範
+- **WHEN** 讀取 `opencode/AGENTS.md` 的「OpenSpec 規範」段
 - **THEN** MUST 可見「禁代名詞」與「design.md Context 段」兩條規範文字
+
+### Requirement: 全域指示檔包含 OpenSpec TDD 規範
+
+全域指示檔 `opencode/AGENTS.md`（部署為 `~/.config/opencode/AGENTS.md`）SHALL 包含 OpenSpec 規範段落，規定：
+1. tasks.md 每個 task 必須有 `> 驗證：` 區塊
+2. 實作完每個 task 後，必須使用 `openspec-tdd-verify` skill 執行驗證，通過才 mark `[x]`
+
+#### Scenario: 產生 tasks.md
+- **WHEN** AI 為 OpenSpec change 產生 tasks.md
+- **THEN** 每個 task 包含 `> 驗證：` 區塊
+
+#### Scenario: 完成 task 實作
+- **WHEN** AI 透過 opsx:apply 完成一個 task 的實作
+- **THEN** AI 呼叫 `openspec-tdd-verify` skill 執行驗證，通過後才 mark `[x]`
+

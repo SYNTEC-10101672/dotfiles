@@ -3,11 +3,9 @@
 ## Purpose
 
 Define requirements for the opencode commands symlink managed via the dotfiles Makefile, ensuring `make opencode` creates the necessary symlinks under `~/.config/opencode/`.
-
 ## Requirements
-
 ### Requirement: opencode Makefile target 建立 commands symlink
-`make opencode` SHALL 建立 `~/.config/opencode/commands` symlink，指向 `dotfiles/claude/commands`；同時建立 `~/.config/opencode/opencode.json` symlink 指向 `dotfiles/opencode/opencode.json`，以及 `~/.config/opencode/package.json` symlink 指向 `dotfiles/opencode/package.json`。目錄 `~/.config/opencode/` 若不存在 SHALL 自動建立。
+`make opencode` SHALL 建立 `~/.config/opencode/commands` symlink，指向 `dotfiles/opencode/commands`；同時建立 `~/.config/opencode/opencode.json` symlink 指向 `dotfiles/opencode/opencode.json`，以及 `~/.config/opencode/package.json` symlink 指向 `dotfiles/opencode/package.json`。目錄 `~/.config/opencode/` 若不存在 SHALL 自動建立。
 
 #### Scenario: 首次安裝
 - **WHEN** 執行 `make opencode` 且 `~/.config/opencode/` 不存在
@@ -16,6 +14,10 @@ Define requirements for the opencode commands symlink managed via the dotfiles M
 #### Scenario: 已存在 symlink
 - **WHEN** 執行 `make opencode` 且所有 symlink 已存在
 - **THEN** 更新所有 symlink 指向正確路徑（force replace，idempotent）
+
+#### Scenario: 舊來源 symlink 被替換
+- **WHEN** 執行 `make opencode` 且 `~/.config/opencode/commands` 仍指向舊來源 `dotfiles/claude/commands`（含 dangling）
+- **THEN** symlink 被 force replace 為指向 `dotfiles/opencode/commands`
 
 ### Requirement: opencode target 整合到 install 流程
 `make install` SHALL 包含 `opencode` target 作為依賴。
@@ -28,7 +30,7 @@ Define requirements for the opencode commands symlink managed via the dotfiles M
 `make check` SHALL 顯示 opencode commands symlink 的狀態。
 
 #### Scenario: symlink 正確
-- **WHEN** 執行 `make check` 且 `~/.config/opencode/commands` 正確指向 `dotfiles/claude/commands`
+- **WHEN** 執行 `make check` 且 `~/.config/opencode/commands` 正確指向 `dotfiles/opencode/commands`
 - **THEN** 顯示 `✓` 狀態
 
 #### Scenario: symlink 不存在
@@ -52,3 +54,4 @@ Define requirements for the opencode commands symlink managed via the dotfiles M
 #### Scenario: 查看說明
 - **WHEN** 執行 `make help`
 - **THEN** 輸出包含 `make opencode` 說明行
+

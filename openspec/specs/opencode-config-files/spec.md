@@ -3,15 +3,14 @@
 ## Purpose
 
 Define requirements for opencode configuration files managed in dotfiles, ensuring `opencode.json`, `package.json`, `oh-my-openagent.json`, `plugins/`, and `scripts/` are version-controlled and deployed via symlinks as the single source of truth.
-
 ## Requirements
-
 ### Requirement: dotfiles 包含 opencode 設定檔
-`dotfiles/opencode/` 目錄 SHALL 包含 `opencode.json`、`package.json`、`oh-my-openagent.json`、`plugins/notify.ts`、`plugins/guard.ts` 與 `scripts/notify-stop.sh`、`scripts/notify-waiting.sh`，作為 opencode 設定的唯一 source of Truth。`opencode.json` SHALL 含 plugin 宣告、experimental 設定與 `permission` 區塊（read 敏感檔 deny、`git push *` ask，詳見 `opencode-secret-guard` capability）。
+`dotfiles/opencode/` 目錄 SHALL 包含 `opencode.json`、`package.json`、`oh-my-openagent.json`、`AGENTS.md`（全域指示檔）、`commands/`（slash commands 目錄）、`skills/`（skills 目錄）、`plugins/notify.ts`、`plugins/guard.ts` 與 `scripts/notify-stop.sh`、`scripts/notify-waiting.sh`，作為 opencode 設定的唯一 source of Truth。`opencode.json` SHALL 含 plugin 宣告、experimental 設定與 `permission` 區塊（read 敏感檔 deny、`git push *` ask，詳見 `opencode-secret-guard` capability）。
 
 #### Scenario: 檔案存在
 - **WHEN** 查看 dotfiles repo 的 `opencode/` 目錄
-- **THEN** SHALL 存在 `opencode.json`（含 plugin 宣告、experimental 設定與 `permission` 區塊）、`package.json`（含 plugin SDK 依賴）、`oh-my-openagent.json`（agent model 設定）
+- **THEN** SHALL 存在 `opencode.json`（含 plugin 宣告、experimental 設定與 `permission` 區塊）、`package.json`（含 plugin SDK 依賴）、`oh-my-openagent.json`（agent model 設定）、`AGENTS.md`（全域指示檔）
+- **THEN** SHALL 存在 `commands/`（slash command 檔，含 `opsx/` 子目錄）與 `skills/`（各 skill 子目錄含 `SKILL.md`）
 - **THEN** SHALL 存在 `plugins/notify.ts`（native 通知 plugin）、`plugins/guard.ts`（金鑰洩漏防護 plugin）與 `scripts/notify-stop.sh`、`scripts/notify-waiting.sh`（通知 scripts，一般檔案）
 
 #### Scenario: opencode.json permission 區塊內容
@@ -23,11 +22,17 @@ Define requirements for opencode configuration files managed in dotfiles, ensuri
 - **THEN** `plugins/guard.ts` SHALL 透過既有 `plugins/` 目錄級 symlink 自動部署，無需新增 Makefile 規則
 
 ### Requirement: opencode 設定檔透過 symlink 部署到 ~/.config/opencode/
-`make opencode` SHALL 建立 `~/.config/opencode/opencode.json` → `dotfiles/opencode/opencode.json`、`~/.config/opencode/package.json` → `dotfiles/opencode/package.json`，以及目錄級 symlink `~/.config/opencode/plugins` → `dotfiles/opencode/plugins`、`~/.config/opencode/scripts` → `dotfiles/opencode/scripts`。
+`make opencode` SHALL 建立 `~/.config/opencode/opencode.json` → `dotfiles/opencode/opencode.json`、`~/.config/opencode/package.json` → `dotfiles/opencode/package.json`、`~/.config/opencode/AGENTS.md` → `dotfiles/opencode/AGENTS.md`，以及目錄級 symlink `~/.config/opencode/commands` → `dotfiles/opencode/commands`、`~/.config/opencode/skills` → `dotfiles/opencode/skills`、`~/.config/opencode/plugins` → `dotfiles/opencode/plugins`、`~/.config/opencode/scripts` → `dotfiles/opencode/scripts`。
 
 #### Scenario: 首次安裝
 - **WHEN** 執行 `make opencode` 且 `~/.config/opencode/opencode.json` 不存在
 - **THEN** 建立 symlink `~/.config/opencode/opencode.json` → `dotfiles/opencode/opencode.json`
+
+#### Scenario: 首次安裝 commands、skills 與 AGENTS.md
+- **WHEN** 執行 `make opencode` 且 `~/.config/opencode/commands`、`~/.config/opencode/skills`、`~/.config/opencode/AGENTS.md` 不存在
+- **THEN** 建立 symlink `~/.config/opencode/commands` → `dotfiles/opencode/commands`
+- **THEN** 建立 symlink `~/.config/opencode/skills` → `dotfiles/opencode/skills`
+- **THEN** 建立 symlink `~/.config/opencode/AGENTS.md` → `dotfiles/opencode/AGENTS.md`
 
 #### Scenario: 首次安裝 plugins 與 scripts 目錄
 - **WHEN** 執行 `make opencode` 且 `~/.config/opencode/plugins` 不存在
@@ -43,7 +48,7 @@ Define requirements for opencode configuration files managed in dotfiles, ensuri
 - **THEN** symlink 維持不變或更新（idempotent）
 
 ### Requirement: check target 驗證 opencode 設定檔 symlink
-`make check` SHALL 顯示 `~/.config/opencode/` 下 `opencode.json`、`package.json`、`plugins`、`scripts` 的 symlink 狀態。
+`make check` SHALL 顯示 `~/.config/opencode/` 下 `opencode.json`、`package.json`、`AGENTS.md`、`commands`、`skills`、`plugins`、`scripts` 的 symlink 狀態。
 
 #### Scenario: symlink 正確
 - **WHEN** 執行 `make check` 且各 symlink 均正確指向 dotfiles
@@ -54,7 +59,7 @@ Define requirements for opencode configuration files managed in dotfiles, ensuri
 - **THEN** 顯示 `✗` 狀態
 
 ### Requirement: uninstall target 清理 opencode 設定檔 symlink
-`make uninstall` SHALL 移除 `~/.config/opencode/` 下的 `opencode.json`、`package.json`、`plugins`、`scripts` symlink。
+`make uninstall` SHALL 移除 `~/.config/opencode/` 下的 `opencode.json`、`package.json`、`AGENTS.md`、`commands`、`skills`、`plugins`、`scripts` symlink。
 
 #### Scenario: symlink 存在
 - **WHEN** 執行 `make uninstall` 且 symlink 存在
@@ -63,3 +68,4 @@ Define requirements for opencode configuration files managed in dotfiles, ensuri
 #### Scenario: symlink 不存在
 - **WHEN** 執行 `make uninstall` 且 symlink 不存在
 - **THEN** 不報錯，繼續執行
+

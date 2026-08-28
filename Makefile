@@ -2,10 +2,9 @@ SHELL := bash
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
-CLAUDE_FILES := settings.json CLAUDE.md
-CLAUDE_DIRS  := commands skills scripts
+OPENCODE_ITEMS := commands skills AGENTS.md opencode.json package.json oh-my-openagent.json plugins scripts
 
-.PHONY: all install bashrc zshrc nvim claude opencode git tig tmux scripts uninstall check help
+.PHONY: all install bashrc zshrc nvim opencode git tig tmux scripts uninstall check help
 
 all: install
 
@@ -21,14 +20,13 @@ help:
 	@echo "  make zshrc     - Install zsh configuration (symlinks + clone p10k/plugins)"
 	@echo "  make bashrc    - Install bash configuration (legacy, not in install)"
 	@echo "  make nvim      - Install neovim configuration"
-	@echo "  make claude    - Install Claude Code configuration"
-	@echo "  make opencode  - Install OpenCode configuration (opencode.json, package.json, commands/)"
+	@echo "  make opencode  - Install OpenCode configuration (opencode.json, AGENTS.md, commands/, skills/, plugins/)"
 	@echo "  make git       - Install git configuration"
 	@echo "  make tig       - Install tig configuration"
 	@echo "  make tmux      - Install tmux configuration"
 	@echo "  make scripts   - Install utility scripts to ~/bin"
 
-install: zshrc nvim claude opencode git tig tmux scripts
+install: zshrc nvim opencode git tig tmux scripts
 	@echo "✓ Dotfiles installed successfully"
 
 zshrc:
@@ -57,23 +55,13 @@ nvim:
 	@echo "✓ Neovim configuration installed"
 	@echo "  Note: Configuration stored in $(ROOT_DIR)/nvim/"
 
-claude:
-	@echo "Installing Claude Code configuration..."
-	@if [ -L "$(HOME)/.claude" ]; then \
-			echo "✗ ~/.claude is a directory symlink (old layout) — migration required:"; \
-			echo "  rm ~/.claude && mkdir ~/.claude && make claude"; \
-			exit 1; \
-		fi
-	@mkdir -p $(HOME)/.claude
-	@for f in $(CLAUDE_FILES); do ln -sf $(ROOT_DIR)/claude/$$f $(HOME)/.claude/$$f; done
-	@for d in $(CLAUDE_DIRS); do ln -sfn $(ROOT_DIR)/claude/$$d $(HOME)/.claude/$$d; done
-	@echo "✓ Claude Code configuration installed"
-
 opencode:
 	@echo "Installing OpenCode configuration..."
 	@[ -L "$(HOME)/.config/opencode" ] && rm "$(HOME)/.config/opencode" || true
 	@mkdir -p $(HOME)/.config/opencode
-	@ln -sfn $(ROOT_DIR)/claude/commands $(HOME)/.config/opencode/commands
+	@ln -sfn $(ROOT_DIR)/opencode/commands $(HOME)/.config/opencode/commands
+	@ln -sfn $(ROOT_DIR)/opencode/skills $(HOME)/.config/opencode/skills
+	@ln -sf $(ROOT_DIR)/opencode/AGENTS.md $(HOME)/.config/opencode/AGENTS.md
 	@ln -sf $(ROOT_DIR)/opencode/opencode.json $(HOME)/.config/opencode/opencode.json
 	@ln -sf $(ROOT_DIR)/opencode/package.json $(HOME)/.config/opencode/package.json
 	@ln -sf $(ROOT_DIR)/opencode/oh-my-openagent.json $(HOME)/.config/opencode/oh-my-openagent.json
@@ -107,8 +95,6 @@ scripts:
 	@mkdir -p $(HOME)/bin
 	@ln -sf $(ROOT_DIR)/scripts/tig-mark-commit.sh $(HOME)/bin/tig-mark-commit
 	@ln -sf $(ROOT_DIR)/scripts/tig-diff-selector.sh $(HOME)/bin/tig-diff-selector
-	@ln -sf $(ROOT_DIR)/claude/scripts/claude-glm $(HOME)/bin/claude-glm
-	@ln -sf $(ROOT_DIR)/claude/scripts/claude-code-statusline $(HOME)/bin/claude-code-statusline
 	@echo "✓ Scripts installed to ~/bin"
 	@echo "  Note: Ensure ~/bin is in your PATH"
 
@@ -120,15 +106,8 @@ uninstall:
 				rm "$(HOME)/$$file"; \
 			fi; \
 		done
-	@echo "Removing Claude Code configuration symlinks..."
-	@for item in $(CLAUDE_FILES) $(CLAUDE_DIRS); do \
-			if [ -L "$(HOME)/.claude/$$item" ]; then \
-				echo "  Removing .claude/$$item"; \
-				rm "$(HOME)/.claude/$$item"; \
-			fi; \
-		done
 	@echo "Removing OpenCode configuration symlinks..."
-	@for f in commands opencode.json package.json oh-my-openagent.json plugins scripts; do \
+	@for f in $(OPENCODE_ITEMS); do \
 			if [ -L "$(HOME)/.config/opencode/$$f" ]; then \
 				echo "  Removing .config/opencode/$$f"; \
 				rm "$(HOME)/.config/opencode/$$f"; \
@@ -140,7 +119,7 @@ uninstall:
 			rm "$(HOME)/.config/nvim"; \
 		fi
 	@echo "Removing scripts..."
-	@for script in tig-mark-commit tig-diff-selector claude-glm claude-code-statusline; do \
+	@for script in tig-mark-commit tig-diff-selector; do \
 			if [ -L "$(HOME)/bin/$$script" ]; then \
 				echo "  Removing ~/bin/$$script"; \
 				rm "$(HOME)/bin/$$script"; \
@@ -166,42 +145,8 @@ check:
 			fi; \
 		done
 	@echo ""
-	@echo "Checking Claude Code installation..."
-	@if [ -d "$(HOME)/.claude" ] && [ ! -L "$(HOME)/.claude" ]; then \
-			for item in $(CLAUDE_FILES) $(CLAUDE_DIRS); do \
-				if [ -L "$(HOME)/.claude/$$item" ]; then \
-					target=$$(readlink "$(HOME)/.claude/$$item"); \
-					if [ "$$target" = "$(ROOT_DIR)/claude/$$item" ]; then \
-						echo "✓ .claude/$$item -> $$target"; \
-					else \
-						echo "⚠ .claude/$$item -> $$target (unexpected target)"; \
-					fi; \
-				elif [ -e "$(HOME)/.claude/$$item" ]; then \
-					echo "✗ .claude/$$item (exists but not a symlink)"; \
-				else \
-					echo "✗ .claude/$$item (not found)"; \
-				fi; \
-			done; \
-	elif [ -L "$(HOME)/.claude" ]; then \
-			echo "⚠ ~/.claude is a directory symlink (old layout) — run migration first"; \
-	else \
-			echo "✗ ~/.claude (not found)"; \
-	fi
-	@echo ""
 	@echo "Checking OpenCode configuration..."
-	@if [ -L "$(HOME)/.config/opencode/commands" ]; then \
-			target=$$(readlink "$(HOME)/.config/opencode/commands"); \
-			if [ "$$target" = "$(ROOT_DIR)/claude/commands" ]; then \
-				echo "✓ .config/opencode/commands -> $$target"; \
-			else \
-				echo "⚠ .config/opencode/commands -> $$target (unexpected target)"; \
-			fi; \
-	elif [ -e "$(HOME)/.config/opencode/commands" ]; then \
-			echo "✗ .config/opencode/commands (exists but not a symlink)"; \
-	else \
-			echo "✗ .config/opencode/commands (not found)"; \
-	fi
-	@for f in opencode.json package.json oh-my-openagent.json plugins scripts; do \
+	@for f in $(OPENCODE_ITEMS); do \
 			if [ -L "$(HOME)/.config/opencode/$$f" ]; then \
 				target=$$(readlink "$(HOME)/.config/opencode/$$f"); \
 				if [ "$$target" = "$(ROOT_DIR)/opencode/$$f" ]; then \
@@ -232,7 +177,7 @@ check:
 	fi
 	@echo ""
 	@echo "Checking scripts installation..."
-	@for script in tig-mark-commit tig-diff-selector claude-glm claude-code-statusline; do \
+	@for script in tig-mark-commit tig-diff-selector; do \
 			if [ -L "$(HOME)/bin/$$script" ]; then \
 				target=$$(readlink "$(HOME)/bin/$$script"); \
 				echo "✓ ~/bin/$$script -> $$target"; \

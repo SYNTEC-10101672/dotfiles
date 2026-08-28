@@ -2,9 +2,7 @@
 
 ## Purpose
 Handover 機制的雙模式生成策略：偵測 active OpenSpec change 後自動選擇薄入口或完整模式生成 HANDOVER.md，優化跨 session 的 context 傳遞。
-
 ## Requirements
-
 ### Requirement: Handover detects active OpenSpec change
 `/handover` SHALL 在開始時偵測是否有 active OpenSpec change，並據此決定生成模式。
 
@@ -39,8 +37,15 @@ Handover 機制的雙模式生成策略：偵測 active OpenSpec change 後自�
 - **WHEN** 以完整模式生成且探索已有明確方向
 - **THEN** SHALL 在下一步中建議使用 `/opsx:propose` 正式化結論
 
-### Requirement: CLAUDE.md auto-detects HANDOVER.md
-project `.claude/CLAUDE.md` SHALL 包含一條規則：session 開始時若偵測到 HANDOVER.md 存在，自動讀取並根據指引恢復 context。
+### Requirement: HANDOVER.md excludes redundant sections
+HANDOVER.md SHALL 不包含 Modified Files、Reference Commands、Dependencies 等可從 git 取得的區段。
+
+#### Scenario: Generating HANDOVER.md
+- **WHEN** 生成 HANDOVER.md（任一模式）
+- **THEN** SHALL 不包含 Modified Files、Reference Commands、Dependencies、Links and Resources 區段
+
+### Requirement: AGENTS.md auto-detects HANDOVER.md
+repo root `AGENTS.md` SHALL 包含一條規則：session 開始時若偵測到 HANDOVER.md 存在，自動讀取並根據指引恢復 context。
 
 #### Scenario: HANDOVER.md exists at session start
 - **WHEN** 新 session 開始且 project root 存在 HANDOVER.md
@@ -50,9 +55,3 @@ project `.claude/CLAUDE.md` SHALL 包含一條規則：session 開始時若偵�
 - **WHEN** 新 session 開始且 project root 無 HANDOVER.md
 - **THEN** 正常運作，不觸發任何恢復流程
 
-### Requirement: HANDOVER.md excludes redundant sections
-HANDOVER.md SHALL 不包含 Modified Files、Reference Commands、Dependencies 等可從 git 取得的區段。
-
-#### Scenario: Generating HANDOVER.md
-- **WHEN** 生成 HANDOVER.md（任一模式）
-- **THEN** SHALL 不包含 Modified Files、Reference Commands、Dependencies、Links and Resources 區段

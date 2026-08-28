@@ -3,9 +3,7 @@
 ## Purpose
 
 Makefile 提供統一的安裝、檢查、移除 dotfiles 的介面，包含 zsh 設定與相關 plugins 的 symlink 管理。
-
 ## Requirements
-
 ### Requirement: Makefile zshrc target 安裝 zsh 設定
 
 Makefile SHALL 提供 `zshrc` target，建立 symlink 並 clone 所需 plugins。
@@ -56,3 +54,16 @@ Makefile SHALL 提供 `zshrc` target，建立 symlink 並 clone 所需 plugins�
 
 - **WHEN** 執行 `make uninstall`
 - **THEN** `~/.zshrc`、`~/.p10k.zsh` symlink 被移除（若存在）
+
+### Requirement: Makefile 禁止 backup/restore/clean target
+
+Makefile SHALL NOT 提供 `backup`、`restore`、`clean` 三個 target。`install` target SHALL 直接執行各模組安裝，不建立備份目錄。
+
+#### Scenario: make install 不自動備份
+- **WHEN** 執行 `make install`
+- **THEN** 系統直接安裝各模組，不建立備份目錄
+
+#### Scenario: make help 不顯示 backup 相關指令
+- **WHEN** 執行 `make help`
+- **THEN** 輸出中不包含 backup、restore、clean 指令
+

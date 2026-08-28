@@ -54,7 +54,7 @@ make check
 
 使用系統套件管理器安裝以下套件：
 
-- `jq` — JSON 處理器（Claude Code statusline 必要）
+- `jq` — JSON 處理器（通知 scripts 與一般工具使用）
 - `tmux` — 終端機多工器
 - `tig` — Git TUI 介面
 - `ripgrep` — 快速 grep（Neovim Telescope 使用）
@@ -101,7 +101,7 @@ sudo cp "/tmp/fd-${FD_VER}-x86_64-unknown-linux-musl/fd" /usr/local/bin/fd
 
 若系統無 `ripgrep` 套件（如 Ubuntu 18.04），下載 musl 靜態 binary：
 
-> **注意**：`rg` 必須是真正的 binary（不能只靠 Claude Code 的 shell function wrapper），否則 Neovim 的 `executable()` 找不到它。
+> **注意**：`rg` 必須是真正的 binary（不能只靠 shell function 或 alias 包裝），否則 Neovim 的 `executable()` 找不到它。
 
 ```bash
 RG_VER=$(curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest | jq -r '.tag_name')
@@ -250,33 +250,7 @@ openspec --version
 
 ---
 
-## 9. Claude Code CLI 與 Plugins
-
-安裝 Claude Code CLI：
-
-```bash
-npm install -g @anthropic-ai/claude-code
-```
-
-安裝 4 個 user-level plugins：
-
-```bash
-claude plugin install superpowers@claude-plugins-official
-claude plugin install code-simplifier@claude-plugins-official
-claude plugin install context7@claude-plugins-official
-claude plugin install skill-creator@claude-plugins-official
-```
-
-驗證：
-
-```bash
-claude --version
-claude plugin list
-```
-
----
-
-## 10. ~/.env 設定
+## 9. ~/.env 設定
 
 複製範本並填入 credentials：
 
@@ -291,7 +265,7 @@ source ~/.zshrc
 
 ---
 
-## 11. 選用 — .NET SDK 與 OmniSharp（C# 開發）
+## 10. 選用 — .NET SDK 與 OmniSharp（C# 開發）
 
 ### .NET SDK
 
@@ -321,7 +295,7 @@ ln -sf ~/.omnisharp/OmniSharp ~/.omnisharp/omnisharp
 
 ---
 
-## 12. 驗證
+## 11. 驗證
 
 執行 `make check` 確認 symlink 狀態：
 
@@ -337,15 +311,6 @@ for cmd in bash git make nvim tmux jq curl fzf tig rg fd ag node python3 opencod
 done
 # atuin 安裝在 ~/.atuin/bin/，需開新 terminal 或 source ~/.zshrc 後才能查到
 ~/.atuin/bin/atuin --version &>/dev/null && echo "✓ atuin" || echo "✗ atuin: NOT FOUND"
-```
-
-確認 Claude Code plugins 是否全部安裝：
-
-```bash
-for plugin in superpowers code-simplifier context7 skill-creator; do
-  claude plugin list 2>/dev/null | grep -q "$plugin" \
-    && echo "✓ $plugin" || echo "✗ $plugin: NOT INSTALLED"
-done
 ```
 
 確認選用工具（若有安裝）：

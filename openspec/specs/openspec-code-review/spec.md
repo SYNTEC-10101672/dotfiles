@@ -5,12 +5,10 @@
 ## Purpose
 
 提供 OpenSpec workflow 在 `opsx:apply` 完成後的品質把關。借鏡 Matt Pocock `code-review` skill 的雙軸設計,Standards 與 Spec 兩軸平行 sub-agent 執行,互不汙染,最後分開呈現避免一軸掩蓋另一軸。
-
 ## Requirements
-
 ### Requirement: 新增 openspec-code-review skill
 
-系統 MUST 新增 skill `~/.claude/skills/openspec-code-review/SKILL.md`,提供雙軸平行 sub-agents 的 code review 能力。
+系統 MUST 提供 skill `dotfiles/opencode/skills/openspec-code-review/SKILL.md`（部署於 `~/.config/opencode/skills/openspec-code-review/SKILL.md`），提供雙軸平行 sub-agents 的 code review 能力。
 
 skill description MUST 包含足夠 trigger 片段讓 model-invoked 自動觸發可行(包含「review a change」「review since」「code review」等 leading words)。
 
@@ -24,7 +22,7 @@ skill MUST 定義以下流程:
 
 #### Scenario: skill 檔案存在且包含必要結構
 
-- **WHEN** 讀取 `~/.claude/skills/openspec-code-review/SKILL.md`
+- **WHEN** 讀取 `~/.config/opencode/skills/openspec-code-review/SKILL.md`
 - **THEN** MUST 包含 frontmatter(name, description)、雙軸定義、5 步流程、Fowler 12 smells baseline 列表
 
 #### Scenario: skill 可被 openspec-apply 內部 prose invocation 觸發
@@ -93,7 +91,7 @@ Standards sub-agent 的標準來源 MUST 為:
    - Middle Man
    - Refused Bequest
 
-來源清單 MUST NOT 包含全域指示檔(`~/.claude/CLAUDE.md` / `~/.config/opencode/AGENTS.md` 等 system prompt 材料)。
+來源清單 MUST NOT 包含全域指示檔(`~/.config/opencode/AGENTS.md` 等 system prompt 材料)。
 
 規則:
 
@@ -166,13 +164,14 @@ MUST NOT 重跑 Red phase 或 Green phase(Final phase 已涵蓋全 T*,等同 ful
 - **WHEN** Fix Loop 套用修復後,重跑 Final phase 有 T* 失敗
 - **THEN** 流程 MUST 回到 Fix Loop 步驟 a(繼續修),MUST NOT 直接跳到 Step 8
 
-### Requirement: CLAUDE.md 必須記錄 apply 後必跑 code review 規範
+### Requirement: AGENTS.md 必須記錄 apply 後必跑 code review 規範
 
-`~/.claude/CLAUDE.md` 的「OpenSpec 規範」段 MUST 新增以下規範:
+全域指示檔 `opencode/AGENTS.md`（部署為 `~/.config/opencode/AGENTS.md`）的「OpenSpec 規範」段 MUST 包含以下規範:
 
 > 完成 `opsx:apply` 後,必須執行 `openspec-code-review`(雙軸 sub-agents)通過才能建議 archive;若 code-review 有 fix,fix 後必須重跑 Final phase tests 確認沒退化
 
-#### Scenario: CLAUDE.md 包含必跑規範
+#### Scenario: AGENTS.md 包含必跑規範
 
-- **WHEN** 讀取 `~/.claude/CLAUDE.md` 的「OpenSpec 規範」段
+- **WHEN** 讀取 `opencode/AGENTS.md` 的「OpenSpec 規範」段
 - **THEN** MUST 可見「完成 opsx:apply 後必須執行 openspec-code-review」的規範文字
+

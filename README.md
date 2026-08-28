@@ -1,6 +1,6 @@
 # dotfiles
 
-個人化開發環境設定檔，包含 Bash、Vim、Git 和 Claude Code 的配置。
+個人化開發環境設定檔，包含 Bash、Vim、Git 和 opencode 的配置。
 
 ## 功能特色
 
@@ -9,8 +9,7 @@
 - 🔧 **Git**: 顏色配置、別名、自動 rebase
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
 - 🖥️ **Tmux**: 終端機多工器，支援 Vim 風格操作和美化狀態列
-- 🤖 **Claude Code**: 全域開發環境設定，含 13 個 plugins 與 skills 工作流
-- 🖥️ **opencode**: AI 編程工具設定（`opencode.json`、`package.json`），與 Claude Code 共用 commands
+- 🖥️ **opencode**: AI 編程工具設定（`opencode.json`、全域指示檔 `AGENTS.md`、commands、skills、plugins）
 
 ## 快速安裝
 
@@ -48,7 +47,6 @@ make install
 # 或分別安裝個別模組
 make bashrc    # 安裝 Bash 設定
 make nvim      # 安裝 Neovim 設定
-make claude    # 安裝 Claude Code 設定
 make opencode  # 安裝 opencode 設定
 make git       # 安裝 Git 設定
 make tig       # 安裝 Tig 設定
@@ -83,17 +81,16 @@ dotfiles/
 │   ├── plugin/           # 插件設定
 │   ├── colors/           # 配色方案
 │   └── autoload/         # vim-plug 套件管理器
-├── .claude/              # Claude Code project-level 設定
-│   └── CLAUDE.md         # 專案層級指令
+├── AGENTS.md             # 專案層級指令（opencode project instructions）
 ├── opencode/             # opencode 設定（symlink 到 ~/.config/opencode/）
+│   ├── AGENTS.md         # 全域指示檔（部署為 ~/.config/opencode/AGENTS.md）
 │   ├── opencode.json     # 主設定與 plugin 宣告
 │   ├── package.json      # plugin SDK 依賴
 │   ├── oh-my-openagent.json  # oh-my-openagent plugin 的 agent / category model 設定
+│   ├── commands/         # slash commands（commit、opsx/、writing 系列、grill 系列）
+│   ├── skills/           # skills（openspec 工作流、mattpocock 系列、tutoring）
 │   ├── plugins/          # opencode native plugins（notify.ts：tmux 完成通知、guard.ts：金鑰洩漏防護：gitleaks staged 掃描 + fail-closed）
 │   └── scripts/          # 通知 scripts（notify-stop / notify-waiting，tmux @claude_state + BEL）
-├── claude/               # Claude Code user-level 設定
-│   ├── CLAUDE.md         # 全域模板設定
-│   └── scripts/          # Claude 相關腳本（通知、statusline）
 ├── scripts/              # 一般工具腳本
 │   └── ...
 ├── docs/                 # 文件目錄
@@ -171,10 +168,6 @@ nvim/                       # Neovim 配置目錄
 
 安裝後：
 - Neovim 配置：`~/.config/nvim/` → `dotfiles/nvim/`
-
-## Claude Code 設定
-
-Claude Code 的基本設定檔，包含 CLAUDE.md、hooks 通知腳本與 statusline 腳本。
 
 ## Tmux 設定
 
@@ -408,26 +401,13 @@ make uninstall
 - Git 2.0+
 - Tig 2.0+（可選，用於 Git 圖形介面）
 - fzf（必需，用於 Tig 互動式檔案選擇器）
-- jq（必需，用於 Claude Code statusline JSON 解析）
+- jq（必需，JSON 處理器 — 通知 scripts 與一般工具使用）
 - gitleaks（必需，OpenCode secret guard 掃描；未安裝時 AI 的 git commit 會被 fail-closed 擋下）
 
 新機器完整建置指引請參考 [docs/SETUP.md](docs/SETUP.md)。
 
 
 ## 問題排除
-
-### Claude Code Statusline 未顯示模型名稱或 Context 用量
-
-`~/.claude/scripts/claude-code-statusline` 依賴 `jq` 解析 Claude Code 傳入的 JSON。
-若未安裝 `jq`，模型名稱欄位將顯示為空白，context 使用量不會出現。
-
-```bash
-# Arch Linux
-sudo pacman -S jq
-
-# Ubuntu/Debian
-sudo apt install jq
-```
 
 ### fzf 未安裝
 
