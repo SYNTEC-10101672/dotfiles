@@ -34,7 +34,7 @@
 ## 4. 收尾
 
 - [x] 4.1 執行 `openspec archive migrate-config-to-opencode`（specs sync：移除 8 個 capability、新增 `project-agents-md`、改寫 18 個 capability），確認 `openspec/changes/` 無殘留 active change（驗證 T15、T16）。
-- [ ] 4.2 以 `/commit` 完成 commit（單一 commit 涵蓋全部 repo 變更；commit message 由 `/commit` 流程產生）（驗證 T7 — 須在 commit 後執行，rename 進入 HEAD 後 `--follow` 才能追溯）。
+- [x] 4.2 以 `/commit` 完成 commit（單一 commit 涵蓋全部 repo 變更；commit message 由 `/commit` 流程產生）（驗證 T7 — 須在 commit 後執行，rename 進入 HEAD 後 `--follow` 才能追溯）。
 
 ## Tests
 
@@ -56,7 +56,7 @@
 - [x] T6: Makefile 無 claude 殘留
   > Command: `if grep -q claude Makefile; then echo FOUND; else echo CLEAN; fi`
   > Expected: 輸出 `CLEAN`
-- [ ] T7: git 歷史保留（rename 可追溯；須在 task 4.2 commit 後執行）
+- [x] T7: git 歷史保留（rename 可追溯；須在 task 4.2 commit 後執行）
   > Command: `git log --follow --format=%cs -- opencode/commands/commit.md | tail -1`
   > Expected: `2026-02-08`（最舊 commit 日期，證明 `--follow` 跨越兩次 rename 追溯到 origin；`2026-04-17` 是無 `--follow` 的值，出現即代表 rename 追溯斷了）
 - [x] T8: root AGENTS.md 無 stale claude 引用
