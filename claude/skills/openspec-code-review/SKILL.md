@@ -1,6 +1,6 @@
 ---
 name: openspec-code-review
-description: Review a change's diff along two axes - Standards (CLAUDE.md code standards + Fowler smells baseline) and Spec (does it faithfully implement the OpenSpec change artifacts?). Runs both as parallel sub-agents. Use when openspec-apply completes, when the user wants to review a change, asks to "review since X", or mentions code review.
+description: Review a change's diff along two axes - Standards (documented repo standards + Fowler smells baseline) and Spec (does it faithfully implement the OpenSpec change artifacts?). Runs both as parallel sub-agents. Use when openspec-apply completes, when the user wants to review a change, asks to "review since X", or mentions code review.
 ---
 
 Two-axis review of the diff since change started:
@@ -30,7 +30,6 @@ OpenSpec change artifacts for current change:
 
 ### 3. Identify standards sources
 
-- `~/.claude/CLAUDE.md` "程式碼規範" section (code standards)
 - repo CODING_STANDARDS.md / CONTRIBUTING.md (if present)
 - Fowler 12 smells baseline (fixed, sub-agent always carries it):
   - Mysterious Name
@@ -55,10 +54,10 @@ Rules:
 
 Use `general-purpose` subagent type for both.
 
-**Standards sub-agent** brief (include diff command, commit list, CLAUDE.md code standards section content, full Fowler 12 baseline list):
+**Standards sub-agent** brief (include diff command, commit list, the standards-source files found in step 3, full Fowler 12 baseline list):
 ```
 Report - per file/hunk:
-(a) violations of CLAUDE.md code standards (cite rule)
+(a) violations of documented repo standards (cite file + rule)
 (b) Fowler smells spotted (name + quote hunk)
 Distinguish hard violations from judgement calls.
 When a documented repo standard exists, standard overrides smell baseline.

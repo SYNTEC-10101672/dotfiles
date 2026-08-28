@@ -364,25 +364,6 @@ console.log(c);
 - 官方文檔連結
 - 建議學習路徑
 
-## Integration with User Settings
-
-遵循 CLAUDE.md 的全局設定：
-
-1. **語言規則**：
-   - 使用繁體中文解釋概念
-   - 技術術語保持英文（API, JWT, OAuth, middleware 等）
-   - 程式碼註解使用英文
-
-2. **溝通方式**：
-   - 用平輩方式對話
-   - 保持客觀理性
-   - 不要揣測答案，如實解釋
-
-3. **程式碼規範**：
-   - 範例程式碼遵循觀察到的 coding style
-   - 註解使用英文
-   - 保持簡潔清楚
-
 ## Example: Full Tutoring Response
 
 假設用戶問：「OAuth 2.0 flow 是怎麼運作的？」

@@ -25,11 +25,10 @@ description: Interactive commit workflow - reviews changes, checks coding style,
    - 縮排方式（tabs vs spaces，縮排層級）
    - 命名規範（變數、函數名稱的 case 風格）
    - 格式風格（括號位置、空格使用、行長度）
-   - 註解風格（是否使用英文註解，符合 CLAUDE.md 規範）
+   - 註解風格（是否使用英文註解）
 3. **對比參考**：
    - 同目錄下的其他檔案
    - 專案中同類型檔案
-   - CLAUDE.md 的專案規範
 4. **如果發現不一致**：
    - 指出具體問題（哪個檔案、哪一行、什麼問題）
    - 建議修正方式

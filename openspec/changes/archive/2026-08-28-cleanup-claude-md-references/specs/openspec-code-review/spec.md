@@ -1,12 +1,6 @@
-# openspec-code-review
+# Delta Spec: openspec-code-review
 
-雙軸平行 sub-agents 的 code review 能力。Standards 軸檢查 documented repo standards + Fowler 12 smells baseline;Spec 軸檢查是否符合 originating OpenSpec change artifacts。被 `openspec-apply` 完成實作後自動觸發。
-
-## Purpose
-
-提供 OpenSpec workflow 在 `opsx:apply` 完成後的品質把關。借鏡 Matt Pocock `code-review` skill 的雙軸設計,Standards 與 Spec 兩軸平行 sub-agent 執行,互不汙染,最後分開呈現避免一軸掩蓋另一軸。
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: 新增 openspec-code-review skill
 
@@ -32,29 +26,6 @@ skill MUST 定義以下流程:
 - **WHEN** `openspec-apply-change` 的 Step 7 執行「呼叫 `openspec-code-review` skill」
 - **THEN** skill MUST 被載入並執行雙軸 review
 
-### Requirement: Apply 完成實作後必須觸發 code review
-
-`openspec-apply-change/SKILL.md` MUST 在 Step 6(TDD 三階段)之後、原 Step 7(顯示狀態)之前,新增「Step 7 Code Review + Fix Loop」。
-
-觸發條件:所有 T* 通過 Final phase。
-
-Step 7 MUST 呼叫 `openspec-code-review` skill 進行雙軸 review,並根據 findings 分流處理:
-
-- **CRITICAL**(Standards 或 Spec):詢問使用者是否修,修則進 Fix Loop
-- **WARNING / SUGGESTION**:列出但不阻塞,由使用者決定
-
-原 Step 7「On completion or pause, show status」MUST 改編號為 Step 8。
-
-#### Scenario: apply 完成後自動進入 code review
-
-- **WHEN** `openspec-apply-change` 的 Step 6 Final phase 全部 T* 通過
-- **THEN** 流程 MUST 自動進入 Step 7(Code Review),MUST NOT 跳過直接顯示完成訊息
-
-#### Scenario: 原 Step 7 改編號為 Step 8
-
-- **WHEN** 讀取 `openspec-apply-change/SKILL.md`
-- **THEN** 「On completion or pause, show status」MUST 標示為 Step 8(原為 Step 7)
-
 ### Requirement: Code review 必須以雙軸平行 sub-agents 執行
 
 `openspec-code-review` MUST 在單一訊息中同時 spawn 兩個 sub-agent(使用 `general-purpose` subagent type):
@@ -73,6 +44,16 @@ Step 7 MUST 呼叫 `openspec-code-review` skill 進行雙軸 review,並根據 fi
 
 - **WHEN** aggregate 階段產出最終報告
 - **THEN** 報告 MUST 有「## Standards」與「## Spec」兩個獨立段,MUST NOT 有「合併排名」或「單一 winner」
+
+## REMOVED Requirements
+
+### Requirement: Standards 軸必須使用 CLAUDE.md + Fowler 12 baseline
+
+**Reason**: system prompt（全域指示檔）是 generation-time 約束，不是 repo documented 的審查契約；skill 引用永遠已載入的材料是零功 pointer，且違反 `skill-self-containment` capability。與上游（mattpocock/skills `code-review`）設計對齊。
+
+**Migration**: 由下方 ADDED requirement「Standards 軸必須使用 documented repo standards + Fowler 12 baseline」取代。行為差異：Standards 軸不再檢查全域「程式碼規範」（註解英文、最小變更）— 前者由 generation-time system prompt 約束，後者的 diff 面向（scope creep）由 Spec 軸涵蓋。
+
+## ADDED Requirements
 
 ### Requirement: Standards 軸必須使用 documented repo standards + Fowler 12 baseline
 
@@ -98,7 +79,7 @@ Standards sub-agent 的標準來源 MUST 為:
 規則:
 
 - repo documented standard 永遠蓋過 smell baseline(如 repo 明確接受某 smell,suppress)
-- 每个 smell 是 heuristic(labelled),MUST NOT 當 hard violation
+- 每個 smell 是 heuristic(labelled),MUST NOT 當 hard violation
 - 略過 tooling 已強制的東西(如 linter 已檢查的格式)
 
 `openspec-apply-change` 引用 Standards axis CRITICAL severity 時 MUST 使用相同語言("violates a documented repo standard / major Fowler smell"),兩個 skill 不得使用不同字眼指稱同一軸。
@@ -117,62 +98,3 @@ Standards sub-agent 的標準來源 MUST 為:
 
 - **WHEN** 讀取 `openspec-apply-change/SKILL.md` 的 Standards axis CRITICAL 定義
 - **THEN** 表述 MUST 為 "violates a documented repo standard / major Fowler smell",與 `openspec-code-review` 的來源語言一致
-
-### Requirement: Spec 軸必須對比 OpenSpec change artifacts
-
-Spec sub-agent 的比對來源 MUST 為當前 change 的 OpenSpec artifacts:
-
-- `openspec/changes/<name>/proposal.md`
-- `openspec/changes/<name>/specs/<capability>/spec.md`(所有 delta specs)
-- `openspec/changes/<name>/design.md`
-- `openspec/changes/<name>/tasks.md`
-
-sub-agent MUST 找出三類問題:
-
-1. spec 要求但實作缺漏或部分實作
-2. diff 中存在 spec 未要求的行為(scope creep)
-3. 實作看起來錯誤(與 spec 描述不符)
-
-每條 finding MUST quote 對應的 spec line。
-
-#### Scenario: 找出 spec 要求但缺漏
-
-- **WHEN** Spec sub-agent 發現 proposal.md 列出「支援 dark mode」但 diff 中無相關實作
-- **THEN** finding MUST 列出,並 quote proposal.md 的對應行
-
-#### Scenario: 找出 scope creep
-
-- **WHEN** Spec sub-agent 發現 diff 中新增了一個 spec 未提到的 config 選項
-- **THEN** finding MUST 列出標為 scope creep,並指出 spec 中無對應要求
-
-### Requirement: Fix Loop 必須重跑 Final phase 測試
-
-當 code review 有 CRITICAL 被 fix 時,MUST 進入 Fix Loop:
-
-1. 套用修復
-2. 重新呼叫 `openspec-tdd-verify` skill,傳入 Final phase(執行所有 T*)
-3. 全綠 → 進 Step 8(顯示狀態)
-4. 仍有失敗 → 回 Fix Loop
-
-MUST NOT 重跑 Red phase 或 Green phase(Final phase 已涵蓋全 T*,等同 full test suite run)。
-
-#### Scenario: fix 後重跑 Final phase 全綠
-
-- **WHEN** Fix Loop 套用修復後,重跑 Final phase 所有 T* 通過
-- **THEN** 流程 MUST 進入 Step 8(顯示狀態),可建議 archive
-
-#### Scenario: fix 後 Final phase 仍失敗
-
-- **WHEN** Fix Loop 套用修復後,重跑 Final phase 有 T* 失敗
-- **THEN** 流程 MUST 回到 Fix Loop 步驟 a(繼續修),MUST NOT 直接跳到 Step 8
-
-### Requirement: CLAUDE.md 必須記錄 apply 後必跑 code review 規範
-
-`~/.claude/CLAUDE.md` 的「OpenSpec 規範」段 MUST 新增以下規範:
-
-> 完成 `opsx:apply` 後,必須執行 `openspec-code-review`(雙軸 sub-agents)通過才能建議 archive;若 code-review 有 fix,fix 後必須重跑 Final phase tests 確認沒退化
-
-#### Scenario: CLAUDE.md 包含必跑規範
-
-- **WHEN** 讀取 `~/.claude/CLAUDE.md` 的「OpenSpec 規範」段
-- **THEN** MUST 可見「完成 opsx:apply 後必須執行 openspec-code-review」的規範文字

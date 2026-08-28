@@ -101,7 +101,7 @@ Implement tasks from an OpenSpec change.
 
    **Handle findings**:
 
-   - **Standards axis CRITICAL** (violates CLAUDE.md / major Fowler smell):
+   - **Standards axis CRITICAL** (violates a documented repo standard / major Fowler smell):
      Ask the user whether to fix. If yes → enter fix loop.
    - **Spec axis CRITICAL** (spec requirement missing / scope creep):
      Pause, ask the user whether to add implementation or revise spec.
