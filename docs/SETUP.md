@@ -218,7 +218,7 @@ curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 npm install -g opencode-ai@latest
 ```
 
-建立設定 symlink（`opencode.json`、`package.json`、`oh-my-openagent.json`、`commands/`）：
+建立設定 symlink（`opencode.json`、`package.json`、`oh-my-openagent.json`、`AGENTS.md`、`commands/`、`skills/`、`plugins/`、`scripts/`）：
 
 ```bash
 make opencode
@@ -306,7 +306,7 @@ make check
 確認所有必要工具已安裝：
 
 ```bash
-for cmd in bash git make nvim tmux jq curl fzf tig rg fd ag node python3 opencode sshpass gitleaks; do
+for cmd in bash git make nvim tmux jq curl fzf tig rg fd ag node python3 opencode openspec sshpass gitleaks; do
   command -v $cmd &>/dev/null && echo "✓ $cmd" || echo "✗ $cmd: NOT FOUND"
 done
 # atuin 安裝在 ~/.atuin/bin/，需開新 terminal 或 source ~/.zshrc 後才能查到
