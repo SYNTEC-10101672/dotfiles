@@ -14,7 +14,7 @@ Individual modules: `make bashrc`, `make nvim`, `make opencode`, `make git`, `ma
 
 ## Architecture
 
-Each config module (bash, nvim, git, tig, tmux, opencode) has its own Makefile target that creates symlinks from this repo to the appropriate location in `$HOME`. The `opencode/` directory contains all opencode settings (`opencode.json`, `package.json`, `oh-my-openagent.json`, the global instruction file `AGENTS.md`, `commands/`, `skills/`, `plugins/`, `scripts/`) deployed as mixed symlinks to `~/.config/opencode/`. The repo root `AGENTS.md` (this file) is the project-level instruction file for this repo.
+Each config module (bash, nvim, git, tig, tmux, opencode) has its own Makefile target that creates symlinks from this repo to the appropriate location in `$HOME`. The `opencode/` directory contains all opencode settings (`opencode.json`, `package.json`, `omo.jsonc`, the global instruction file `AGENTS.md`, `commands/`, `skills/`, `plugins/`, `scripts/`) deployed as mixed symlinks to `~/.config/opencode/`, except `omo.jsonc` which deploys to `~/.omo/omo.jsonc` (OmO >= 4.19 reads only that path; the legacy `~/.config/opencode/oh-my-openagent.json` was removed). The repo root `AGENTS.md` (this file) is the project-level instruction file for this repo.
 
 ## New Machine Setup
 

@@ -62,11 +62,11 @@ opencode native plugin 於 `permission.asked` 事件觸發時（permission dialo
 - **THEN** 內容不含 `~/.claude` 或 `claude/scripts` 路徑參照
 
 ### Requirement: 停用 claude-code-hooks bridge
-`dotfiles/opencode/oh-my-openagent.json` 的 `claude_code` 區塊 SHALL 包含 `"hooks": false`，停用 oh-my-openagent 讀取 `~/.claude/settings.json` hooks 的 bridge 機制。
+`dotfiles/opencode/omo.jsonc` 的 `[opencode].claude_code` 區塊 SHALL 包含 `"hooks": false`，停用 oh-my-openagent 讀取 `~/.claude/settings.json` hooks 的 bridge 機制。
 
 #### Scenario: 設定生效
-- **WHEN** 查看 `dotfiles/opencode/oh-my-openagent.json`
-- **THEN** `claude_code` 區塊包含 `"hooks": false`
+- **WHEN** 查看 `dotfiles/opencode/omo.jsonc`
+- **THEN** `[opencode].claude_code` 區塊包含 `"hooks": false`
 - **THEN** opencode 啟動後 `~/.claude/settings.json` 的 hooks（含 atuin 記錄）不再被執行
 
 #### Scenario: tmux 通知仍正常運作

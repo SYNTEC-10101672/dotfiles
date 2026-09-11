@@ -218,13 +218,13 @@ curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 npm install -g opencode-ai@latest
 ```
 
-建立設定 symlink（`opencode.json`、`package.json`、`oh-my-openagent.json`、`AGENTS.md`、`commands/`、`skills/`、`plugins/`、`scripts/`）：
+建立設定 symlink（`opencode.json`、`package.json`、`AGENTS.md`、`commands/`、`skills/`、`plugins/`、`scripts/` 透過 `make opencode` 部署到 `~/.config/opencode/`；`omo.jsonc` 部署到 `~/.omo/omo.jsonc`）：
 
 ```bash
 make opencode
 ```
 
-> **注意**：`opencode.json` 宣告的 plugin（`@slkiser/opencode-quota`、`oh-my-openagent@latest`）將在首次啟動 opencode 時自動下載，無需手動執行 `npm install`。`oh-my-openagent.json` 由 `oh-my-openagent` plugin 讀取，定義每個 agent 與 category 對應的 model。
+> **注意**：`opencode.json` 宣告的 plugin（`@slkiser/opencode-quota`、`oh-my-openagent@latest`）將在首次啟動 opencode 時自動下載，無需手動執行 `npm install`。`omo.jsonc` 由 `oh-my-openagent` plugin 讀取（OmO >= 4.19 只讀 `~/.omo/omo.jsonc`），定義每個 agent 與 category 對應的 model。
 
 驗證：
 
