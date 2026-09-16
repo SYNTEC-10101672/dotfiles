@@ -1,6 +1,6 @@
 ---
 name: openspec-code-review
-description: Review a change's diff along two axes - Standards (documented repo standards + Fowler smells baseline) and Spec (does it faithfully implement the OpenSpec change artifacts?). Runs both as parallel sub-agents. Use when openspec-apply completes, when the user wants to review a change, asks to "review since X", or mentions code review.
+description: Review a change's diff along two axes - Standards (documented repo standards + Fowler smells baseline) and Spec (does it faithfully implement the OpenSpec change artifacts?). Runs both as parallel sub-agents. Use when /opsx:apply completes, when the user wants to review a change, asks to "review since X", or mentions code review.
 ---
 
 Two-axis review of the diff since change started:

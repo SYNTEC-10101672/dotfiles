@@ -1,6 +1,6 @@
 ---
 name: openspec-artifact-review
-description: Artifact review gate for OpenSpec changes — review a change's artifacts (proposal, design, specs, tasks) for blockers before implementation. Use after openspec-propose completes a change's artifacts.
+description: Artifact review gate for OpenSpec changes — review a change's artifacts (proposal, design, specs, tasks) for blockers before implementation. Use after /opsx:propose completes a change's artifacts.
 ---
 
 # OpenSpec Artifact Review
