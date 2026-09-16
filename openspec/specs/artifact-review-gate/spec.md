@@ -4,7 +4,7 @@ propose 階段的 artifact 審查門檻，由 `openspec-artifact-review` skill �
 
 ## Purpose
 
-定義 `openspec-propose` 完成 artifacts 後的 gate 審查契約：審查者（`openspec-artifact-review` skill spawn 的一般 agent）只找 blocker 不做設計評論、以本地 codebase 驗證 reference、輸出三值 verdict，修訂由主 AI 執行。
+定義 `/opsx:propose` 流程完成 artifacts 後的 gate 審查契約：審查者（`openspec-artifact-review` skill spawn 的一般 agent）只找 blocker 不做設計評論、以本地 codebase 驗證 reference、輸出三值 verdict，修訂由主 AI 執行。
 ## Requirements
 ### Requirement: 審查準則為 blocker-only
 

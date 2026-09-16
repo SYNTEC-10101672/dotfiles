@@ -1,6 +1,6 @@
 # openspec-code-review
 
-雙軸平行 sub-agents 的 code review 能力。Standards 軸檢查 documented repo standards + Fowler 12 smells baseline;Spec 軸檢查是否符合 originating OpenSpec change artifacts。被 `openspec-apply` 完成實作後自動觸發。
+雙軸平行 sub-agents 的 code review 能力。Standards 軸檢查 documented repo standards + Fowler 12 smells baseline;Spec 軸檢查是否符合 originating OpenSpec change artifacts。被 `/opsx:apply` 完成實作後自動觸發。
 
 ## Purpose
 

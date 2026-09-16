@@ -1,6 +1,6 @@
 # self-contained-tasks
 
-規範 `openspec-propose` 產出的 tasks.md 必須 self-contained,讓 fresh AI session 可獨立執行。涵蓋 fact-vs-decision 紀律、Fact Lookup 階段、Self-Containment Gate。
+規範 `/opsx:propose` 流程產出的 tasks.md 必須 self-contained,讓 fresh AI session 可獨立執行。涵蓋 fact-vs-decision 紀律、Fact Lookup 階段、Self-Containment Gate。
 
 ## Purpose
 

@@ -1,6 +1,6 @@
 ## Purpose
 
-規範 opsx workflow 在 `opencode/commands/opsx/`（slash command 進入點）與 `opencode/skills/openspec-<name>/SKILL.md`（workflow 內容本體）之間的檔案分工：skill 為單一真相來源，command 為 thin wrapper；並約束保留集合與 cross-reference 的完整性。
+規範 opsx workflow 的檔案歸屬：`opencode/commands/opsx/` 的 command 檔案為 workflow 內容本體（單一真相來源，經 slash command 啟動時直接送達）；`opencode/skills/` 內 `openspec-*` 前綴目錄僅存 helper 角色（被流程以 skill tool / `load_skills` 引用，不得是無 command 對應的孤兒 entry）。並約束保留集合（4 commands + 4 helper skills）與 cross-reference 的完整性——不得重建「thin wrapper + entry skill」雙層結構。
 ## Requirements
 ### Requirement: Body prose SHALL 用英文；literal format token SHALL 用英文 format identifier
 

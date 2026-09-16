@@ -1,10 +1,10 @@
 # spec-test-contract
 
-openspec-propose 與 openspec-apply-change 之間的 T* 測試項目契約：T* 於 propose 階段生成，apply 階段不重複生成。
+/opsx:propose 與 /opsx:apply 之間的 T* 測試項目契約：T* 於 propose 階段生成，apply 階段不重複生成。
 
 ## Purpose
 
-定義 T* 測試項目的生成時機與責任歸屬：`openspec-propose` 負責在 propose 階段產出 `## Tests` section 的 T\* 項目，`openspec-apply-change` 直接使用既有 T\* 走 TDD 三相驗證，不另行生成。
+定義 T* 測試項目的生成時機與責任歸屬：`/opsx:propose` 流程負責在 propose 階段產出 `## Tests` section 的 T\* 項目，`/opsx:apply` 流程直接使用既有 T\* 走 TDD 三相驗證，不另行生成。
 ## Requirements
 ### Requirement: T\* 測試項目於 propose 階段生成
 
