@@ -18,6 +18,16 @@ _Avoid_: fail-open（明確被否決的方案）
 在 `git commit` 執行前用 `gitleaks protect --staged --redact` 掃描 staged diff 內容；`--redact` 確保錯誤訊息不含 secret 明文。
 _Avoid_: 內容掃描（太泛）
 
+### Commit 授權
+
+**Commit Gate**:
+OpenCode 層的 AI `git commit` 授權機制：偵測 `git commit`（含 `-C`、chain、env prefix 形狀），未授權 session 一律擋下並指示模型繼續任務，實作於 `opencode/plugins/commit-gate.ts`。
+_Avoid_: commit guard（與 Secret Guard 混淆）
+
+**authorized session**:
+使用者執行過 `/commit` 的 session；其間 AI 的 `git commit` 放行（仍過 Secret Guard）。授權隨任何其他 slash command 執行或 session 結束失效，不繼承給 subagent。
+_Avoid_: 白名單 session（誤導為持久清單）
+
 ### Skill 撰寫
 
 **ambient 規則**:

@@ -89,7 +89,7 @@ dotfiles/
 │   ├── omo.jsonc         # oh-my-openagent (OmO) 的 agent / category model 設定（部署為 ~/.omo/omo.jsonc，OmO >= 4.19 唯一讀取的 config）
 │   ├── commands/         # slash commands（commit、opsx/、writing 系列、grill 系列）
 │   ├── skills/           # skills（openspec 工作流、mattpocock 系列、tutoring）
-│   ├── plugins/          # opencode native plugins（notify.ts：tmux 完成通知、guard.ts：金鑰洩漏防護：gitleaks staged 掃描 + fail-closed）
+│   ├── plugins/          # opencode native plugins（notify.ts：tmux 完成通知、guard.ts：金鑰洩漏防護：gitleaks staged 掃描 + fail-closed、commit-gate.ts：AI git commit 授權閘（未授權 session 一律擋，/commit 授權放行））
 │   └── scripts/          # 通知 scripts（notify-stop / notify-waiting，tmux @claude_state + BEL）
 ├── scripts/              # 一般工具腳本
 │   └── ...
