@@ -1,11 +1,12 @@
-# mattpocock-skills
+# Delta: mattpocock-skills
 
-從 `mattpocock/skills` vendor 指定 skills 到 dotfiles 的 `opencode/skills/` 目錄，並透過既有 symlink 部署讓 opencode 可用。user-invoked 的 `grill-me` / `grill-with-docs` 已遷移至 `opencode/commands/` slash commands（見 `writing-skills` 與本 spec 的 grill 系列 requirement）。
+## RENAMED Requirements
 
-## Purpose
+- FROM: `五個 mattpocock skill 檔案存在於正確路徑`
+- TO: `mattpocock vendor skill 目錄存在於正確路徑`
 
-提供 4 個來自 `https://github.com/mattpocock/skills` 的 model-invoked skills（`grilling`、`writing-for-agents`、`domain-modeling`、`code-review`），保留 upstream 內容與 invocation 分類，且不影響既有 skills；另以 2 個 slash commands（`grill-me`、`grill-with-docs`）提供 user-invoked 的 grill 流程。
-## Requirements
+## MODIFIED Requirements
+
 ### Requirement: mattpocock vendor skill 目錄存在於正確路徑
 
 系統 SHALL 在 `dotfiles/opencode/skills/` 下提供 4 個 skill 子目錄（model-invoked），每個子目錄必須包含一個 `SKILL.md` 檔案，內容來自 `https://github.com/mattpocock/skills` main 分支對應路徑的最新版本（byte-identical，含附屬檔案，本地不修改；同步 = 覆蓋）。
@@ -57,32 +58,3 @@
 #### Scenario: 子目錄名稱無衝突
 - **WHEN** 檢查 `dotfiles/opencode/skills/` 的子目錄名稱清單
 - **THEN** 不得有重複名稱（新增目錄不得與既有目錄同名）
-
-### Requirement: 安裝來源可追溯
-
-系統 SHALL 保留 upstream repo URL 與對應路徑資訊，讓日後手動重新 vendor 時有明確依據；資訊可記錄於 commit message、proposal.md、design.md，或本 spec 的 requirement 內容。
-
-#### Scenario: commit message 含 upstream 資訊
-- **WHEN** 檢視 git log 此變更的 commit
-- **THEN** commit message 必須提及來源 `mattpocock/skills`（commit message 格式由 commit 階段決定，本 spec 不強制）
-
-### Requirement: grill 系列 slash commands 存在於 opencode/commands
-
-系統 SHALL 在 `opencode/commands/` 下提供 `grill-me.md` 與 `grill-with-docs.md` 兩個 slash command 檔案，結構為：
-
-1. YAML frontmatter：`description`（沿用 upstream 原句）、`argument-hint: [topic to grill]`
-2. `Topic to grill: $ARGUMENTS` 行
-3. 指引行：`grill-me.md` 為 `Call the Skill tool with "grilling".`；`grill-with-docs.md` 為 `Call the Skill tool twice, for "grilling" and "domain-modeling".`（皆照搬 upstream SKILL.md body）
-
-#### Scenario: 2 個 command 檔案存在於 opencode/commands/
-- **WHEN** 執行 `ls opencode/commands/ | grep grill`
-- **THEN** 列出 `grill-me.md` 與 `grill-with-docs.md`
-
-#### Scenario: frontmatter 為 command 格式
-- **WHEN** 檢查兩個 command 檔案的 YAML frontmatter
-- **THEN** 含 `description` 與 `argument-hint` 欄位；不含 `disable-model-invocation`
-
-#### Scenario: 指向的 skills 存在
-- **WHEN** command 檔案內容引用 `grilling` 與 `domain-modeling`
-- **THEN** `opencode/skills/grilling/SKILL.md` 與 `opencode/skills/domain-modeling/SKILL.md` 存在
-
