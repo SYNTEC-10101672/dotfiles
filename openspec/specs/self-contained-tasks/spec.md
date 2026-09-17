@@ -8,13 +8,13 @@
 ## Requirements
 ### Requirement: Propose 階段必須區分 fact 與 decision
 
-`openspec-propose` 在產出 artifact 時,MUST 區分「環境可查的事實(fact)」與「需要使用者決定的決策(decision)」:
+`/opsx:propose` 流程（`opencode/commands/opsx/propose.md`）在產出 artifact 時,MUST 區分「環境可查的事實(fact)」與「需要使用者決定的決策(decision)」:
 
 - **Fact**(檔案路徑、API 名稱、IP/port、既有常數等環境可查者)MUST 由 AI 自行查 codebase / config / docs,將具體值 inline 寫入 artifact,不可用代名詞帶過
 - **Decision**(演算法選擇、feature 範圍等需人類判斷者)MUST 透過 AskUserQuestion 詢問使用者
 - 遇到 fact 但查 codebase 查不到時,MUST 詢問使用者(不可自行腦補代名詞)
 
-`openspec-propose/SKILL.md` 第 108 行「If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum」MUST 被刪除,並以本規則替換。
+`opencode/commands/opsx/propose.md` MUST NOT 含「If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum」或同義的「傾向自行決策以保持動能」指示,並以本規則替換。
 
 #### Scenario: 遇到服務 IP 時自行查 codebase
 
@@ -33,7 +33,7 @@
 
 ### Requirement: Propose 必須執行 Fact Lookup 階段
 
-`openspec-propose` 在 Step 4(artifact 迴圈)完成後、Step 7(顯示狀態)之前,MUST 新增「Step 5 Fact Lookup」階段,對剛寫完的 artifact(特別是 tasks.md)逐條掃描找出模糊指代並處理。
+`/opsx:propose` 流程在 Step 4(artifact 迴圈)完成後、Step 7(顯示狀態)之前,MUST 執行「Step 5 Fact Lookup」階段,對剛寫完的 artifact(特別是 tasks.md)逐條掃描找出模糊指代並處理。
 
 掃描目標 MUST 包含:
 
@@ -60,7 +60,7 @@
 
 ### Requirement: Propose 必須通過 Self-Containment Gate
 
-`openspec-propose` 在 Step 5(Fact Lookup)完成後、Step 7(顯示狀態)之前,MUST 新增「Step 6 Self-Containment Gate」階段,模擬「未參與 session 對話的 fresh AI」視角對每個 task 檢查三項:
+`/opsx:propose` 流程在 Step 5(Fact Lookup)完成後、Step 7(顯示狀態)之前,MUST 執行「Step 6 Self-Containment Gate」階段,模擬「未參與 session 對話的 fresh AI」視角對每個 task 檢查三項:
 
 1. **檔案可定位**:具體路徑(如 `src/auth.ts`)或可定位描述(如「處理 login 的 service,在 `src/services/` 下」)
 2. **變更具體**:具體 API / 行號 / 變更內容(不可是「重寫」「最佳化」「改善」這類抽象動詞)

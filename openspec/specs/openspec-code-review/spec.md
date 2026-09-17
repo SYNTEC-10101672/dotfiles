@@ -10,7 +10,7 @@
 
 系統 MUST 提供 skill `dotfiles/opencode/skills/openspec-code-review/SKILL.md`（部署於 `~/.config/opencode/skills/openspec-code-review/SKILL.md`），提供雙軸平行 sub-agents 的 code review 能力。
 
-skill description MUST 包含足夠 trigger 片段讓 model-invoked 自動觸發可行(包含「review a change」「review since」「code review」等 leading words)。
+skill description MUST 包含足夠 trigger 片段讓 model-invoked 自動觸發可行(包含「review a change」「review since」「code review」等 leading words),且流程引用使用 slash form（`/opsx:apply`）而非已刪除的 skill 名識別字。
 
 skill MUST 定義以下流程:
 
@@ -25,14 +25,14 @@ skill MUST 定義以下流程:
 - **WHEN** 讀取 `~/.config/opencode/skills/openspec-code-review/SKILL.md`
 - **THEN** MUST 包含 frontmatter(name, description)、雙軸定義、5 步流程、Fowler 12 smells baseline 列表
 
-#### Scenario: skill 可被 openspec-apply 內部 prose invocation 觸發
+#### Scenario: skill 可被 opsx apply 流程內部 prose invocation 觸發
 
-- **WHEN** `openspec-apply-change` 的 Step 7 執行「呼叫 `openspec-code-review` skill」
+- **WHEN** `/opsx:apply` 流程（`opencode/commands/opsx/apply.md`）的 Step 7 執行「呼叫 `openspec-code-review` skill」
 - **THEN** skill MUST 被載入並執行雙軸 review
 
 ### Requirement: Apply 完成實作後必須觸發 code review
 
-`openspec-apply-change/SKILL.md` MUST 在 Step 6(TDD 三階段)之後、原 Step 7(顯示狀態)之前,新增「Step 7 Code Review + Fix Loop」。
+`opencode/commands/opsx/apply.md` MUST 在 Step 6(TDD 三階段)之後、原 Step 7(顯示狀態)之前,新增「Step 7 Code Review + Fix Loop」。
 
 觸發條件:所有 T* 通過 Final phase。
 
@@ -45,12 +45,12 @@ Step 7 MUST 呼叫 `openspec-code-review` skill 進行雙軸 review,並根據 fi
 
 #### Scenario: apply 完成後自動進入 code review
 
-- **WHEN** `openspec-apply-change` 的 Step 6 Final phase 全部 T* 通過
+- **WHEN** `/opsx:apply` 流程的 Step 6 Final phase 全部 T* 通過
 - **THEN** 流程 MUST 自動進入 Step 7(Code Review),MUST NOT 跳過直接顯示完成訊息
 
 #### Scenario: 原 Step 7 改編號為 Step 8
 
-- **WHEN** 讀取 `openspec-apply-change/SKILL.md`
+- **WHEN** 讀取 `opencode/commands/opsx/apply.md`
 - **THEN** 「On completion or pause, show status」MUST 標示為 Step 8(原為 Step 7)
 
 ### Requirement: Code review 必須以雙軸平行 sub-agents 執行
@@ -99,7 +99,7 @@ Standards sub-agent 的標準來源 MUST 為:
 - 每个 smell 是 heuristic(labelled),MUST NOT 當 hard violation
 - 略過 tooling 已強制的東西(如 linter 已檢查的格式)
 
-`openspec-apply-change` 引用 Standards axis CRITICAL severity 時 MUST 使用相同語言("violates a documented repo standard / major Fowler smell"),兩個 skill 不得使用不同字眼指稱同一軸。
+`/opsx:apply` 流程（`opencode/commands/opsx/apply.md`）引用 Standards axis CRITICAL severity 時 MUST 使用相同語言("violates a documented repo standard / major Fowler smell"),兩個檔案不得使用不同字眼指稱同一軸。
 
 #### Scenario: repo 標準覆蓋 smell baseline
 
@@ -113,7 +113,7 @@ Standards sub-agent 的標準來源 MUST 為:
 
 #### Scenario: severity 用語跨文件對齊
 
-- **WHEN** 讀取 `openspec-apply-change/SKILL.md` 的 Standards axis CRITICAL 定義
+- **WHEN** 讀取 `opencode/commands/opsx/apply.md` 的 Standards axis CRITICAL 定義
 - **THEN** 表述 MUST 為 "violates a documented repo standard / major Fowler smell",與 `openspec-code-review` 的來源語言一致
 
 ### Requirement: Spec 軸必須對比 OpenSpec change artifacts
