@@ -95,7 +95,11 @@ Implement tasks from an OpenSpec change.
 
    **Trigger condition**: All T* pass Final phase.
 
-   Invoke `openspec-code-review` skill to review the diff with parallel sub-agents.
+   Invoke `code-review` skill to review the diff with parallel sub-agents.
+   Provide these OpenSpec adaptations at the call site:
+   - Spec source: the active change's artifacts — `openspec/changes/<name>/proposal.md`, `openspec/changes/<name>/specs/` (all delta specs), `openspec/changes/<name>/design.md`, `openspec/changes/<name>/tasks.md`
+   - Fixed point: `git merge-base <change-start-commit> HEAD`
+   - No issue tracker: skip tracker-based spec discovery (do not suggest running `/setup-matt-pocock-skills`)
 
    **Handle findings**:
 
