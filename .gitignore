@@ -16,6 +16,9 @@ Thumbs.db
 *.bak
 *.backup
 
+# Local issue tracker
+.scratch/
+
 # oh-my-opencode runtime
 .omo/
 

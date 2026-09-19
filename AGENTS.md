@@ -31,3 +31,13 @@ When starting a new session, if `HANDOVER.md` exists in the project root, read i
 3. Add the target name to `install` and `.PHONY`
 4. Update `check` and `uninstall` targets
 5. Update this file and README.md
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked as local markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` at the repo root, ADRs in `docs/adr/`. See `docs/agents/domain.md`.
