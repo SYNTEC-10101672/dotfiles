@@ -34,6 +34,14 @@ _Avoid_: 白名單 session（誤導為持久清單）
 已由 system prompt（全域 `AGENTS.md`）載入的規則；skills 與 commands 對其不做路徑引用也不重抄 — skill 需要的規則內文明示，ambient 的不需要任何 pointer。
 _Avoid_: 「遵循 CLAUDE.md」（dangling pointer）、「引用全域設定」（指向永遠已載入的材料是零功 pointer）
 
+**matt 系列**:
+從 mattpocock/skills repo vendor 的 skills。user-invoked 裝法 = `skills/<name>/SKILL.md` + `commands/<name>.md` 薄 wrapper；model-invoked 只裝 `skills/`。其 `handoff` 是拋棄式跨 agent 交接（文件存 OS temp dir，用完即丟）；repo 內 session 交接走 `handover`（HANDOVER.md + OpenSpec artifacts）。
+_Avoid_: handoff / handover 互換（拋棄式跨 agent vs repo session 交接是兩回事）
+
+**wrapper command**:
+`commands/*.md` 中只做 `$ARGUMENTS` 轉發給對應 skill 的薄指令檔（frontmatter + 一行 Skill tool 呼叫）。
+_Avoid_: 把 wrapper 當 skill 本體稱呼（內容在 `skills/<name>/SKILL.md`）
+
 ### 部署
 
 **deploy**:
