@@ -35,11 +35,19 @@ _Avoid_: 白名單 session（誤導為持久清單）
 _Avoid_: 「遵循 CLAUDE.md」（dangling pointer）、「引用全域設定」（指向永遠已載入的材料是零功 pointer）
 
 **matt 系列**:
-從 mattpocock/skills repo vendor 的 skills。user-invoked 裝法 = `skills/<name>/SKILL.md` + `commands/<name>.md` 薄 wrapper；model-invoked 只裝 `skills/`。其 `handoff` 是拋棄式跨 agent 交接（文件存 OS temp dir，用完即丟）；repo 內 session 交接走 `handover`（HANDOVER.md + OpenSpec artifacts）。
+從 mattpocock/skills repo vendor 的 skills。dual-entry（grilling、domain-modeling）裝法 = `skills/<name>/SKILL.md` + `commands/<name>.md` 薄 wrapper；user-only 入口（teach、handoff、wayfinder、improve-codebase-architecture、setup-matt-pocock-skills）= 自包含 `commands/<name>.md`，內容內聯、無 skill 檔（見 ADR-0001）。其 `handoff` 是拋棄式跨 agent 交接（文件存 OS temp dir，用完即丟）；repo 內 session 交接走 `handover`（HANDOVER.md + OpenSpec artifacts）。
 _Avoid_: handoff / handover 互換（拋棄式跨 agent vs repo session 交接是兩回事）
 
+**user-only 入口**:
+只由人以 slash command 觸發的工作流，形式為自包含 `commands/*.md`，不佔 skill listing。上游以 `disable-model-invocation` 表達此概念，但該 flag 在 opencode 為 no-op（core 與 OmO 皆不讀），故以刪除 skill 檔達成零 ambient。
+_Avoid_: user-invoked skill（本環境無此機制）
+
+**dual-entry skill**:
+model 與人都能觸發的 skill（如 grilling、domain-modeling）；description 常駐 system prompt 是 model 自主觸發與共用內容 home 的代價。
+_Avoid_: 與 user-only 入口混用（判準：model 會不會自主觸發）
+
 **wrapper command**:
-`commands/*.md` 中只做 `$ARGUMENTS` 轉發給對應 skill 的薄指令檔（frontmatter + 一行 Skill tool 呼叫）。
+`commands/*.md` 中只做 `$ARGUMENTS` 轉發給 dual-entry skill 的薄指令檔（frontmatter + 一行 Skill tool 呼叫）。僅 grill-me 與 grill-with-docs 使用；user-only 入口一律自包含。
 _Avoid_: 把 wrapper 當 skill 本體稱呼（內容在 `skills/<name>/SKILL.md`）
 
 ### 部署
