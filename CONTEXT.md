@@ -50,6 +50,20 @@ _Avoid_: 與 user-only 入口混用（判準：model 會不會自主觸發）
 `commands/*.md` 中只做 `$ARGUMENTS` 轉發給 dual-entry skill 的薄指令檔（frontmatter + 一行 Skill tool 呼叫）。僅 grill-me 與 grill-with-docs 使用；user-only 入口一律自包含。
 _Avoid_: 把 wrapper 當 skill 本體稱呼（內容在 `skills/<name>/SKILL.md`）
 
+### 終端機
+
+**主力終端**:
+日常使用的 terminal multiplexer，現為 herdr；tmux 為 fallback（設定凍結：壞了修、不演進，見 ADR-0002）。
+_Avoid_: 把 tmux 稱為主力、把 fallback 說成並存雙主力
+
+**native agent observation**:
+herdr 內建的 agent 偵測與狀態回報機制（detection manifests + sidebar rollup + toast/sound），涵蓋 opencode。
+_Avoid_: 與 tmux 時代的 `@claude_state` + notify scripts 觀測管線混稱（那是 fallback 專屬 hack）
+
+**tab ↔ window**:
+herdr 的 tab 是 tmux window 的對應物（workspace 內的 tab row，位置可由 `ui.tab_bar_position` 設定，現為底部）；herdr workspace 是 sidebar 的專案空間，tmux 無對應物。
+_Avoid_: 把 herdr tab 稱為 workspace（兩層結構，混用會讓 keybinding 討論失準）
+
 ### 部署
 
 **deploy**:

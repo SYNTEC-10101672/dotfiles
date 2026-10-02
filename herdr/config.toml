@@ -1,0 +1,33 @@
+onboarding = false
+
+[theme]
+name = "gruvbox"
+auto_switch = false
+
+[ui]
+status_indicators = "dots"
+tab_bar_position = "bottom"
+tab_bar_right = [
+  { type = "hostname" },
+  { type = "datetime", format = "%Y-%m-%d %H:%M" },
+]
+
+[ui.toast]
+delivery = "off"
+
+# alt+j / alt+k forward PageDown / PageUp to the focused pane for keyboards
+# without dedicated page keys. herdr pane send-keys has no page key names
+# (tested on 0.9.3), so the terminal escape sequences are sent as literal
+# text: PageDown = ESC [6~, PageUp = ESC [5~. HERDR_ACTIVE_PANE_ID is the
+# pane focused at keypress; pane current is the fallback when unset.
+[[keys.command]]
+key = "alt+j"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane send-text "${HERDR_ACTIVE_PANE_ID:-$("$HERDR_BIN_PATH" pane current | jq -r .result.pane.pane_id)}" "$(printf "\033[6~")"'
+description = "page down in focused pane"
+
+[[keys.command]]
+key = "alt+k"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane send-text "${HERDR_ACTIVE_PANE_ID:-$("$HERDR_BIN_PATH" pane current | jq -r .result.pane.pane_id)}" "$(printf "\033[5~")"'
+description = "page up in focused pane"

@@ -8,7 +8,8 @@
 - ⚡ **Neovim**: 完整的 Neovim 開發環境（包含 LSP、NERDTree、CtrlP 等），向後相容 Vim
 - 🔧 **Git**: 顏色配置、別名、自動 rebase
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
-- 🖥️ **Tmux**: 終端機多工器，支援 Vim 風格操作和美化狀態列
+- 🖥️ **Herdr**: 主力終端（terminal workspace manager for AI coding agents），tab bar 底部化、hostname/日期時間顯示、`alt+j`/`alt+k` 翻頁
+- 🖥️ **Tmux**: fallback 終端機多工器（設定凍結：壞了修、不演進，見 [ADR-0002](docs/adr/0002-herdr-replaces-tmux-primary-terminal.md)）
 - 🖥️ **opencode**: AI 編程工具設定（`opencode.json`、全域指示檔 `AGENTS.md`、commands、skills、plugins）
 
 ## 快速安裝
@@ -50,7 +51,8 @@ make nvim      # 安裝 Neovim 設定
 make opencode  # 安裝 opencode 設定
 make git       # 安裝 Git 設定
 make tig       # 安裝 Tig 設定
-make tmux      # 安裝 Tmux 設定
+make tmux      # 安裝 Tmux 設定（fallback）
+make herdr     # 安裝 Herdr 設定（主力終端）
 ```
 
 ## Makefile 指令
@@ -74,7 +76,9 @@ dotfiles/
 ├── .gitignore_global     # Git 全域忽略檔案
 ├── .gitignore            # 本專案忽略檔案
 ├── .tigrc                # Tig 設定檔（Git 文字介面）
-├── .tmux.conf            # Tmux 設定檔（終端機多工器）
+├── .tmux.conf            # Tmux 設定檔（fallback 終端機多工器）
+├── herdr/                # herdr 設定目錄（主力終端）
+│   └── config.toml       # herdr 設定檔（symlink 到 ~/.config/herdr/config.toml）
 ├── nvim/                 # Neovim 設定目錄
 │   ├── vimrc             # 主設定檔
 │   ├── init.vim          # Neovim 進入點（指向 vimrc）
@@ -169,7 +173,54 @@ nvim/                       # Neovim 配置目錄
 安裝後：
 - Neovim 配置：`~/.config/nvim/` → `dotfiles/nvim/`
 
+## Herdr 設定
+
+herdr 是[主力終端](https://herdr.dev)（terminal workspace manager for AI coding agents）；tmux 為 fallback，設定凍結。決策與 keybinding 策略見 [ADR-0002](docs/adr/0002-herdr-replaces-tmux-primary-terminal.md)。
+
+### 特色功能
+
+- **Tab bar 底部化**: tab row 位於 terminal panes 下方（`ui.tab_bar_position = "bottom"`），右側顯示 hostname 與日期時間（`ui.tab_bar_right` structured entries）
+- **`alt+j` / `alt+k` 翻頁**: 把 PageDown / PageUp 送給聚焦 pane，供無翻頁鍵的鍵盤使用。經 `[[keys.command]]`（type shell）+ `herdr pane send-text` 送 terminal escape sequence 實作（`herdr pane send-keys` 在 0.9.3 無 page key 名稱）
+- **Native agent observation**: herdr 內建 agent 偵測（detection manifests + sidebar rollup），sidebar 直接顯示 opencode 的 working/idle/blocked 狀態；tmux 時代的 `@claude_state` + notify scripts 管線不移轉（fallback 專屬，凍結）
+- **主題與通知**: theme gruvbox（部署後經 herdr Settings 變更，2026-10-02）、status indicators dots、toast delivery off
+
+### 與 tmux 的 keybinding 對應
+
+herdr 與 tmux 的 prefix 同為 `ctrl+b`。採納 herdr 原生 keybinding，不復刻 tmux 肌肉記憶（見 ADR-0002）；僅翻頁自建。herdr 的 tab 對應 tmux 的 window；herdr 的 workspace（sidebar 的專案空間）在 tmux 無對應物。
+
+| 操作 | tmux | herdr |
+|------|------|-------|
+| Pane 切換 | `Ctrl-w` + `h/j/k/l` | `prefix` + `h/j/k/l` |
+| 新 tab（tmux window） | `prefix` + `c` | `prefix` + `c` |
+| Tab 切換 | `prefix` + `1..9`、`Ctrl-w` + `j/k` | `prefix` + `1..9`、`prefix` + `n` / `p` |
+| 關閉 tab | `prefix` + `&` | `prefix` + `shift+x` |
+| 垂直分割 | `prefix` + `\|` | `prefix` + `v` |
+| 水平分割 | `prefix` + `-` | `prefix` + `minus` |
+| Pane zoom | `prefix` + `z` | `prefix` + `z` |
+| Copy mode | `prefix` + `Escape` | `prefix` + `[` |
+| Workspace 切換 | （無對應） | `prefix` + `w`（picker）、`prefix` + `g`（goto） |
+| 翻頁 | 鍵盤 PageUp/PageDown | `alt+j` / `alt+k`（自訂 `[[keys.command]]`） |
+
+### 常用指令
+
+```bash
+# 安裝 / 更新 herdr 設定（symlink 到 ~/.config/herdr/config.toml）
+make herdr
+
+# 驗證設定檔（指向 repo 檔離線驗證，不碰 live config）
+HERDR_CONFIG_PATH=~/personal/dotfiles/herdr/config.toml herdr config check
+
+# 修改設定後通知運行中的 server 生效
+herdr server reload-config
+```
+
+### 本地自訂設定
+
+設定檔由 repo 管理（symlink）；`herdr config reset-keys` 會直接改寫 `~/.config/herdr/config.toml`（即 repo 檔案），使用前請先確認 symlink 指向與 git 狀態。
+
 ## Tmux 設定
+
+tmux 為 fallback 終端機多工器，設定凍結：壞了修、不主動演進（見 [ADR-0002](docs/adr/0002-herdr-replaces-tmux-primary-terminal.md)）。
 
 ### 特色功能
 
@@ -400,6 +451,7 @@ make uninstall
 - **Neovim 0.6+**
 - Git 2.0+
 - Tig 2.0+（可選，用於 Git 圖形介面）
+- herdr 0.9.3+（可選，主力終端；`alt+j`/`alt+k` 翻頁依賴 jq）
 - fzf（必需，用於 Tig 互動式檔案選擇器）
 - jq（必需，JSON 處理器 — 通知 scripts 與一般工具使用）
 - gitleaks（必需，OpenCode secret guard 掃描；未安裝時 AI 的 git commit 會被 fail-closed 擋下）
