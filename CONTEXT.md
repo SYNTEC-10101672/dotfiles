@@ -64,6 +64,10 @@ _Avoid_: 與 tmux 時代的 `@claude_state` + notify scripts 觀測管線混稱�
 herdr 的 tab 是 tmux window 的對應物（workspace 內的 tab row，位置可由 `ui.tab_bar_position` 設定，現為底部）；herdr workspace 是 sidebar 的專案空間，tmux 無對應物。
 _Avoid_: 把 herdr tab 稱為 workspace（兩層結構，混用會讓 keybinding 討論失準）
 
+**自動命名**:
+tab 名稱自動反映該 tab 內正在執行的指令；手動改名優先於自動命名（鎖定至 tab 關閉，見 ADR-0003）。
+_Avoid_: 與 tmux `automatic-rename` 混稱（tmux 以輪詢實作、本 repo 以 shell hooks 實作；herdr 0.9.3 無原生）
+
 ### 部署
 
 **deploy**:
