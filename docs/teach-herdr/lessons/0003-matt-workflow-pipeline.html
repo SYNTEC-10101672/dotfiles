@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003 · Matt 工作流 × herdr — 從 ticket 到 merge 的整條管線</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+
+<header class="lesson-header">
+  <div class="course">herdr 工作流遷移 · Lesson 0003</div>
+  <h1>Matt 工作流 × herdr：每張 ticket 一個 worktree、一個 agent</h1>
+  <div class="meta">約 20 分鐘 · 先備：<a href="0001-agent-collaboration-loop.html">0001</a> agent 協作 loop + <a href="0002-worktree-workspaces.html">0002</a> worktree workspaces · herdr 0.9.3</div>
+</header>
+
+<p>這是 <a href="../MISSION.md">mission</a> 的具象化：你已經有規劃工具（Matt 的 <code>/to-spec</code>、<code>/to-tickets</code>、<code>/implement</code>、<code>/code-review</code>）和執行基礎設施（<code>agent prompt/wait</code> + worktree workspaces）。本課把它們焊成一條管線：<strong>規劃在主 checkout，實作散到 N 個 worktree × N 個 agents，你只審核與收斂</strong>。</p>
+
+<p class="callout"><span class="tag">已驗證</span>整條管線於 2026-10-05 在你的機器上用真 ticket 跑通（<code>/implement</code> 經 <code>agent prompt</code> 遞送、絕對路徑讀 ticket、worktree 產出、策略 (b) 未 commit）。教材輸出皆為真實執行結果。</p>
+
+<h2><span class="no">1</span>管線總覽</h2>
+
+<p><strong>規劃期（主 checkout，一個 agent 就夠）</strong>：</p>
+<pre><code>/to-spec      <span class="cmt"># 對話 → spec，存 .scratch/&lt;feature&gt;/spec.md</span>
+/to-tickets   <span class="cmt"># spec → tickets，一檔一票 .scratch/&lt;feature&gt;/issues/NN-&lt;slug&gt;.md（含 blocking edges）</span></code></pre>
+
+<p><strong>實作期（逐張 unblocked ticket）</strong>：</p>
+<ol class="flow">
+  <li data-n="1">為 ticket 開 worktree workspace（branch 命名 <code>&lt;feature&gt;-NN</code> 對應 ticket 編號）：
+<pre><code>herdr worktree create <span class="flag">--cwd</span> ~/personal/dotfiles <span class="flag">--branch</span> myfeat-01 <span class="flag">--label</span> myfeat-01 <span class="flag">--no-focus</span></code></pre></li>
+  <li data-n="2">在 root pane 啟動實作 agent：
+<pre><code>herdr agent start impl-01 <span class="flag">--kind</span> opencode <span class="flag">--pane</span> &lt;root_pane_id&gt;</code></pre></li>
+  <li data-n="3"><strong>派工</strong>——slash 指令 + 絕對路徑 ticket：
+<pre><code>herdr agent prompt impl-01 <span class="str">"/implement /home/syntec/personal/dotfiles/.scratch/myfeat/issues/01-slug.md"</span> <span class="flag">--wait</span> <span class="flag">--timeout</span> 180000</code></pre></li>
+  <li data-n="4">agent 回頭問問題時（<code>--wait</code> 返回 <code>blocked</code>）：
+<pre><code>herdr agent read impl-01 <span class="flag">--source</span> recent-unwrapped <span class="flag">--lines</span> 80
+herdr agent send-keys impl-01 <span class="str">&lt;回答 UI 所需的鍵&gt;</span></code></pre></li>
+  <li data-n="5"><strong>審核</strong>（策略 b：變更未 commit，躺在 worktree 裡等你）：
+<pre><code>git -C ~/.herdr/worktrees/dotfiles/myfeat-01 status --short
+git -C ~/.herdr/worktrees/dotfiles/myfeat-01 diff</code></pre></li>
+  <li data-n="6"><strong>收斂</strong>：滿意 → 在主 checkout merge 該 branch 並自己 commit（<code>/commit</code>）；不滿意 → 對 agent 追派修改（回到步驟 3）</li>
+  <li data-n="7"><strong>清理</strong>：
+<pre><code>herdr worktree remove <span class="flag">--workspace</span> &lt;ws-id&gt; <span class="flag">--force</span>   <span class="cmt"># 有未 commit 變更要 --force</span>
+git -C ~/personal/dotfiles branch -d myfeat-01</code></pre>
+    ticket 檔案把 <code>Status:</code> 改為 <code>resolved</code>。</li>
+</ol>
+
+<h2><span class="no">2</span>Gotcha ①：`.scratch/` 不會出現在 worktree 裡</h2>
+
+<p>worktree 是從 <code>HEAD</code> checkout 出來的乾淨目錄——<strong>untracked 與 gitignored 的檔案都不會跟過去</strong>。而你的 issue tracker（<code>.scratch/&lt;feature&gt;/</code>）整個目錄是 gitignored（<code>.gitignore</code> 第 20 行）。所以：</p>
+
+<div class="callout warn"><span class="tag">規則</span>派工時永遠給<strong>主 checkout 的絕對路徑</strong>（<code>/home/syntec/personal/dotfiles/.scratch/...</code>）。worktree agent 用絕對路徑讀得到（同一台機器、只是另一個目錄），但它<strong>自己找不到</strong>——相對路徑在它眼裡不存在。同場加映：worktree 裡也看不到主 checkout 未 commit 的變更（例如你今天寫到一半的筆記），agent 看到的是最後一個 commit 的世界。</div>
+
+<h2><span class="no">3</span>Gotcha ②：Commit Gate 是 per-session 授權</h2>
+
+<p>你的 <code>commit-gate.ts</code> 規則：AI 的 <code>git commit</code> 在<strong>未授權 session</strong> 一律擋下，<code>/commit</code> 授權只作用於該 session、不繼承、不跨 agent。管線裡每個 worktree agent 都是獨立 session，所以有兩條路：</p>
+
+<table style="border-collapse:collapse;width:100%;font-size:0.9rem">
+  <tr style="border-bottom:1px solid var(--rule)"><th style="text-align:left;padding:0.3rem 0.6rem 0.3rem 0">策略</th><th style="text-align:left;padding:0.3rem 0.6rem">做法</th><th style="text-align:left;padding:0.3rem 0.6rem">代價</th></tr>
+  <tr style="border-bottom:1px solid var(--rule)"><td style="padding:0.3rem 0.6rem 0.3rem 0"><strong>(a) 各自授權</strong></td><td style="padding:0.3rem 0.6rem">到每個 worktree agent 的 TUI 跑一次 <code>/commit</code></td><td style="padding:0.3rem 0.6rem">授權散落、review 介入點多</td></tr>
+  <tr><td style="padding:0.3rem 0.6rem 0.3rem 0"><strong>(b) 集中收斂（你選的）</strong></td><td style="padding:0.3rem 0.6rem">ticket constraints 寫明「不要 commit」；你在主 checkout 統一 review + <code>/commit</code></td><td style="padding:0.3rem 0.6rem">收斂是你的手動步驟</td></tr>
+</table>
+
+<p class="callout tip"><span class="tag">實測證據</span>策略 (b) 實測：agent 完成後回報——「未 commit：ticket 明確要求不執行 git commit，你會在主 checkout review 後統一 commit。檔案以 untracked 狀態留在這個 worktree」——連偏離 /implement 預設行為的說明都自動附上。把 constraint 寫進 ticket 就夠了。</p>
+
+<h2><span class="no">4</span>實測痕跡（你的機器，2026-10-05）</h2>
+
+<p>派工指令下達後，worktree agent 的 tab 標題從 <code>OpenCode</code> 變成：</p>
+<pre><code>OC | Implementing work from 01-demo-ticket.md</code></pre>
+<p><code>/implement</code> 確實被當成 command 執行（不是純文字訊息）。51.6 秒後：</p>
+<pre><code>$ git -C ~/.herdr/worktrees/dotfiles/teach-pipe-01 status --short
+?? docs/PIPELINE-DEMO.txt
+
+$ cat ~/.herdr/worktrees/dotfiles/teach-pipe-01/docs/PIPELINE-DEMO.txt
+herdr × Matt pipeline 教學驗證 2026-10-05</code></pre>
+<p>乾淨：一個新檔案、未 commit、無其他變更。</p>
+
+<h2><span class="no">5</span>隨堂測驗</h2>
+
+<div class="q-card" data-quiz='{"no":"Q1 · 複習 0002","q":"herdr worktree remove 之後，那條 branch 會怎樣？","choices":["保留，手動刪除","同時一併刪除","自動合併回 main"],"answer":0,"why":"remove 只刪 checkout（跑 git worktree remove）；branch 要自己 git branch -d。"}'></div>
+
+<div class="q-card" data-quiz='{"no":"Q2","q":"worktree agent 用相對路徑讀不到 .scratch/myfeat/issues/01.md，根本原因是？","choices":["scratch 被 gitignore","worktree 沒有權限","herdr 封鎖該目錄"],"answer":0,"why":"worktree 從 HEAD checkout，untracked/gitignored 檔案不會跟過去——所以派工要給主 checkout 絕對路徑。"}'></div>
+
+<div class="q-card" data-quiz='{"no":"Q3","q":"策略 (b) 下，agent 完成後你 review 的對象是？","choices":["worktree 未 commit 變更","agent 傳來 patch 檔","主 checkout 的 stash"],"answer":0,"why":"ticket 寫明不 commit，變更以 untracked/modified 狀態留在 worktree 裡等你——git -C <worktree> diff 看。"}'></div>
+
+<div class="q-card" data-quiz='{"no":"Q4","q":"不用筆記：派 agent impl-02 執行 /implement、ticket 在 /home/x/.scratch/f/issues/02-y.md，要等待完成：","input":true,"placeholder":"herdr agent prompt impl-02 ...","match":"^herdr agent prompt\\s+impl-02\\s+\"/implement\\s+/home/x/\\.scratch/f/issues/02-y\\.md\"(\\s+--wait(\\s+--timeout\\s+\\d+)?)?\\s*$","why":"herdr agent prompt impl-02 \"/implement /home/x/.scratch/f/issues/02-y.md\" --wait"}'></div>
+
+<h2><span class="no">6</span>實戰：跑一次真管線</h2>
+
+<p>驗證用的 ticket 還在你的機器上：<code>.scratch/teach-0003-pipeline/issues/01-demo-ticket.md</code>。在普通 shell 逐段執行：</p>
+
+<ol class="flow">
+  <li data-n="1">開 worktree + 啟動 agent：
+<pre><code>wt=$(herdr worktree create <span class="flag">--cwd</span> ~/personal/dotfiles <span class="flag">--branch</span> teach-drill <span class="flag">--label</span> teach-drill <span class="flag">--no-focus</span>)
+ws=$(printf <span class="str">'%s\n'</span> <span class="str">"$wt"</span> | jq -r <span class="str">'.result.workspace.workspace_id'</span>)
+pane=$(printf <span class="str">'%s\n'</span> <span class="str">"$wt"</span> | jq -r <span class="str">'.result.root_pane.pane_id'</span>)
+herdr agent start impl-drill <span class="flag">--kind</span> opencode <span class="flag">--pane</span> <span class="str">"$pane"</span></code></pre></li>
+  <li data-n="2">派工（絕對路徑！）：
+<pre><code>herdr agent prompt impl-drill <span class="str">"/implement /home/syntec/personal/dotfiles/.scratch/teach-0003-pipeline/issues/01-demo-ticket.md"</span> <span class="flag">--wait</span> <span class="flag">--timeout</span> 180000</code></pre>
+    <span class="out">預期：tab 標題變成「Implementing work from 01-demo-ticket.md」；約一分鐘返回 done</span></li>
+  <li data-n="3">審核（策略 b）：
+<pre><code>git -C ~/.herdr/worktrees/dotfiles/teach-drill status --short
+cat ~/.herdr/worktrees/dotfiles/teach-drill/docs/PIPELINE-DEMO.txt</code></pre>
+    <span class="out">預期：?? docs/PIPELINE-DEMO.txt，內容「herdr × Matt pipeline 教學驗證 2026-10-05」</span></li>
+  <li data-n="4">清理（這是練習，不做 merge）：
+<pre><code>herdr worktree remove <span class="flag">--workspace</span> <span class="str">"$ws"</span> <span class="flag">--force</span>
+git -C ~/personal/dotfiles branch -d teach-drill</code></pre></li>
+</ol>
+
+<div class="callout info"><span class="tag">何時用 /code-review</span>步驟 3 審核時，除了自己看 diff，也可以對 worktree agent 追派：<code>herdr agent prompt impl-drill "/code-review 從 main 到現在的變更" --wait</code>，或乾脆在主 checkout 對 merge 前的 branch 跑——Matt 的 code-review skill 會開雙軸 sub-agents（Standards + Spec）。</div>
+
+<h2><span class="no">7</span>課後</h2>
+
+<p><strong>Primary source</strong>：<a href="https://herdr.dev/docs/agent-automation/">Agent automation</a>（ Recipes 段）＋ 這個 repo 的 <code>docs/agents/issue-tracker.md</code>（ticket 檔案格式與 wayfinding 操作——管線的另一半規格）。</p>
+
+<p><strong>查閱</strong>：<a href="../reference/agent-and-worktree-cli.html">CLI 速查表</a> · <a href="../reference/herdr-skill-0.9.3.md">內建 skill</a></p>
+
+<p><strong>下一課（預告）</strong>：pane orchestration——測試、dev server 這些非 agent 程式的 <code>pane run / wait-output</code>，把管線的自動驗證段也自動化。繼續 <code>/teach</code>。</p>
+
+<footer class="lesson-footer">
+  <p class="ask">💬 有疑問問你的 agent。好問題：「多張 ticket 有 blocking edges 時，怎麼排 spawn 順序？」「merge 前想讓另一個 agent 先跑 /code-review，指令怎麼下？」</p>
+  <p>herdr 工作流遷移 · Lesson 0003 · 2026-10-05 · <a href="0002-worktree-workspaces.html">← Lesson 0002</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a></p>
+</footer>
+
+</main>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

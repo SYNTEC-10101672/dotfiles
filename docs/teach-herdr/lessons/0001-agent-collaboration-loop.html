@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001 · 一個 agent 指揮另一個 agent — prompt、wait 與五狀態</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+
+<header class="lesson-header">
+  <div class="course">herdr 工作流遷移 · Lesson 0001</div>
+  <h1>一個 agent 指揮另一個 agent：<code>prompt</code>、<code>wait</code> 與五狀態</h1>
+  <div class="meta">約 15 分鐘 · 先備：herdr keybinding 與基礎設定（你已具備） · 版本：herdr 0.9.3</div>
+</header>
+
+<p>你的 mission 是讓多個 AI agents 在 herdr 裡<strong>自主協作</strong>。這堂課教你最核心的一件事：<strong>用四個指令，讓一個 agent（或你自己）命令另一個 agent 做事、等它完成、讀它的回覆</strong>。</p>
+
+<p class="callout tip"><span class="tag">已驗證</span>本課的實戰練習於 2026-10-05 在你的機器上完整跑過一次（split → start → prompt → read → cleanup），輸出是真實的。</p>
+
+<h2><span class="no">1</span>兩種控制面：pane vs agent</h2>
+
+<p>herdr 把 automation 分成兩層 surface——<a href="https://herdr.dev/docs/agent-automation/#three-primitives">官方文件</a>的原則：</p>
+
+<ul>
+  <li><strong>pane 指令</strong>：控制 raw terminal。跑指令、送 input、讀輸出。pane 裡<strong>不一定</strong>有 agent。</li>
+  <li><strong>agent 指令</strong>：控制「被 herdr 認出的 coding agent」。herdr 會驗證 agent 身分、追蹤它的 lifecycle 狀態。</li>
+</ul>
+
+<p>關鍵差別：<code>agent start</code> 只能在<strong>既有、可用 shell prompt 的 pane</strong> 上啟動 agent——它不會自己 split pane。所以「開 agent」永遠是兩步：先 <code>pane split</code>，再 <code>agent start</code>。</p>
+
+<h2><span class="no">2</span>五個 lifecycle 狀態</h2>
+
+<p>所有 <code>agent</code> 指令的等待與判斷都圍繞這五個狀態（<a href="https://herdr.dev/docs/concepts/#agent">官方定義</a>）：</p>
+
+<p>
+  <span class="state-pill st-working">working</span> agent 正在執行<br>
+  <span class="state-pill st-blocked">blocked</span> herdr 認出 approval / question / permission UI<br>
+  <span class="state-pill st-idle">idle</span> 完成或等待中，且<strong>已被看見</strong><br>
+  <span class="state-pill st-done">done</span> 完成但<strong>尚未被看見</strong><br>
+  <span class="state-pill st-unknown">unknown</span> 有 agent，但 herdr 無法有信心分類
+</p>
+
+<div class="callout info"><span class="tag">idle vs done</span>兩者都代表「可接受 input」。<code>done</code> 只是那個 completion 還沒被 mark as seen——<strong>read 不會 mark seen，focus 才會</strong>（每個 TUI client 各自追蹤）。所以從 CLI 觀察時，完成的 agent 常顯示 <code>done</code>；你點過去 focus 之後才變 <code>idle</code>。記住：Sidebar 的 Done badge 和 CLI 看到的可能不同步，這是設計不是 bug。</div>
+
+<div class="callout warn"><span class="tag">blocked 是嚴格判定</span>herdr 只在 pane 的 live bottom-buffer match 到<strong>已知</strong> approval/question UI 時才標 <code>blocked</code>（<a href="https://herdr.dev/docs/agents/#blocked-state">官方說明</a>）。「看起來卡住」不等於 <code>blocked</code>。狀態有問題時用 <code>herdr agent explain &lt;target&gt;</code> 查判定過程。</div>
+
+<h2><span class="no">3</span>TARGET：怎麼指到一個 agent</h2>
+
+<p>所有 agent 指令的第一個參數是 <code>&lt;TARGET&gt;</code>，只接受兩種東西（<a href="../reference/herdr-skill-0.9.3.md">內建 skill file</a>）：</p>
+
+<ol>
+  <li><strong>live agent 名稱</strong>：須符合 <code>[a-z][a-z0-9_-]{0,31}</code>，且在 live agents 中唯一。名稱跟著 pane 的目前 occupant，agent 結束時清掉。</li>
+  <li><strong>pane ID</strong>：如 <code>wK:p2</code>——正在承載該 agent 的 pane。</li>
+</ol>
+
+<p><strong>不</strong>接受 terminal ID，也<strong>不</strong>接受 <code>opencode</code> 這種 agent-kind 標籤（同名 agent 可能有好幾個）。</p>
+
+<h2><span class="no">4</span>核心 loop：四步</h2>
+
+<ol class="flow">
+  <li data-n="1"><strong>split 出新 pane</strong>（回傳 JSON，用 jq 取 <code>.result.pane.pane_id</code>）<pre><code><span class="cmd">split</span>=$(herdr pane split --current --direction right --cwd <span class="str">"$PWD"</span> <span class="flag">--no-focus</span>)
+pane_id=$(printf <span class="str">'%s\n'</span> <span class="str">"$split"</span> | jq -r <span class="str">'.result.pane.pane_id'</span>)</code></pre></li>
+  <li data-n="2"><strong>在該 pane 啟動 agent 並命名</strong><pre><code>herdr agent start <span class="cmd">trainee</span> <span class="flag">--kind</span> opencode <span class="flag">--pane</span> <span class="str">"$pane_id"</span></code></pre>
+    <code>--kind</code> 支援 25 種（claude、codex、opencode、cursor、amp…），<code>--</code> 後面接 agent 原生參數。回傳前 herdr 會等到 agent 被偵測且 ready（預設 30 秒 timeout）。</li>
+  <li data-n="3"><strong>派工並等待</strong><pre><code>herdr agent prompt <span class="cmd">trainee</span> <span class="str">"Review the current diff"</span> <span class="flag">--wait</span> <span class="flag">--timeout</span> 120000</code></pre></li>
+  <li data-n="4"><strong>讀回覆</strong><pre><code>herdr agent read <span class="cmd">trainee</span> <span class="flag">--source</span> recent-unwrapped <span class="flag">--lines</span> 120</code></pre></li>
+</ol>
+
+<p>這就是 herdr 首頁說的「agents … prompt each other, and wait until another agent is genuinely blocked instead of firing keystrokes and hoping」的具體實作（<a href="https://herdr.dev/docs/agent-automation/#recipes">官方 recipe</a>）。</p>
+
+<h2><span class="no">5</span><code>--wait</code> 的真實語意</h2>
+
+<p><code>agent prompt --wait</code> 不是「送字串後等 idle」那麼簡單（<a href="https://herdr.dev/docs/agent-automation/#choose-the-control-surface">官方語意</a>）：</p>
+
+<ol>
+  <li>文字與 encoded Enter 以<strong>單一有序提交</strong>送出（遵守 bracketed-paste mode）。</li>
+  <li>agent 已是 <code>blocked</code> → 立即回傳 <code>agent_blocked</code>，<strong>不送任何 input</strong>。此時先 <code>agent read</code> 看 UI，再決定送什麼鍵。</li>
+  <li>agent 原本不是 <code>working</code> → herdr 給 <strong>5 秒</strong>觀察期，必須看到 <code>working</code> 或 <code>blocked</code> 動靜，否則回傳 <code>agent_prompt_stalled</code>。</li>
+  <li>看到動靜後，等第一個 settled state（預設 <code>idle</code>/<code>done</code>/<code>blocked</code>）。</li>
+</ol>
+
+<div class="callout"><span class="tag">注意</span>wait 追蹤的是 <strong>lifecycle 狀態，不是單一 turn</strong>。如果 agent 本來就在 working，這個 turn 的完成就可能直接滿足等待。另外 timeout/stalled <strong>不代表 prompt 沒送達</strong>——先 read 再決定，不要盲目重送。</div>
+
+<p>等「別的 agent 真的卡住」用獨立的 wait：</p>
+<pre><code>herdr agent wait <span class="cmd">reviewer</span> <span class="flag">--until</span> blocked <span class="flag">--timeout</span> 120000</code></pre>
+<p><code>--until</code> 可重複（如 <code>--until idle --until done</code>）。低階互動（回答 blocked UI）用 <code>agent send-keys &lt;target&gt; esc|enter|ctrl+c</code>。</p>
+
+<h2><span class="no">6</span>隨堂測驗</h2>
+
+<div class="q-card" data-quiz='{"no":"Q1","q":"五狀態中，哪個代表「agent 已完成，但這個 completion 尚未被看見」？","choices":["idle","done","blocked","unknown"],"answer":1,"why":"idle = 已看見的完成；read 不會 mark seen，focus 才會。"}'></div>
+
+<div class="q-card" data-quiz='{"no":"Q2","q":"herdr agent prompt 對「已經 blocked」的 agent 送 prompt，herdr 會怎麼處理？","choices":["直接拒絕不送輸入","照常送出等待回覆","照常送出自動作答"],"answer":0,"why":"官方語意：rejected with agent_blocked before any input is sent。先 read 看 UI 再回應。"}'></div>
+
+<div class="q-card" data-quiz='{"no":"Q3","q":"不用筆記，寫出「等 reviewer 真正停在 approval/question UI」的完整指令（最多 120 秒）：","input":true,"placeholder":"herdr ...","match":"^\\s*herdr\\s+agent\\s+wait\\s+reviewer\\s+--until\\s+blocked(\\s+--timeout\\s+120000)?\\s*$","why":"herdr agent wait reviewer --until blocked --timeout 120000"}'></div>
+
+<div class="q-card" data-quiz='{"no":"Q4","q":"agent 指令的 <TARGET> 可以是什麼？","choices":["agent 名稱或 pane ID","agent kind 或 terminal ID","workspace 或 tab ID"],"answer":0,"why":"TARGET = 唯一 live agent 名稱（[a-z][a-z0-9_-]{0,31}）或承載它的 pane ID。不接受 kind 標籤——同名 agent 可能有多個。"}'></div>
+
+<h2><span class="no">7</span>實戰：在你的 herdr 跑一次完整 loop</h2>
+
+<p>隨便挑一個 herdr pane 的<strong>普通 shell</strong>（不是 opencode 裡面），貼上執行。過程中盯著 sidebar，你會看到 trainee 的狀態變化——這正是 <a href="https://herdr.dev/docs/agents/#how-status-works">native agent observation</a> 在工作。</p>
+
+<ol class="flow">
+  <li data-n="1">split pane 並啟動 trainee（opencode）：
+<pre><code><span class="cmd">split</span>=$(herdr pane split --current --direction right --cwd <span class="str">"$PWD"</span> <span class="flag">--no-focus</span>)
+pane_id=$(printf <span class="str">'%s\n'</span> <span class="str">"$split"</span> | jq -r <span class="str">'.result.pane.pane_id'</span>)
+herdr agent start trainee <span class="flag">--kind</span> opencode <span class="flag">--pane</span> <span class="str">"$pane_id"</span></code></pre>
+    <span class="out">預期：JSON 回傳 agent_status:"idle"、interactive_ready:true</span></li>
+  <li data-n="2">派一個無害任務並等待：
+<pre><code>herdr agent prompt trainee <span class="str">"這是一個 herdr 教學驗證。請只回覆：OK"</span> <span class="flag">--wait</span> <span class="flag">--timeout</span> 120000</code></pre>
+    <span class="out">預期：回傳 agent_status:"done"（不是 idle——你還沒 focus 過去 mark as seen！）</span></li>
+  <li data-n="3">讀回覆：
+<pre><code>herdr agent read trainee <span class="flag">--source</span> recent-unwrapped <span class="flag">--lines</span> 60</code></pre>
+    <span class="out">預期：在輸出中找到 "OK"（讀太少行會只看到 TUI footer，這是 --lines 的用處）</span></li>
+  <li data-n="4">清理自己開的 pane：
+<pre><code>herdr pane close <span class="str">"$pane_id"</span></code></pre></li>
+</ol>
+
+<div class="callout warn"><span class="tag">安全守則</span>背景工作一律 <code>--no-focus</code>（別搶使用者的 focus）。ID 從 JSON response 解析，不要用 sidebar 順序猜。沒有自己建立的 workspace/tab/pane 不要關。<code>herdr server stop</code> 會殺掉所有 panes——沒有明確意圖永遠不要跑。</div>
+
+<h2><span class="no">8</span>課後</h2>
+
+<p><strong>Primary source（今天讀這個）</strong>：<a href="https://herdr.dev/docs/agent-automation/">Agent automation — herdr 官方文件</a>。整頁就是本課主題，含 recipes 與 --wait 完整語意。</p>
+
+<p><strong>查閱</strong>：<a href="../reference/herdr-skill-0.9.3.md">herdr 內建 agent skill（0.9.3 逐字版）</a> · <a href="../reference/agent-and-worktree-cli.html">agent / worktree CLI 速查表</a></p>
+
+<p><strong>下一課（預告）</strong>：git worktree workspaces——<code>herdr worktree create --branch</code> 直接開一個綁 branch 的 workspace，每個 agent 獨立 checkout 平行開發。用 <code>/teach</code> 繼續。</p>
+
+<footer class="lesson-footer">
+  <p class="ask">💬 有任何不清楚的，直接問你的 agent（就是平常跟你對話的這個）——它是你的老師。例如：「為什麼我 prompt 之後等很久都沒回？」或「agent prompt 可以用在正在 working 的 agent 上嗎？」</p>
+  <p>herdr 工作流遷移 · Lesson 0001 · 2026-10-05 · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="https://herdr.dev/docs/agent-automation/">官方文件</a></p>
+</footer>
+
+</main>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

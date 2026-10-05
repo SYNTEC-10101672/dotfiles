@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002 · 每個 agent 一個 worktree — herdr worktree workspaces</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main>
+
+<header class="lesson-header">
+  <div class="course">herdr 工作流遷移 · Lesson 0002</div>
+  <h1>每個 agent 一個 worktree：<code>worktree create / open / remove</code></h1>
+  <div class="meta">約 15 分鐘 · 先備：<a href="0001-agent-collaboration-loop.html">Lesson 0001</a>（agent 協作 loop） · 版本：herdr 0.9.3</div>
+</header>
+
+<p><a href="../MISSION.md">Mission</a> 要的是多 agents 平行開發。Lesson 0001 讓你指揮 agent，但兩個 agents 共用同一個 checkout 時，branch 切換、build 產物會互踩。解法 herdr 原生就有：<strong>一個 worktree = 一個 workspace = 一條 branch</strong>，多 agents 各自平行、互不干擾。</p>
+
+<p class="callout tip"><span class="tag">你已經在用這個 pattern</span>你的 appkernel 專案已手動維護多個 git worktrees（<code>appkernel_ATEST_8947</code>、<code>appkernel_GTK</code>、<code>appkernel_review</code>）。herdr 把這個手動流程產品化——本課最後還會教你把既有 worktrees <strong>收編</strong>成 managed workspaces。</p>
+
+<p class="callout"><span class="tag">已驗證</span>本課 drill 於 2026-10-05 在你的機器完整跑過（create → close → open → remove → branch 清理），教材輸出皆為真實執行結果。</p>
+
+<h2><span class="no">1</span>worktree workspace 是什麼</h2>
+
+<p>就是<strong>帶 Git checkout 來源的普通 workspace</strong>（<a href="https://herdr.dev/docs/configuration/#worktrees">官方文件</a>）。普通 workspace 能做的它全都能：focus、rename、close、開 tabs/panes、跑 agents。差別只有一個：它知道自己從哪個 repo、哪條 branch checkout 出來，並與 parent repo 的 workspace 自動<strong>分組</strong>（sidebar 裡看得到從屬關係）。</p>
+
+<h2><span class="no">2</span><code>worktree create</code> 一句話做五件事</h2>
+
+<pre><code>herdr worktree create <span class="flag">--cwd</span> ~/personal/dotfiles <span class="flag">--branch</span> teach-0002 <span class="flag">--label</span> teach-0002 <span class="flag">--no-focus</span></code></pre>
+
+<p>這一條指令（<a href="https://herdr.dev/docs/cli-reference/#worktrees">CLI reference</a>）：</p>
+<ol class="flow">
+  <li data-n="1">建 Git worktree checkout（目錄預設在 <code>~/.herdr/worktrees/&lt;repo&gt;/&lt;branch-slug&gt;</code>，可由 config <code>[worktrees] directory</code> 改）</li>
+  <li data-n="2">開一個新 workspace（含第一個 tab 與 root pane，cwd 直接指到 checkout）</li>
+  <li data-n="3">與 parent repo 的 workspace 分組</li>
+  <li data-n="4">branch 已存在 → checkout 該 branch；不存在 → 從 <code>--base</code>（預設 <code>HEAD</code>）建立</li>
+  <li data-n="5">回傳 JSON：<code>.result.workspace</code>、<code>.result.tab</code>、<code>.result.root_pane</code>——下一步要用的 ID 都在裡面</li>
+</ol>
+
+<p>真實回應（節錄自你的機器）：</p>
+<pre><code>{"result":{"type":"worktree_created",
+  "workspace":{"workspace_id":"wN","label":"teach-0002","number":3,
+    "worktree":{"branch":"teach-0002","repo_root":"/home/syntec/personal/dotfiles",
+                "checkout_path":"/home/syntec/.herdr/worktrees/dotfiles/teach-0002"}},
+  "root_pane":{"pane_id":"wN:p1","cwd":"/home/syntec/.herdr/worktrees/dotfiles/teach-0002"}}}</code></pre>
+
+<div class="callout info"><span class="tag">與 Lesson 0001 接軌</span>create 回傳 <code>root_pane</code> 的 pane ID——直接 <code>herdr agent start builder --kind opencode --pane wN:p1</code>，就是「每個 agent 一條 branch 平行開發」的完整形。create 與 agent start 是兩個明確步驟（<code>agent start</code> 永遠不自己建 pane）。</div>
+
+<h2><span class="no">3</span>生命週期：close ≠ open ≠ remove</h2>
+
+<table style="border-collapse:collapse;width:100%;font-size:0.9rem">
+  <tr style="border-bottom:1px solid var(--rule)"><th style="text-align:left;padding:0.3rem 0.6rem 0.3rem 0">指令</th><th style="text-align:left;padding:0.3rem 0.6rem">herdr state</th><th style="text-align:left;padding:0.3rem 0.6rem">checkout 目錄</th><th style="text-align:left;padding:0.3rem 0.6rem">branch</th></tr>
+  <tr style="border-bottom:1px solid var(--rule)"><td style="padding:0.3rem 0.6rem 0.3rem 0"><code>workspace close &lt;id&gt;</code></td><td style="padding:0.3rem 0.6rem">關閉</td><td style="padding:0.3rem 0.6rem"><strong>保留</strong></td><td style="padding:0.3rem 0.6rem">保留</td></tr>
+  <tr style="border-bottom:1px solid var(--rule)"><td style="padding:0.3rem 0.6rem 0.3rem 0"><code>worktree open --branch</code></td><td style="padding:0.3rem 0.6rem">重新接上（<strong>新 workspace ID</strong>，ID 不重用）</td><td style="padding:0.3rem 0.6rem">沿用既有</td><td style="padding:0.3rem 0.6rem">沿用既有</td></tr>
+  <tr><td style="padding:0.3rem 0.6rem 0.3rem 0"><code>worktree remove --workspace &lt;id&gt;</code></td><td style="padding:0.3rem 0.6rem">關閉</td><td style="padding:0.3rem 0.6rem">刪除（跑 <code>git worktree remove</code>；dirty 才需 <code>--force</code>）</td><td style="padding:0.3rem 0.6rem"><strong>保留——要手動</strong> <code>git branch -d</code></td></tr>
+</table>
+
+<div class="callout warn"><span class="tag">危險區</span><code>workspace close &lt;id&gt; --group</code> 會<strong>連坐</strong>：關掉 primary workspace 加上它全部連動的 worktree workspaces（<a href="../reference/herdr-skill-0.9.3.md">內建 skill</a> 明文警告）。永遠不要為了繞過 <code>workspace_group_close_required</code> 加這個 flag。另外 <code>--trust-repository</code> 是 per-request 的 Git trust 授權，<strong>不是</strong>worktree 指令失敗時的常規重試選項。</div>
+
+<div class="callout"><span class="tag">查 list 要明確</span>不帶參數的 <code>herdr worktree list</code> 以<strong>focused workspace</strong> 的 repo 為範圍——你的機器上它列出的是 appkernel（當時 focus 在 wH）。批次/腳本中一律用 <code>--cwd &lt;path&gt;</code> 或 <code>--workspace &lt;id&gt;</code> 明確指定，別依賴 focus（同 Lesson 0001 安全守則）。</div>
+
+<h2><span class="no">4</span>隨堂測驗</h2>
+
+<div class="q-card" data-quiz='{"no":"Q1 · 複習 0001","q":"CLI 觀察下（沒 focus 過去），agent 完成一輪後通常停在哪個狀態？","choices":["idle","done","blocked","unknown"],"answer":1,"why":"read 不會 mark as seen，focus 才會——所以 CLI 看到的是 done。"}'></div>
+
+<div class="q-card" data-quiz='{"no":"Q2","q":"worktree create --branch feat-x，但 feat-x 已存在於 repo。herdr 會？","choices":["直接 checkout 該分支","直接拒絕並報錯誤","覆蓋重建該分支"],"answer":0,"why":"branch 已存在 → checkout 該 branch；不存在才從 --base（預設 HEAD）建立。"}'></div>
+
+<div class="q-card" data-quiz='{"no":"Q3","q":"要刪掉 worktree 的 checkout 目錄，正確指令是？","choices":["herdr worktree remove","herdr workspace close","git worktree prune"],"answer":0,"why":"close 只關 herdr state（checkout 留在磁碟）；git 的 prune 只清 stale admin 記錄，不刪活著的 checkout。"}'></div>
+
+<div class="q-card" data-quiz='{"no":"Q4","q":"herdr workspace close <id> --group 會關閉什麼？","choices":["primary 與連動 worktree","僅 primary 留 worktree","僅 worktree 留 primary"],"answer":0,"why":"--group 連坐關閉 primary workspace 與其全部連動 worktree workspaces——內建 skill 明文警告勿繞過 group 提示。"}'></div>
+
+<div class="q-card" data-quiz='{"no":"Q5","q":"不用筆記：在 ~/demo-repo 開一個 branch spike-idea、label spike、不搶 focus 的完整指令：","input":true,"placeholder":"herdr worktree create ...","match":"^herdr worktree create(?=.*--cwd)(?=.*--branch\\s+spike-idea)(?=.*--label\\s+spike)(?=.*--no-focus).*$","why":"herdr worktree create --cwd ~/demo-repo --branch spike-idea --label spike --no-focus"}'></div>
+
+<h2><span class="no">5</span>實戰：完整生命週期跑一遍</h2>
+
+<p>在普通 shell 執行（用你的 dotfiles repo 當白老鼠）。過程盯 sidebar：新 workspace 會出現、消失、再出現（換新 ID）。</p>
+
+<ol class="flow">
+  <li data-n="1"><strong>建立</strong>：
+<pre><code>herdr worktree create <span class="flag">--cwd</span> ~/personal/dotfiles <span class="flag">--branch</span> teach-0002 <span class="flag">--label</span> teach-0002 <span class="flag">--no-focus</span></code></pre>
+    <span class="out">預期：type:"worktree_created"，root_pane 的 cwd 在 ~/.herdr/worktrees/dotfiles/teach-0002</span></li>
+  <li data-n="2"><strong>驗證 Git 觀點</strong>：
+<pre><code>git -C ~/personal/dotfiles worktree list</code></pre>
+    <span class="out">預期：主 checkout 之外多一行 linked worktree，branch teach-0002 指向與 main 相同的 commit</span></li>
+  <li data-n="3"><strong>close 只關 state</strong>（記下 step 1 回傳的 workspace_id，示範設為 wN）：
+<pre><code>herdr workspace close wN
+git -C ~/personal/dotfiles worktree list   <span class="cmt"># checkout 還在！</span></code></pre></li>
+  <li data-n="4"><strong>open 重新接上</strong>——注意是新 workspace ID（ID 不重用）：
+<pre><code>herdr worktree open <span class="flag">--cwd</span> ~/personal/dotfiles <span class="flag">--branch</span> teach-0002 <span class="flag">--no-focus</span></code></pre>
+    <span class="out">預期：新 ws（我們跑的時候是 wP，你的會不同），cwd 指回同一個 checkout</span></li>
+  <li data-n="5"><strong>remove + branch 清理</strong>（remove 不刪 branch，收尾要兩步）：
+<pre><code>herdr worktree remove <span class="flag">--workspace</span> &lt;step-4的ws-id&gt;
+git -C ~/personal/dotfiles branch -d teach-0002</code></pre></li>
+</ol>
+
+<p><strong>加分題（收編既有 worktrees）</strong>：把你在 appkernel 的手動 worktree 變成 managed workspace——</p>
+<pre><code>herdr worktree open <span class="flag">--cwd</span> ~/personal/windows_projects/appkernel <span class="flag">--path</span> ~/personal/windows_projects/appkernel_GTK <span class="flag">--no-focus</span></code></pre>
+<p>收編後 sidebar 直接看得到它，也能對它跑 workspace/pane/agent 全套指令。用完 <code>workspace close</code> 即可（checkout 是你自己的，別跑 remove）。</p>
+
+<h2><span class="no">6</span>課後</h2>
+
+<p><strong>Primary source</strong>：<a href="https://herdr.dev/docs/cli-reference/#worktrees">CLI reference — Worktrees</a> 加 <a href="https://herdr.dev/docs/configuration/#worktrees">Configuration — Worktrees</a>（兩段加起來十分鐘，是這主題的全部官方文件）。</p>
+
+<p><strong>查閱</strong>：<a href="../reference/agent-and-worktree-cli.html">agent / worktree CLI 速查表</a> · <a href="../reference/herdr-skill-0.9.3.md">內建 skill（0.9.3）</a></p>
+
+<p><strong>下一課（預告）</strong>：Matt 工作流 × herdr——把你的 <code>/to-tickets</code>、<code>/implement</code>、<code>/code-review</code> 掛到 worktree + agent 上：每張 ticket 一個 worktree、一個 agent，<code>agent prompt</code> 遞送 slash 指令派工。繼續用 <code>/teach</code>。</p>
+
+<footer class="lesson-footer">
+  <p class="ask">💬 有疑問直接問你的 agent。好問題例如：「worktree workspace 裡的 agent commit 之後，我要怎麼把幾條 branch 收回 main？」「remove 之後 sidebar 還顯示 workspace 怎麼辦？」</p>
+  <p>herdr 工作流遷移 · Lesson 0002 · 2026-10-05 · <a href="0001-agent-collaboration-loop.html">← Lesson 0001</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a></p>
+</footer>
+
+</main>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

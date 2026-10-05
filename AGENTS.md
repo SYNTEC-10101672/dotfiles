@@ -34,6 +34,10 @@ When starting a new session, if `HANDOVER.md` exists in the project root, read i
 
 ## Agent skills
 
+### Teaching workspace
+
+herdr 教學工作區（`/teach` command）位於 `docs/teach-herdr/`：MISSION.md、RESOURCES.md、NOTES.md、`lessons/`、`reference/`、`learning-records/`、`assets/`。執行 `/teach` 時以該目錄為 teaching workspace root（非 repo root）。
+
 ### Issue tracker
 
 Issues are tracked as local markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.

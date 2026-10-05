@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>herdr 速查表 · Agent 協作 + Git Worktree（0.9.3）</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  body { font-size: 0.95rem; }
+  section { margin-top: 2.2rem; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.88rem; margin: 0.8rem 0; }
+  th, td { border: 1px solid var(--rule); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+  th { background: var(--bg-soft); font-family: var(--mono); font-size: 0.78rem; }
+  td code { white-space: nowrap; }
+</style>
+</head>
+<body>
+<main style="max-width: 52rem">
+
+<header class="lesson-header">
+  <div class="course">herdr 速查表</div>
+  <h1>Agent 協作 + Git Worktree</h1>
+  <div class="meta">版本綁定 herdr 0.9.3 · 對照 <a href="https://herdr.dev/docs/cli-reference/">官方 CLI reference</a> · 列印用</div>
+</header>
+
+<section id="states">
+<h2>五個 agent 狀態</h2>
+<table>
+  <tr><th>狀態</th><th>意義</th><th>備註</th></tr>
+  <tr><td><span class="state-pill st-working">working</span></td><td>執行中</td><td>prompt 可送達</td></tr>
+  <tr><td><span class="state-pill st-blocked">blocked</span></td><td>認出 approval / question UI</td><td>嚴格判定：只 match 已知 UI；prompt 送入會被拒（<code>agent_blocked</code>）</td></tr>
+  <tr><td><span class="state-pill st-idle">idle</span></td><td>完成且<strong>已被看見</strong></td><td rowspan="2">read 不 mark seen、focus 才會；CLI 視角常是 done，TUI 點過去才變 idle</td></tr>
+  <tr><td><span class="state-pill st-done">done</span></td><td>完成但<strong>未被看見</strong></td></tr>
+  <tr><td><span class="state-pill st-unknown">unknown</span></td><td>無法有信心分類</td><td>不等於完成；wait 需明確 <code>--until unknown</code></td></tr>
+</table>
+</section>
+
+<section id="agent-loop">
+<h2>Agent 協作 loop</h2>
+<pre><code><span class="cmt"># 1. split pane（--current = 呼叫者 pane；記得 --no-focus）</span>
+<span class="cmd">split</span>=$(herdr pane split --current --direction right --cwd <span class="str">"$PWD"</span> <span class="flag">--no-focus</span>)
+pane_id=$(printf <span class="str">'%s\n'</span> <span class="str">"$split"</span> | jq -r <span class="str">'.result.pane.pane_id'</span>)
+
+<span class="cmt"># 2. 啟動並命名 agent（25 種 kind：opencode, claude, codex, cursor, amp…）</span>
+herdr agent start <span class="cmd">&lt;name&gt;</span> <span class="flag">--kind</span> opencode <span class="flag">--pane</span> <span class="str">"$pane_id"</span> [-- <span class="str">agent-args…</span>]
+
+<span class="cmt"># 3. 派工 + 等待（單一有序提交；blocked 拒收；5 秒 stall gate）</span>
+herdr agent prompt <span class="cmd">&lt;target&gt;</span> <span class="str">"工作描述"</span> <span class="flag">--wait</span> <span class="flag">--timeout</span> 120000
+
+<span class="cmt"># 4. 讀回覆</span>
+herdr agent read <span class="cmd">&lt;target&gt;</span> <span class="flag">--source</span> recent-unwrapped <span class="flag">--lines</span> 120</code></pre>
+
+<table>
+  <tr><th>指令</th><th>用途</th></tr>
+  <tr><td><code>herdr agent list</code></td><td>所有 live agents（JSON：名稱、狀態、pane、cwd）</td></tr>
+  <tr><td><code>herdr agent get &lt;target&gt;</code></td><td>單一 agent 現況</td></tr>
+  <tr><td><code>herdr agent wait &lt;t&gt; --until &lt;s&gt; [--timeout ms]</code></td><td>等到狀態；<code>--until</code> 可重複；預設 idle/done/blocked</td></tr>
+  <tr><td><code>herdr agent send-keys &lt;t&gt; esc|enter|ctrl+c</code></td><td>低階互動（回答 blocked UI）；寫入前先驗證全部 key</td></tr>
+  <tr><td><code>herdr agent rename &lt;pane-id&gt; &lt;name&gt;</code></td><td>手動啟動的 agent 事後命名</td></tr>
+  <tr><td><code>herdr agent focus &lt;target&gt;</code></td><td>focus 過去（會 mark completion as seen）</td></tr>
+  <tr><td><code>herdr agent explain &lt;target&gt;</code></td><td>除錯偵測判定：manifest 版本、matched rule、fallback 原因</td></tr>
+</table>
+
+<p><strong>TARGET</strong> = 唯一 live agent 名稱（<code>[a-z][a-z0-9_-]{0,31}</code>）或承載 pane ID（如 <code>wK:p2</code>）。不接受 terminal ID / agent kind。</p>
+</section>
+
+<section id="pane">
+<h2>Pane 讀取 sources</h2>
+<table>
+  <tr><th>source</th><th>內容</th></tr>
+  <tr><td><code>visible</code></td><td>目前 viewport</td></tr>
+  <tr><td><code>recent</code></td><td>近期輸出（含 soft wrap）</td></tr>
+  <tr><td><code>recent-unwrapped</code></td><td>wrap 合併——<strong>logs / transcript 首選</strong></td></tr>
+  <tr><td><code>detection</code></td><td>agent 偵測用的 bottom-buffer 快照</td></tr>
+</table>
+<pre><code>herdr pane run &lt;pane-id&gt; <span class="str">"just test"</span>                    <span class="cmt"># 送指令 + Enter</span>
+herdr pane wait-output &lt;pane-id&gt; <span class="flag">--match</span> <span class="str">"test result"</span>   <span class="cmt"># 或 --regex（Rust regex）</span></code></pre>
+</section>
+
+<section id="worktree">
+<h2>Git Worktree（原生功能）</h2>
+<p>worktree = <strong>帶 Git checkout 來源的 workspace</strong>：可 focus/rename/close、開 tabs/panes、跑 agents，與 parent repo workspace 自動分組。</p>
+<pre><code><span class="cmt"># 建立（branch 已存在則 checkout；不存在則從 --base/HEAD 建立）</span>
+herdr worktree create <span class="flag">--cwd</span> ~/Projects/my-repo <span class="flag">--branch</span> review-api <span class="flag">--label</span> review-api <span class="flag">--no-focus</span>
+
+<span class="cmt"># 開啟既有 worktree（--path 或 --branch 擇一）</span>
+herdr worktree open <span class="flag">--cwd</span> ~/Projects/my-repo <span class="flag">--branch</span> review-api
+
+<span class="cmt"># 列出 / 移除（remove 跑 git worktree remove，不刪 branch；dirty 才需 --force）</span>
+herdr worktree list
+herdr worktree remove <span class="flag">--workspace</span> &lt;id&gt; [--force]</code></pre>
+<table>
+  <tr><th>項目</th><th>說明</th></tr>
+  <tr><td>預設目錄</td><td><code>[worktrees] directory = "~/.herdr/worktrees"</code>，checkout 在 <code>&lt;directory&gt;/&lt;repo&gt;/&lt;branch-slug&gt;</code></td></tr>
+  <tr><td><code>--trust-repository</code></td><td>每次請求授予 Git trust；<strong>不是</strong>失敗重試的常規選項</td></tr>
+  <tr><td>close vs remove</td><td><code>workspace close</code> 只關 herdr state（checkout/branch 都留）；<code>worktree remove</code> 才刪 checkout</td></tr>
+  <tr><td>group</td><td><code>workspace close --group</code> 關閉 primary + 連動 worktree workspaces——要小心</td></tr>
+</table>
+<p><strong>每 agent 一 worktree</strong>：create 之後在該 workspace 的 root pane 跑 <code>agent start</code>（create 與 start 是兩個明確步驟）。</p>
+</section>
+
+<section id="env">
+<h2>環境變數</h2>
+<table>
+  <tr><th>變數</th><th>出現處</th><th>用途</th></tr>
+  <tr><td><code>HERDR_ENV</code></td><td>每個 managed pane</td><td>守門：<code>=1</code> 才在 herdr 內</td></tr>
+  <tr><td><code>HERDR_WORKSPACE_ID / HERDR_TAB_ID / HERDR_PANE_ID</code></td><td>每個 managed pane</td><td>public ID（w1 / w1:t1 / w1:p1）</td></tr>
+  <tr><td><code>HERDR_BIN_PATH / HERDR_SOCKET_PATH</code></td><td>每個 managed pane</td><td>呼叫 herdr CLI 與 socket</td></tr>
+  <tr><td><code>HERDR_ACTIVE_PANE_ID / _TAB_ID / _WORKSPACE_ID / _PANE_CWD</code></td><td>custom command（<code>[[keys.command]]</code>）與 popup</td><td>觸發按鍵當下的 active context（你的 alt+j/k 翻頁就是用它）</td></tr>
+</table>
+</section>
+
+<section id="safety">
+<h2>安全守則（摘自內建 skill）</h2>
+<ul>
+  <li>背景工作一律 <code>--no-focus</code>；ID 從 JSON 解析，不用 sidebar 順序猜。</li>
+  <li>用 <code>--current</code>、明確 pane ID 或唯一 agent 名稱；不要依賴別的 client 的 focus。</li>
+  <li>不是自己開的 workspace/tab/pane/session 不要關。</li>
+  <li><code>herdr server stop</code> 會停止 server 與全部 pane processes——除非明確要，永遠不要跑。</li>
+  <li>CLI server 錯誤：JSON on stderr、exit 1；語法錯誤 exit 2。</li>
+</ul>
+</section>
+
+<footer class="lesson-footer">
+  <p>來源：<a href="https://herdr.dev/docs/cli-reference/">CLI reference</a> · <a href="https://herdr.dev/docs/agent-automation/">Agent automation</a> · <a href="https://herdr.dev/docs/configuration/#worktrees">Configuration — Worktrees</a> · <a href="herdr-skill-0.9.3.md">內建 skill（逐字）</a> · 課程：<a href="../lessons/0001-agent-collaboration-loop.html">Lesson 0001</a></p>
+</footer>
+
+</main>
+</body>
+</html>
