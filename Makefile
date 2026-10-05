@@ -4,6 +4,8 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 OPENCODE_ITEMS := commands skills AGENTS.md opencode.json package.json plugins scripts
 
+HERDR_ITEMS := config.toml shell.zsh
+
 .PHONY: all install bashrc zshrc nvim opencode git tig tmux herdr scripts uninstall check help
 
 all: install
@@ -95,13 +97,15 @@ tmux:
 
 herdr:
 	@echo "Installing herdr configuration..."
-	@if [ -e "$(HOME)/.config/herdr/config.toml" ] && [ ! -L "$(HOME)/.config/herdr/config.toml" ]; then \
-			echo "⚠ .config/herdr/config.toml exists and is not a symlink — remove it manually and re-run"; \
-		else \
-			mkdir -p $(HOME)/.config/herdr; \
-			ln -sf $(ROOT_DIR)/herdr/config.toml $(HOME)/.config/herdr/config.toml; \
-			echo "✓ Herdr configuration installed"; \
-		fi
+	@mkdir -p $(HOME)/.config/herdr
+	@for f in $(HERDR_ITEMS); do \
+			if [ -e "$(HOME)/.config/herdr/$$f" ] && [ ! -L "$(HOME)/.config/herdr/$$f" ]; then \
+				echo "⚠ .config/herdr/$$f exists and is not a symlink — remove it manually and re-run"; \
+			else \
+				ln -sf $(ROOT_DIR)/herdr/$$f $(HOME)/.config/herdr/$$f; \
+			fi; \
+		done
+	@echo "✓ Herdr configuration installed"
 
 scripts:
 	@echo "Installing utility scripts..."
@@ -139,10 +143,13 @@ uninstall:
 			echo "  Removing .config/nvim"; \
 			rm "$(HOME)/.config/nvim"; \
 		fi
-	@if [ -L "$(HOME)/.config/herdr/config.toml" ]; then \
-			echo "  Removing .config/herdr/config.toml"; \
-			rm "$(HOME)/.config/herdr/config.toml"; \
-		fi
+	@echo "Removing herdr symlinks..."
+	@for f in $(HERDR_ITEMS); do \
+			if [ -L "$(HOME)/.config/herdr/$$f" ]; then \
+				echo "  Removing .config/herdr/$$f"; \
+				rm "$(HOME)/.config/herdr/$$f"; \
+			fi; \
+		done
 	@echo "Removing scripts..."
 	@for script in tig-mark-commit tig-diff-selector; do \
 			if [ -L "$(HOME)/bin/$$script" ]; then \
@@ -214,18 +221,20 @@ check:
 	fi
 	@echo ""
 	@echo "Checking herdr installation..."
-	@if [ -L "$(HOME)/.config/herdr/config.toml" ]; then \
-			target=$$(readlink "$(HOME)/.config/herdr/config.toml"); \
-			if [ "$$target" = "$(ROOT_DIR)/herdr/config.toml" ]; then \
-				echo "✓ .config/herdr/config.toml -> $$target"; \
+	@for f in $(HERDR_ITEMS); do \
+			if [ -L "$(HOME)/.config/herdr/$$f" ]; then \
+				target=$$(readlink "$(HOME)/.config/herdr/$$f"); \
+				if [ "$$target" = "$(ROOT_DIR)/herdr/$$f" ]; then \
+					echo "✓ .config/herdr/$$f -> $$target"; \
+				else \
+					echo "⚠ .config/herdr/$$f -> $$target (unexpected target)"; \
+				fi; \
+			elif [ -e "$(HOME)/.config/herdr/$$f" ]; then \
+				echo "✗ .config/herdr/$$f (exists but not a symlink)"; \
 			else \
-				echo "⚠ .config/herdr/config.toml -> $$target (unexpected target)"; \
+				echo "✗ .config/herdr/$$f (not found)"; \
 			fi; \
-		elif [ -e "$(HOME)/.config/herdr/config.toml" ]; then \
-			echo "✗ .config/herdr/config.toml (exists but not a symlink)"; \
-		else \
-			echo "✗ .config/herdr/config.toml (not found)"; \
-		fi
+		done
 	@echo ""
 	@echo "Checking scripts installation..."
 	@for script in tig-mark-commit tig-diff-selector; do \

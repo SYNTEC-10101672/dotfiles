@@ -15,6 +15,13 @@ tab_bar_right = [
 [ui.toast]
 delivery = "off"
 
+# j/k mirror up/down in the workspace picker (prefix+w); the goto picker
+# (prefix+g) already has built-in j/k, and workspace-picker j/k is unbound
+# by default, so these multi-bindings cost nothing (verified on 0.9.3).
+[keys]
+navigate_workspace_up = ["up", "k"]
+navigate_workspace_down = ["down", "j"]
+
 # alt+j / alt+k forward PageDown / PageUp to the focused pane for keyboards
 # without dedicated page keys. herdr pane send-keys has no page key names
 # (tested on 0.9.3), so the terminal escape sequences are sent as literal

@@ -39,6 +39,9 @@ export NVM_DIR="$HOME/.nvm"
 [[ -f "$HOME/.atuin/bin/env" ]] && source "$HOME/.atuin/bin/env"
 eval "$(atuin init zsh)"
 
+# herdr (tab auto-naming; no-op outside herdr panes)
+[[ -f ~/.config/herdr/shell.zsh ]] && source ~/.config/herdr/shell.zsh
+
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"

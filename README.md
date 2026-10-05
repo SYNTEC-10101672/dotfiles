@@ -8,7 +8,7 @@
 - ⚡ **Neovim**: 完整的 Neovim 開發環境（包含 LSP、NERDTree、CtrlP 等），向後相容 Vim
 - 🔧 **Git**: 顏色配置、別名、自動 rebase
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
-- 🖥️ **Herdr**: 主力終端（terminal workspace manager for AI coding agents），tab bar 底部化、hostname/日期時間顯示、`alt+j`/`alt+k` 翻頁
+- 🖥️ **Herdr**: 主力終端（terminal workspace manager for AI coding agents），tab bar 底部化、hostname/日期時間顯示、tab 自動命名、`alt+j`/`alt+k` 翻頁
 - 🖥️ **Tmux**: fallback 終端機多工器（設定凍結：壞了修、不演進，見 [ADR-0002](docs/adr/0002-herdr-replaces-tmux-primary-terminal.md)）
 - 🖥️ **opencode**: AI 編程工具設定（`opencode.json`、全域指示檔 `AGENTS.md`、commands、skills、plugins）
 
@@ -78,7 +78,8 @@ dotfiles/
 ├── .tigrc                # Tig 設定檔（Git 文字介面）
 ├── .tmux.conf            # Tmux 設定檔（fallback 終端機多工器）
 ├── herdr/                # herdr 設定目錄（主力終端）
-│   └── config.toml       # herdr 設定檔（symlink 到 ~/.config/herdr/config.toml）
+│   ├── config.toml       # herdr 設定檔（symlink 到 ~/.config/herdr/config.toml）
+│   └── shell.zsh         # tab 自動命名 shell integration（symlink 到 ~/.config/herdr/shell.zsh，由 .zshrc source）
 ├── nvim/                 # Neovim 設定目錄
 │   ├── vimrc             # 主設定檔
 │   ├── init.vim          # Neovim 進入點（指向 vimrc）
@@ -182,6 +183,7 @@ herdr 是[主力終端](https://herdr.dev)（terminal workspace manager for AI c
 - **Tab bar 底部化**: tab row 位於 terminal panes 下方（`ui.tab_bar_position = "bottom"`），右側顯示 hostname 與日期時間（`ui.tab_bar_right` structured entries）
 - **`alt+j` / `alt+k` 翻頁**: 把 PageDown / PageUp 送給聚焦 pane，供無翻頁鍵的鍵盤使用。經 `[[keys.command]]`（type shell）+ `herdr pane send-text` 送 terminal escape sequence 實作（`herdr pane send-keys` 在 0.9.3 無 page key 名稱）
 - **Native agent observation**: herdr 內建 agent 偵測（detection manifests + sidebar rollup），sidebar 直接顯示 opencode 的 working/idle/blocked 狀態；tmux 時代的 `@claude_state` + notify scripts 管線不移轉（fallback 專屬，凍結）
+- **Tab 自動命名**: pane 內執行指令時，tab 名自動改為指令第一個 word（`nvim config.toml` → `nvim`）；回到 prompt 顯示 `shell`；`zsh`/`bash`/`sh` 一律顯示 `shell`。手動改名（如 `prefix+shift+t`）後自動命名讓道，鎖定至 tab 關閉。實作於 `herdr/shell.zsh`（zsh preexec/precmd hooks + `herdr tab rename`），經 `.zshrc` 一行 source 載入；以 `HERDR_TAB_ID` 自我守門，非 herdr 環境零副作用。見 [ADR-0003](docs/adr/0003-herdr-tab-autonaming-shell-hooks.md)
 - **主題與通知**: theme gruvbox（部署後經 herdr Settings 變更，2026-10-02）、status indicators dots、toast delivery off
 
 ### 與 tmux 的 keybinding 對應
@@ -198,7 +200,7 @@ herdr 與 tmux 的 prefix 同為 `ctrl+b`。採納 herdr 原生 keybinding，不
 | 水平分割 | `prefix` + `-` | `prefix` + `minus` |
 | Pane zoom | `prefix` + `z` | `prefix` + `z` |
 | Copy mode | `prefix` + `Escape` | `prefix` + `[` |
-| Workspace 切換 | （無對應） | `prefix` + `w`（picker）、`prefix` + `g`（goto） |
+| Workspace 切換 | （無對應） | `prefix` + `w`（picker，`j`/`k` 導覽）、`prefix` + `g`（goto，內建 `j`/`k`） |
 | 翻頁 | 鍵盤 PageUp/PageDown | `alt+j` / `alt+k`（自訂 `[[keys.command]]`） |
 
 ### 常用指令
@@ -451,7 +453,7 @@ make uninstall
 - **Neovim 0.6+**
 - Git 2.0+
 - Tig 2.0+（可選，用於 Git 圖形介面）
-- herdr 0.9.3+（可選，主力終端；`alt+j`/`alt+k` 翻頁依賴 jq）
+- herdr 0.9.3+（可選，主力終端；`alt+j`/`alt+k` 翻頁與 tab 自動命名依賴 jq）
 - fzf（必需，用於 Tig 互動式檔案選擇器）
 - jq（必需，JSON 處理器 — 通知 scripts 與一般工具使用）
 - gitleaks（必需，OpenCode secret guard 掃描；未安裝時 AI 的 git commit 會被 fail-closed 擋下）
