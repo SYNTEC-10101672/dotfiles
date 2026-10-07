@@ -37,6 +37,6 @@
 - 完成 `/opsx:apply` 後，必須執行 `code-review`（雙軸 sub-agents）通過才能建議 archive；若 code-review 有 fix，fix 後必須重跑 Final phase tests 確認沒退化。
 
 ## 領域知識規範
-- 開工前，若 repo 根目錄存在 `CONTEXT.md`，先讀取其內容；不存在則靜默繼續，不報錯、不建議建立。
-- 輸出（issue 標題、test 名稱、refactor 提案、hypothesis）使用 `CONTEXT.md` 定義的詞彙，不漂移到同義詞。
-- 若 repo 根目錄有 `CONTEXT-MAP.md`，讀取後找出與當前主題相關的 per-context `CONTEXT.md`
+- 開工前，若 repo 根目錄存在 `GLOSSARY.md`，先讀取其內容；不存在則靜默繼續，不報錯、不建議建立。
+- 輸出（issue 標題、test 名稱、refactor 提案、hypothesis）使用 `GLOSSARY.md` 定義的詞彙，不漂移到同義詞。
+- 若 repo 根目錄有 `GLOSSARY-MAP.md`，讀取後找出與當前主題相關的 per-context `GLOSSARY.md`

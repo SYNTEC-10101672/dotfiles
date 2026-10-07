@@ -13,7 +13,7 @@
 子目錄與 upstream 對應：
 - `grilling/` ← `skills/productivity/grilling/`（含 `agents/`）
 - `writing-for-agents/` ← `skills/productivity/writing-for-agents/`（含 `SKILL-MECHANICS.md`、`agents/`）
-- `domain-modeling/` ← `skills/engineering/domain-modeling/`（含 `CONTEXT-FORMAT.md`、`ADR-FORMAT.md`、`agents/`）
+- `domain-modeling/` ← `skills/engineering/domain-modeling/`（含 `GLOSSARY-FORMAT.md`、`ADR-FORMAT.md`、`agents/`）
 - `code-review/` ← `skills/engineering/code-review/`（含 `agents/`）
 
 `grill-me/` 與 `grill-with-docs/` 目錄 SHALL 不存在於 `opencode/skills/`（已遷移至 slash commands，見「grill 系列 slash commands 存在於 opencode/commands」requirement）。
@@ -28,7 +28,7 @@
 
 #### Scenario: 附帶的 reference 檔案一併存在
 - **WHEN** 檢查 `writing-for-agents/`、`domain-modeling/` 子目錄
-- **THEN** `writing-for-agents/SKILL-MECHANICS.md`、`writing-for-agents/agents/openai.yaml`、`domain-modeling/CONTEXT-FORMAT.md`、`domain-modeling/ADR-FORMAT.md` 必須存在（這些是 SKILL.md 內連結或 invocation 設定的必要參考檔）
+- **THEN** `writing-for-agents/SKILL-MECHANICS.md`、`writing-for-agents/agents/openai.yaml`、`domain-modeling/GLOSSARY-FORMAT.md`、`domain-modeling/ADR-FORMAT.md` 必須存在（這些是 SKILL.md 內連結或 invocation 設定的必要參考檔）
 
 #### Scenario: 遷移的 grill skill 目錄不存在
 - **WHEN** 執行 `ls dotfiles/opencode/skills/ | grep -E "^grill"`

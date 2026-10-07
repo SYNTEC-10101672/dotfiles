@@ -1,33 +1,33 @@
 # glossary-maintenance
 
-CONTEXT.md 領域詞彙表的維護時機規則：explore / propose 階段即時寫入，apply 階段禁止寫入，domain-modeling 不產生 ADR。
+GLOSSARY.md 領域詞彙表的維護時機規則：explore / propose 階段即時寫入，apply 階段禁止寫入，domain-modeling 不產生 ADR。
 
 ## Purpose
 
-規範 `CONTEXT.md` 領域詞彙表在各 openspec 工作流階段的維護責任：explore 與 propose 階段即時寫入、apply 階段不中斷任務執行，並界定 `domain-modeling` skill 的產出範圍僅限 glossary、不含 ADR。
+規範 `GLOSSARY.md` 領域詞彙表在各 openspec 工作流階段的維護責任：explore 與 propose 階段即時寫入、apply 階段不中斷任務執行，並界定 `domain-modeling` skill 的產出範圍僅限 glossary、不含 ADR。
 ## Requirements
-### Requirement: apply 前階段即時維護 CONTEXT.md
+### Requirement: apply 前階段即時維護 GLOSSARY.md
 
-`/opsx:explore` 流程（`opencode/commands/opsx/explore.md`）與 `/opsx:propose` 流程（`opencode/commands/opsx/propose.md`）在各自階段釐清領域詞彙時，MUST 即時寫入該專案的 `CONTEXT.md`（依 `domain-modeling` 的 CONTEXT-FORMAT.md 格式；檔案不存在時 lazily 建立）。`grill` 階段經 `grill-with-docs` → `domain-modeling` 既有行為維持不變。
+`/opsx:explore` 流程（`opencode/commands/opsx/explore.md`）與 `/opsx:propose` 流程（`opencode/commands/opsx/propose.md`）在各自階段釐清領域詞彙時，MUST 即時寫入該專案的 `GLOSSARY.md`（依 `domain-modeling` 的 GLOSSARY-FORMAT.md 格式；檔案不存在時 lazily 建立）。`grill` 階段經 `grill-with-docs` → `domain-modeling` 既有行為維持不變。
 
 #### Scenario: explore 釐清詞彙即寫入
 
 - **WHEN** `/opsx:explore` session 中使用者與 AI 對某領域詞彙達成明確定義
-- **THEN** 該詞彙即時寫入專案 `CONTEXT.md`，而非 session 結束才補
+- **THEN** 該詞彙即時寫入專案 `GLOSSARY.md`，而非 session 結束才補
 
 #### Scenario: propose 釐清詞彙即寫入
 
 - **WHEN** `/opsx:propose` 流程的 Fact Lookup 或 artifact 撰寫過程釐清領域詞彙
-- **THEN** 該詞彙即時寫入專案 `CONTEXT.md`
+- **THEN** 該詞彙即時寫入專案 `GLOSSARY.md`
 
-### Requirement: apply 階段禁止寫入 CONTEXT.md
+### Requirement: apply 階段禁止寫入 GLOSSARY.md
 
-`/opsx:apply` 流程（`opencode/commands/opsx/apply.md`）執行期間 MUST NOT 寫入或更新 `CONTEXT.md`，以避免任務執行被文件維護中斷。apply 期間發現的新詞彙由後續 change 的 explore / grill / propose 階段捕獲。
+`/opsx:apply` 流程（`opencode/commands/opsx/apply.md`）執行期間 MUST NOT 寫入或更新 `GLOSSARY.md`，以避免任務執行被文件維護中斷。apply 期間發現的新詞彙由後續 change 的 explore / grill / propose 階段捕獲。
 
 #### Scenario: apply 不中斷寫 glossary
 
 - **WHEN** `/opsx:apply` 流程實作任務時發現新的領域詞彙
-- **THEN** 流程不因此暫停或寫入 `CONTEXT.md`，任務繼續執行
+- **THEN** 流程不因此暫停或寫入 `GLOSSARY.md`，任務繼續執行
 
 ### Requirement: domain-modeling 不產生 ADR
 
@@ -41,5 +41,5 @@ CONTEXT.md 領域詞彙表的維護時機規則：explore / propose 階段即時
 #### Scenario: grill-with-docs 描述與行為一致
 
 - **WHEN** 檢視 `opencode/commands/grill-with-docs.md` 的 frontmatter description
-- **THEN** 不含 ADR 字樣，僅保留 glossary（CONTEXT.md）維護
+- **THEN** 不含 ADR 字樣，僅保留 glossary（GLOSSARY.md）維護
 

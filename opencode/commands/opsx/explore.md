@@ -19,7 +19,7 @@ Enter explore mode. Think deeply. Visualize freely. Follow the conversation wher
 **IMPORTANT: Explore mode is for thinking, not implementing.** You may read files, search code, and investigate the codebase, but you must NEVER write code or implement features. The ONLY files you may write are (whitelist):
 
 1. OpenSpec artifacts under `openspec/changes/**` (proposal.md, design.md, specs, tasks.md) — when the user asks
-2. The project's `CONTEXT.md` — only after the term has been resolved through the `domain-modeling` challenge procedure (see Guardrails)
+2. The project's `GLOSSARY.md` — only after the term has been resolved through the `domain-modeling` challenge procedure (see Guardrails)
 
 Nothing else is writable — no source code, no config, no scripts, no docs. If the user asks you to implement or directly modify anything outside the whitelist (even mid-discussion, even if it seems tiny), do not write it: remind them to exit explore mode and run `/opsx:propose` to turn the discussion into a change proposal.
 
@@ -301,7 +301,7 @@ But this summary is optional. Sometimes the thinking IS the value.
 
 ## Guardrails
 
-- **Don't implement** - The only writable files are OpenSpec artifacts under `openspec/changes/**` and `CONTEXT.md` after the `domain-modeling` procedure resolves a term. Application code, config, scripts, and docs are not writable — guide the user to `/opsx:propose` instead
+- **Don't implement** - The only writable files are OpenSpec artifacts under `openspec/changes/**` and `GLOSSARY.md` after the `domain-modeling` procedure resolves a term. Application code, config, scripts, and docs are not writable — guide the user to `/opsx:propose` instead
 - **Don't fake understanding** - If something is unclear, dig deeper
 - **Don't rush** - Discovery is thinking time, not task time
 - **Don't force structure** - Let patterns emerge naturally
@@ -309,4 +309,4 @@ But this summary is optional. Sometimes the thinking IS the value.
 - **Do visualize** - A good diagram is worth many paragraphs
 - **Do explore the codebase** - Ground discussions in reality
 - **Do question assumptions** - Including the user's and your own
-- **Do capture domain vocabulary** - When a term's definition crystallizes, invoke the `domain-modeling` skill and run its challenge procedure (challenge fuzzy terms → stress-test with concrete scenarios → resolve). Only after the term is resolved, write it into the project's `CONTEXT.md` using the domain-modeling skill's `CONTEXT-FORMAT.md` (create the file lazily if absent). If you cannot invoke the skill in this environment, read the `domain-modeling` skill's `SKILL.md` and `CONTEXT-FORMAT.md` — they live in `opencode/skills/domain-modeling/` — first, then write. Never write on first mention — a term is captured only after it has been challenged and agreed. Once resolved, capture it in the same step rather than batching terms to the end of the session
+- **Do capture domain vocabulary** - When a term's definition crystallizes, invoke the `domain-modeling` skill and run its challenge procedure (challenge fuzzy terms → stress-test with concrete scenarios → resolve). Only after the term is resolved, write it into the project's `GLOSSARY.md` using the domain-modeling skill's `GLOSSARY-FORMAT.md` (create the file lazily if absent). If you cannot invoke the skill in this environment, read the `domain-modeling` skill's `SKILL.md` and `GLOSSARY-FORMAT.md` — they live in `opencode/skills/domain-modeling/` — first, then write. Never write on first mention — a term is captured only after it has been challenged and agreed. Once resolved, capture it in the same step rather than batching terms to the end of the session

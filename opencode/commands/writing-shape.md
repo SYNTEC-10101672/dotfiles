@@ -4,6 +4,7 @@ argument-hint: [raw material path]
 ---
 
 Raw material file: $ARGUMENTS
+
 <what-to-do>
 
 The user has passed (or will pass) a markdown file of raw material. Treat it as the input pile: anything from a tidy list of fragments to a wall of unstructured prose to a transcript. The format does not matter. Read it end-to-end before doing anything else.

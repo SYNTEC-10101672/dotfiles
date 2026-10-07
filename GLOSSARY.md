@@ -35,8 +35,12 @@ _Avoid_: 白名單 session（誤導為持久清單）
 _Avoid_: 「遵循 CLAUDE.md」（dangling pointer）、「引用全域設定」（指向永遠已載入的材料是零功 pointer）
 
 **matt 系列**:
-從 mattpocock/skills repo vendor 的 skills。dual-entry（grilling、domain-modeling）裝法 = `skills/<name>/SKILL.md` + `commands/<name>.md` 薄 wrapper；user-only 入口（teach、handoff、wayfinder、improve-codebase-architecture、setup-matt-pocock-skills）= 自包含 `commands/<name>.md`，內容內聯、無 skill 檔（見 ADR-0001）。其 `handoff` 是拋棄式跨 agent 交接（文件存 OS temp dir，用完即丟）；repo 內 session 交接走 `handover`（HANDOVER.md + OpenSpec artifacts）。
+從 mattpocock/skills repo vendor 的 skills 與 commands，vendor 基準線記錄於 `opencode/VENDORED.md`。dual-entry（grilling、domain-modeling）裝法 = `skills/<name>/SKILL.md` 為內容 home、`commands/` 側以 `grill-me`/`grill-with-docs` 薄 wrapper 轉發；user-only 入口（teach、handoff、wayfinder、improve-codebase-architecture、setup-matt-pocock-skills、retro、wait-what、implement-spec、to-questionnaire，另有 to-spec、to-tickets、implement、writing 系列等 body 原文同步者）= 自包含 `commands/<name>.md`，內容內聯、無 skill 檔（見 ADR-0001）。其 `handoff` 是拋棄式跨 agent 交接（文件存 OS temp dir，用完即丟）；repo 內 session 交接走 `handover`（HANDOVER.md + OpenSpec artifacts）。
 _Avoid_: handoff / handover 互換（拋棄式跨 agent vs repo session 交接是兩回事）
+
+**vendor 基準線**:
+matt 系列檔案對齊的 upstream 版本基準（現為 mattpocock/skills v1.3.1），記錄於 `opencode/VENDORED.md`；升級 = checkout upstream tag 後逐項 diff，僅回補記錄過的包裝客製。
+_Avoid_: upstream 版本單獨指稱此基準時
 
 **user-only 入口**:
 只由人以 slash command 觸發的工作流，形式為自包含 `commands/*.md`，不佔 skill listing。上游以 `disable-model-invocation` 表達此概念，但該 flag 在 opencode 為 no-op（core 與 OmO 皆不讀），故以刪除 skill 檔達成零 ambient。

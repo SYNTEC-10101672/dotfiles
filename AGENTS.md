@@ -44,4 +44,4 @@ Issues are tracked as local markdown files under `.scratch/<feature>/`. See `doc
 
 ### Domain docs
 
-Single-context: one `CONTEXT.md` at the repo root, ADRs in `docs/adr/`. See `docs/agents/domain.md`.
+Single-context: one `GLOSSARY.md` at the repo root, ADRs in `docs/adr/`. See `docs/agents/domain.md`.
