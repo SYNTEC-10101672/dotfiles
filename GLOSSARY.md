@@ -29,7 +29,7 @@ _Avoid_: 「遵循 CLAUDE.md」（dangling pointer）、「引用全域設定」
 _Avoid_: 把 handoff 交接文件當持久層（要留的狀態寫進 tickets）
 
 **vendor 基準線**:
-matt 系列檔案對齊的 upstream 版本基準（現為 mattpocock/skills v1.3.1），記錄於 `opencode/VENDORED.md`；升級 = checkout upstream tag 後逐項 diff，僅回補記錄過的包裝客製。
+vendored 檔案對齊的 upstream 版本基準（matt 系列：mattpocock/skills v1.3.1；humanlayer 系列：main @ `bba9d13`），記錄於 `opencode/VENDORED.md`；升級 = checkout upstream tag（humanlayer 無 tag，以 commit 為準）後逐項 diff，僅回補記錄過的包裝客製。
 _Avoid_: upstream 版本單獨指稱此基準時
 
 **user-only 入口**:

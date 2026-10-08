@@ -92,9 +92,9 @@ dotfiles/
 │   ├── opencode.json     # 主設定與 plugin 宣告
 │   ├── package.json      # plugin SDK 依賴
 │   ├── omo.jsonc         # oh-my-openagent (OmO) 的 agent / category model 設定（部署為 ~/.omo/omo.jsonc，OmO >= 4.19 唯一讀取的 config）
-│   ├── commands/         # slash commands（commit、writing 系列、grill 系列、matt workflow：to-spec、to-tickets、implement；user-only 入口 setup-matt-pocock-skills、handoff、teach、wayfinder、improve-codebase-architecture、retro、wait-what、implement-spec、to-questionnaire 為自包含 command，工作流內容直接內聯於 command 檔）
-│   ├── skills/           # skills（matt 系列：grilling、domain-modeling、writing-for-agents、code-review、tdd、codebase-design、prototype、diagnosing-bugs、research；自製：tutoring）
-│   ├── VENDORED.md       # matt 系列 vendor 基準線記錄（upstream 版本、包裝形式、客製摘要；見 ADR-0001/0004）
+│   ├── commands/         # slash commands（commit、writing 系列、grill 系列、matt workflow：to-spec、to-tickets、implement；user-only 入口 setup-matt-pocock-skills、handoff、teach、wayfinder、improve-codebase-architecture、retro、wait-what、implement-spec、to-questionnaire、show-me（humanlayer 來源）為自包含 command，工作流內容直接內聯於 command 檔）
+│   ├── skills/           # skills（matt 系列：grilling、domain-modeling、writing-for-agents、code-review、tdd、codebase-design、prototype、diagnosing-bugs、research）
+│   ├── VENDORED.md       # vendor 基準線記錄（matt 系列、humanlayer 系列；upstream 版本、包裝形式、客製摘要；見 ADR-0001/0004）
 │   ├── plugins/          # opencode native plugins（notify.ts：tmux 完成通知、guard.ts：金鑰洩漏防護：gitleaks staged 掃描 + fail-closed）
 │   └── scripts/          # 通知 scripts（notify-stop / notify-waiting，tmux @claude_state + BEL）
 ├── scripts/              # 一般工具腳本

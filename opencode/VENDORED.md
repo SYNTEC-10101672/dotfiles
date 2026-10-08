@@ -1,6 +1,6 @@
 # VENDORED
 
-matt 系列的 vendor 基準線記錄：每個 vendored 項目的 upstream path、版本基準、包裝形式與本地客製。包裝形式詞彙（model skill、dual-entry、user-only 入口、wrapper command）定義於 repo 根目錄 `GLOSSARY.md`；user-only 入口自包含化的決策見 ADR-0001。
+第三方 skills/commands 的 vendor 基準線記錄（matt 系列、humanlayer 系列）：每個 vendored 項目的 upstream path、版本基準、包裝形式與本地客製。包裝形式詞彙（model skill、dual-entry、user-only 入口、wrapper command）定義於 repo 根目錄 `GLOSSARY.md`；user-only 入口自包含化的決策見 ADR-0001。
 
 **目前基準：[mattpocock/skills](https://github.com/mattpocock/skills) v1.3.1**（升級方式：checkout upstream tag 後逐項 diff，僅回補記錄於此的客製）。
 
@@ -44,6 +44,14 @@ User-only 入口的改裝規則（ADR-0001）：剝除 `name:` 與 `disable-mode
 | writing-fragments | `skills/in-progress/writing-fragments` | user-only 自包含（upstream in-progress bucket） | body 原文同步 | 剝 frontmatter；`argument-hint` + `$ARGUMENTS`（fragments-save-path） |
 | writing-shape | `skills/in-progress/writing-shape` | user-only 自包含（upstream in-progress bucket） | body 原文同步 | 剝 frontmatter；`argument-hint` + `$ARGUMENTS`（raw material path） |
 
+## humanlayer 系列（`opencode/commands/`）
+
+**來源：[humanlayer/skills](https://github.com/humanlayer/skills)** main @ `bba9d13`（2026-09-12；upstream 無 release tag，以 commit 為基準，升級 = 對 commit diff）。
+
+| command | upstream path | 形式 | 客製 |
+|---|---|---|---|
+| show-me | `plugins/show-me/skills/show-me/SKILL.md` | user-only 自包含 | 剝 `name:`/`disable-model-invocation`，改掛 opencode command `description`；加 terminal 環境說明行（inline Mermaid 不渲染）；Mermaid inline 節改寫為 .md artifact（`mkdir -p /tmp/opencode/show-me`、寫 `{description}.md`、印路徑 — VSCode markdown preview 觀看、GitHub-paste-ready）；HTML artifact 同目錄寫 `{description}.html` + 印路徑、移除 `open`（headless server）；text 格式、diff、guidance 保持 upstream 原文 |
+
 ## 暫不採用
 
 | upstream skill | 理由 |
@@ -53,9 +61,8 @@ User-only 入口的改裝規則（ADR-0001）：剝除 `name:` 與 `disable-mode
 | `engineering/wizard` | 產生互動式 bash wizard 引導人工步驟（provisioning、credentials）；目前無對應使用場景 |
 | `engineering/triage` | issue 分診狀態機（五個 triage label）；本環境 issue tracker 為 local markdown（`.scratch/`，狀態以 `Status:` 行記錄，見 `docs/agents/issue-tracker.md`），label 體系用不上 |
 
-## 自製（非 matt，不在 vendor 基準內）
+## 自製（非 vendored，不在 vendor 基準內）
 
-- `skills/tutoring`：自製 skill。
 - `commands/commit`、`commands/eli5`：自製 command。
 
 ## 注意事項
