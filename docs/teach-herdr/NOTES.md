@@ -15,13 +15,13 @@
 - 環境事實：herdr 0.9.3、gruvbox theme、zsh + tab 自動命名 hooks（ADR-0003）。
 - 使用者同時跑多個 opencode instance（`herdr agent list` 可見即時範例）——課程練習可用真實 agents，但要無害（scratch 任務、`--no-focus`）。
 - **Matt 工作流整合（2026-10-05 確認）**：課程要與 Matt skills（/to-spec、/to-tickets、/implement、/code-review）接軌；方案 B = 機制課與應用課分離（0003 為 Matt pipeline 專課）。
-- **Commit 策略 (b)**：worktree agents 只做不 commit（ticket constraints 註明），使用者在主 checkout 統一 review + /commit。熟練後可升級 (a) 各 session 授權。
+- **Commit 策略 (b)**：worktree agents 只做不 commit（ticket constraints 註明），使用者在主 checkout 統一 review + /commit。熟練後可升級 (a) 各自提交。
 
 ## 課程路線圖（ZPD 順序）
 
 1. **0001 — agent 協作 loop**（已完成 2026-10-05）：`agent prompt/wait` + 五狀態 + TARGET 語法（split → start → prompt --wait → read）
 2. **0002 — worktree workspaces**（已完成 2026-10-05）：`herdr worktree create/open/remove`、workspace group、`--trust-repository` 語意
-3. **0003 — Matt 工作流 × herdr**（已完成 2026-10-05）：ticket → worktree per ticket → `agent prompt` 遞送 /implement（絕對路徑）→ 策略 (b) 審核收斂 → merge/remove。兩大 gotcha：.scratch gitignored、commit gate per-session。demo ticket 保留於 `.scratch/teach-0003-pipeline/issues/01-demo-ticket.md`（drill 用）
+3. **0003 — Matt 工作流 × herdr**（已完成 2026-10-05）：ticket → worktree per ticket → `agent prompt` 遞送 /implement（絕對路徑）→ 策略 (b) 審核收斂 → merge/remove。兩大 gotcha：.scratch gitignored、worktree agent 的 commit 邊界。demo ticket 保留於 `.scratch/teach-0003-pipeline/issues/01-demo-ticket.md`（drill 用）
 4. **0004 — pane orchestration（非 agent 程序）**：`pane run/wait-output/read`、四種 read source、與 agent loop 的分工
 5. **0005 — detection 深入**：`agent explain`、detection manifests、local override（`~/.config/herdr/agent-detection/<agent>.toml`）——`agent wait` 可靠度的基礎
 6. **0006 — socket API 直呼**：newline-delimited JSON、`herdr api` 查 schema、`agent.prompt` 帶 wait object（race-free）、event subscription

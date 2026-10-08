@@ -52,17 +52,17 @@ git -C ~/personal/dotfiles branch -d myfeat-01</code></pre>
 
 <div class="callout warn"><span class="tag">規則</span>派工時永遠給<strong>主 checkout 的絕對路徑</strong>（<code>/home/syntec/personal/dotfiles/.scratch/...</code>）。worktree agent 用絕對路徑讀得到（同一台機器、只是另一個目錄），但它<strong>自己找不到</strong>——相對路徑在它眼裡不存在。同場加映：worktree 裡也看不到主 checkout 未 commit 的變更（例如你今天寫到一半的筆記），agent 看到的是最後一個 commit 的世界。</div>
 
-<h2><span class="no">3</span>Gotcha ②：Commit Gate 是 per-session 授權</h2>
+<h2><span class="no">3</span>Gotcha ②：worktree agent 的 commit 邊界</h2>
 
-<p>你的 <code>commit-gate.ts</code> 規則：AI 的 <code>git commit</code> 在<strong>未授權 session</strong> 一律擋下，<code>/commit</code> 授權只作用於該 session、不繼承、不跨 agent。管線裡每個 worktree agent 都是獨立 session，所以有兩條路：</p>
+<p>AI 的 <code>git commit</code> 可在各自的 worktree 直接執行，管線可選兩條路：</p>
 
 <table style="border-collapse:collapse;width:100%;font-size:0.9rem">
   <tr style="border-bottom:1px solid var(--rule)"><th style="text-align:left;padding:0.3rem 0.6rem 0.3rem 0">策略</th><th style="text-align:left;padding:0.3rem 0.6rem">做法</th><th style="text-align:left;padding:0.3rem 0.6rem">代價</th></tr>
-  <tr style="border-bottom:1px solid var(--rule)"><td style="padding:0.3rem 0.6rem 0.3rem 0"><strong>(a) 各自授權</strong></td><td style="padding:0.3rem 0.6rem">到每個 worktree agent 的 TUI 跑一次 <code>/commit</code></td><td style="padding:0.3rem 0.6rem">授權散落、review 介入點多</td></tr>
-  <tr><td style="padding:0.3rem 0.6rem 0.3rem 0"><strong>(b) 集中收斂（你選的）</strong></td><td style="padding:0.3rem 0.6rem">ticket constraints 寫明「不要 commit」；你在主 checkout 統一 review + <code>/commit</code></td><td style="padding:0.3rem 0.6rem">收斂是你的手動步驟</td></tr>
+  <tr style="border-bottom:1px solid var(--rule)"><td style="padding:0.3rem 0.6rem 0.3rem 0"><strong>(a) 各自提交</strong></td><td style="padding:0.3rem 0.6rem">worktree agent 完成後直接建立 commit</td><td style="padding:0.3rem 0.6rem">需要管理各 worktree 的 commit 邊界</td></tr>
+  <tr><td style="padding:0.3rem 0.6rem 0.3rem 0"><strong>(b) 集中收斂</strong></td><td style="padding:0.3rem 0.6rem">ticket constraints 寫明「不要 commit」；你在主 checkout 統一 review + 整合</td><td style="padding:0.3rem 0.6rem">收斂是你的手動步驟</td></tr>
 </table>
 
-<p class="callout tip"><span class="tag">實測證據</span>策略 (b) 實測：agent 完成後回報——「未 commit：ticket 明確要求不執行 git commit，你會在主 checkout review 後統一 commit。檔案以 untracked 狀態留在這個 worktree」——連偏離 /implement 預設行為的說明都自動附上。把 constraint 寫進 ticket 就夠了。</p>
+<p class="callout tip"><span class="tag">實測證據</span>策略 (b) 實測：worktree agent 遵守 ticket 的不-commit constraint，變更邊界清楚留在 worktree，由主 checkout 統一 review 收斂。</p>
 
 <h2><span class="no">4</span>實測痕跡（你的機器，2026-10-05）</h2>
 

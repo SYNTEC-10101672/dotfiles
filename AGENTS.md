@@ -20,10 +20,6 @@ Each config module (bash, nvim, git, tig, tmux, herdr, opencode) has its own Mak
 
 When setting up a new machine, follow the complete step-by-step guide in [`docs/SETUP.md`](docs/SETUP.md). It covers system packages, language runtimes, opencode, environment variables, and verification.
 
-## Session Handover
-
-When starting a new session, if `HANDOVER.md` exists in the project root, read it and follow its instructions to restore context. If HANDOVER.md points to OpenSpec artifacts (proposal.md, design.md, tasks.md, specs/), read those as well. If the handover is no longer relevant, ignore it and proceed normally.
-
 ## Adding a New Module
 
 1. Add config files to this repo

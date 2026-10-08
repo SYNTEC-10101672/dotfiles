@@ -234,23 +234,7 @@ opencode --version
 
 ---
 
-## 8. openspec
-
-需先安裝 Node.js（步驟 3）。透過 npm 全域安裝：
-
-```bash
-npm install -g @fission-ai/openspec@latest
-```
-
-驗證：
-
-```bash
-openspec --version
-```
-
----
-
-## 9. ~/.env 設定
+## 8. ~/.env 設定
 
 複製範本並填入 credentials：
 
@@ -265,7 +249,7 @@ source ~/.zshrc
 
 ---
 
-## 10. 選用 — .NET SDK 與 OmniSharp（C# 開發）
+## 9. 選用 — .NET SDK 與 OmniSharp（C# 開發）
 
 ### .NET SDK
 
@@ -295,7 +279,7 @@ ln -sf ~/.omnisharp/OmniSharp ~/.omnisharp/omnisharp
 
 ---
 
-## 11. 驗證
+## 10. 驗證
 
 執行 `make check` 確認 symlink 狀態：
 
@@ -306,7 +290,7 @@ make check
 確認所有必要工具已安裝：
 
 ```bash
-for cmd in bash git make nvim tmux jq curl fzf tig rg fd ag node python3 opencode openspec sshpass gitleaks; do
+for cmd in bash git make nvim tmux jq curl fzf tig rg fd ag node python3 opencode sshpass gitleaks; do
   command -v $cmd &>/dev/null && echo "✓ $cmd" || echo "✗ $cmd: NOT FOUND"
 done
 # atuin 安裝在 ~/.atuin/bin/，需開新 terminal 或 source ~/.zshrc 後才能查到

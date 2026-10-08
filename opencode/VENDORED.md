@@ -13,7 +13,7 @@ Upstream frontmatter 保持原文（含 `name:`）；目錄內含 upstream 的�
 | codebase-design | `skills/engineering/codebase-design` | model skill | SKILL.md + 參考檔同步 | `agents/openai.yaml` 未 vendor |
 | code-review | `skills/engineering/code-review` | model skill | zero-diff | 無 |
 | diagnosing-bugs | `skills/engineering/diagnosing-bugs` | model skill | zero-diff | 無 |
-| domain-modeling | `skills/engineering/domain-modeling` | model skill（dual-entry 內容 home，opsx 經 Skill tool 引用） | zero-diff | 無（`CONTEXT-FORMAT.md` 已隨 v1.3.1 改名 `GLOSSARY-FORMAT.md`，見 ADR-0004） |
+| domain-modeling | `skills/engineering/domain-modeling` | model skill（dual-entry 內容 home） | zero-diff | 無（`CONTEXT-FORMAT.md` 已隨 v1.3.1 改名 `GLOSSARY-FORMAT.md`，見 ADR-0004） |
 | grilling | `skills/productivity/grilling` | model skill（dual-entry，grill-me / grill-with-docs 的內容來源） | zero-diff | 無 |
 | prototype | `skills/engineering/prototype` | model skill | SKILL.md + 參考檔同步 | `agents/openai.yaml` 未 vendor |
 | research | `skills/engineering/research` | model skill | zero-diff | 無 |
@@ -49,17 +49,16 @@ User-only 入口的改裝規則（ADR-0001）：剝除 `name:` 與 `disable-mode
 | upstream skill | 理由 |
 |---|---|
 | `engineering/ask-matt` | upstream 的 user-invoked router（指引該用哪個 skill）；本環境 skills 由 OmO 分類排程、總覽即本檔，router 無額外價值 |
-| `engineering/pr` | PR body 撰寫（model-invoked）；本環境工作流多為 stage-only、commit 由使用者以 `/commit` 收尾，PR 產出情境罕見，需要時再 vendor |
+| `engineering/pr` | PR body 撰寫（model-invoked）；PR 產出情境罕見，需要時再 vendor |
 | `engineering/wizard` | 產生互動式 bash wizard 引導人工步驟（provisioning、credentials）；目前無對應使用場景 |
 | `engineering/triage` | issue 分診狀態機（五個 triage label）；本環境 issue tracker 為 local markdown（`.scratch/`，狀態以 `Status:` 行記錄，見 `docs/agents/issue-tracker.md`），label 體系用不上 |
 
 ## 自製（非 matt，不在 vendor 基準內）
 
-- `skills/tutoring`、`skills/openspec-*`：自製 skill。
-- `commands/commit`、`commands/eli5`、`commands/handover`、`commands/opsx/*`：自製 command。
+- `skills/tutoring`：自製 skill。
+- `commands/commit`、`commands/eli5`：自製 command。
 
 ## 注意事項
 
-- `implement-spec` 與 `/opsx:apply` 功能重疊（整包 spec/tickets 一次實作）：使用時擇一，勿在同一 change 上並用。
 - wrapper command（grill-me、grill-with-docs）的 body 是本地薄轉發，升級時不受 upstream body diff 影響，但轉發目標 skill（grilling、domain-modeling）的內容要同步。
 - user-only 入口附錄以 `````markdown` fence 內聯；upstream 更新參考檔時需同步對應附錄區塊（ADR-0001 記錄的後果）。

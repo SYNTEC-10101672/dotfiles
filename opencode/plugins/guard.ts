@@ -1,6 +1,7 @@
 // OpenCode Secret Guard Layer 2: scan staged content before AI-driven commits.
 // The fail-closed policy rejects commits when gitleaks is unavailable; see
-// openspec/changes/add-opencode-secret-guard/ for the complete three-layer design.
+// commit b414b1f (feat(opencode): add three-layer secret guard against AI key
+// leaks) for the complete three-layer design.
 import type { Plugin } from "@opencode-ai/plugin"
 
 // opencode loads plugins with its bundled bun runtime where `process` exists,

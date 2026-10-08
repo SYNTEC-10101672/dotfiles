@@ -18,16 +18,6 @@ _Avoid_: fail-open（明確被否決的方案）
 在 `git commit` 執行前用 `gitleaks protect --staged --redact` 掃描 staged diff 內容；`--redact` 確保錯誤訊息不含 secret 明文。
 _Avoid_: 內容掃描（太泛）
 
-### Commit 授權
-
-**Commit Gate**:
-OpenCode 層的 AI `git commit` 授權機制：偵測 `git commit`（含 `-C`、chain、env prefix 形狀），未授權 session 一律擋下並指示模型繼續任務，實作於 `opencode/plugins/commit-gate.ts`。
-_Avoid_: commit guard（與 Secret Guard 混淆）
-
-**authorized session**:
-使用者執行過 `/commit` 的 session；其間 AI 的 `git commit` 放行（仍過 Secret Guard）。授權隨任何其他 slash command 執行或 session 結束失效，不繼承給 subagent。
-_Avoid_: 白名單 session（誤導為持久清單）
-
 ### Skill 撰寫
 
 **ambient 規則**:
@@ -35,8 +25,8 @@ _Avoid_: 白名單 session（誤導為持久清單）
 _Avoid_: 「遵循 CLAUDE.md」（dangling pointer）、「引用全域設定」（指向永遠已載入的材料是零功 pointer）
 
 **matt 系列**:
-從 mattpocock/skills repo vendor 的 skills 與 commands，vendor 基準線記錄於 `opencode/VENDORED.md`。dual-entry（grilling、domain-modeling）裝法 = `skills/<name>/SKILL.md` 為內容 home、`commands/` 側以 `grill-me`/`grill-with-docs` 薄 wrapper 轉發；user-only 入口（teach、handoff、wayfinder、improve-codebase-architecture、setup-matt-pocock-skills、retro、wait-what、implement-spec、to-questionnaire，另有 to-spec、to-tickets、implement、writing 系列等 body 原文同步者）= 自包含 `commands/<name>.md`，內容內聯、無 skill 檔（見 ADR-0001）。其 `handoff` 是拋棄式跨 agent 交接（文件存 OS temp dir，用完即丟）；repo 內 session 交接走 `handover`（HANDOVER.md + OpenSpec artifacts）。
-_Avoid_: handoff / handover 互換（拋棄式跨 agent vs repo session 交接是兩回事）
+從 mattpocock/skills repo vendor 的 skills 與 commands，vendor 基準線記錄於 `opencode/VENDORED.md`。dual-entry（grilling、domain-modeling）裝法 = `skills/<name>/SKILL.md` 為內容 home、`commands/` 側以 `grill-me`/`grill-with-docs` 薄 wrapper 轉發；user-only 入口（teach、handoff、wayfinder、improve-codebase-architecture、setup-matt-pocock-skills、retro、wait-what、implement-spec、to-questionnaire，另有 to-spec、to-tickets、implement、writing 系列等 body 原文同步者）= 自包含 `commands/<name>.md`，內容內聯、無 skill 檔（見 ADR-0001）。其 `handoff` 是唯一的 session 交接機制（拋棄式：交接文件存 OS temp dir，用完即丟；跨 session 的持久層是 issue tracker 的 `.scratch/` tickets）。openspec 時代的 `handover`（HANDOVER.md）已隨 openspec 退役移除（見 ADR-0005）。
+_Avoid_: 把 handoff 交接文件當持久層（要留的狀態寫進 tickets）
 
 **vendor 基準線**:
 matt 系列檔案對齊的 upstream 版本基準（現為 mattpocock/skills v1.3.1），記錄於 `opencode/VENDORED.md`；升級 = checkout upstream tag 後逐項 diff，僅回補記錄過的包裝客製。
