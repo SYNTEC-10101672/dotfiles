@@ -3,10 +3,10 @@
   "model": "zai-coding-plan/glm-5.3",
   "agents": {
     "explore": {
-      "model": "github-copilot/gpt-5.6-luna"
+      "model": "github-copilot/gpt-6-luna"
     },
     "title": {
-      "model": "github-copilot/gpt-5.6-luna"
+      "model": "github-copilot/gpt-6-luna"
     }
   },
   "permissions": [
