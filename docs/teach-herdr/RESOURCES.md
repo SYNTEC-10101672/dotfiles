@@ -7,7 +7,7 @@
 - `herdr --skill` 的逐字輸出：[reference/herdr-skill-0.9.3.md](reference/herdr-skill-0.9.3.md)
   內建 agent skill file——TARGET 語法、五狀態語意、canonical 協作 pattern、安全規則。herdr 升級後重新產出。Use for: 任何 CLI 語法與行為疑問的第一手依據。
 - `herdr <group>` 不帶 subcommand 直接跑（如 `herdr agent`、`herdr worktree`）會印出該 group 的完整命令清單。Use for: 快速查安裝版本的命令面。
-- 本 repo：`herdr/config.toml`、`herdr/shell.zsh`、[ADR-0002](../../adr/0002-herdr-replaces-tmux-primary-terminal.md)（herdr 取代 tmux、native agent observation）、ADR-0003（tab 自動命名）
+- 本 repo：`herdr/config.toml`、`herdr/shell.zsh`、[ADR-0002](../../adr/0002-herdr-replaces-tmux-primary-terminal.md)（herdr 取代 tmux、native agent observation；tmux 模組後續退役見 [ADR-0006](../../adr/0006-remove-tmux-module.md)）、ADR-0003（tab 自動命名）
 - 官方提供 [llms.txt](https://herdr.dev/llms.txt) 與 [llms-full.txt](https://herdr.dev/llms-full.txt)（給 agent 的全文件 dump）。Use for: 讓 agent 快速拿到全域文件。
 
 ### 官方文件（herdr.dev，docs 版本 = 0.9.3）
