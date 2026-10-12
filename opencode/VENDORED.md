@@ -22,7 +22,7 @@ Upstream frontmatter 保持原文（含 `name:`）；目錄內含 upstream 的�
 
 ## Commands（`opencode/commands/`）
 
-User-only 入口的改裝規則（ADR-0001）：剝除 `name:` 與 `disable-model-invocation`，其餘內文保持 upstream 原文；需要參數的加 `argument-hint` 與 `$ARGUMENTS` 帶入行；upstream 引用的獨立參考檔以 `````markdown` fenced block 內聯為附錄，`[file](./file.md)` 連結改寫為 in-page anchor。
+User-only 入口的改裝規則（ADR-0001）：剝除 `name:` 與 `disable-model-invocation`，其餘內文保持 upstream 原文；需要參數的加 `argument-hint` 與 `$ARGUMENTS` 帶入行；upstream 引用的獨立參考檔以 `````markdown` fenced block 內聯為附錄，`[file](./file.md)` 連結改寫為 in-page anchor。body 指定輸出語言為英文者，得以檔尾附加「本地客製（非 upstream）」段覆寫語言（upstream 段落維持逐字同步；案例：wait-what）。
 
 | command | upstream path | 形式 | v1.3.1 狀態 | 客製 |
 |---|---|---|---|---|
@@ -38,7 +38,7 @@ User-only 入口的改裝規則（ADR-0001）：剝除 `name:` 與 `disable-mode
 | to-questionnaire | `skills/productivity/to-questionnaire` | user-only 自包含 | body 原文同步 | 剝 frontmatter；`argument-hint` + `$ARGUMENTS`（questionnaire topic） |
 | to-spec | `skills/engineering/to-spec` | user-only 自包含 | body 原文同步 | 僅剝 frontmatter |
 | to-tickets | `skills/engineering/to-tickets` | user-only 自包含 | body 原文同步 | 僅剝 frontmatter |
-| wait-what | `skills/productivity/wait-what` | user-only 自包含 | body 原文同步 | 僅剝 frontmatter（無參數語意，不加 `argument-hint`） |
+| wait-what | `skills/productivity/wait-what` | user-only 自包含 | body 原文同步（檔尾附加本地段） | 剝 frontmatter；檔尾附加「本地客製（非 upstream）」段覆寫輸出語言為繁中（upstream 段落逐字同步，無參數語意，不加 `argument-hint`） |
 | wayfinder | `skills/engineering/wayfinder` | user-only 自包含 | body 原文同步 | 僅剝 frontmatter |
 | writing-beats | `skills/in-progress/writing-beats` | user-only 自包含（upstream in-progress bucket） | body 原文同步 | 剝 frontmatter；`argument-hint` + `$ARGUMENTS`（raw material path） |
 | writing-fragments | `skills/in-progress/writing-fragments` | user-only 自包含（upstream in-progress bucket） | body 原文同步 | 剝 frontmatter；`argument-hint` + `$ARGUMENTS`（fragments-save-path） |
