@@ -2,11 +2,11 @@ SHELL := bash
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
-OPENCODE_ITEMS := commands skills AGENTS.md opencode.json package.json plugins scripts
+OPENCODE_ITEMS := commands skills AGENTS.md opencode.json package.json plugins
 
 HERDR_ITEMS := config.toml shell.zsh
 
-.PHONY: all install bashrc zshrc nvim opencode git tig tmux herdr scripts uninstall check help
+.PHONY: all install bashrc zshrc nvim opencode git tig herdr scripts uninstall check help
 
 all: install
 
@@ -22,14 +22,13 @@ help:
 	@echo "  make zshrc     - Install zsh configuration (symlinks + clone p10k/plugins)"
 	@echo "  make bashrc    - Install bash configuration (legacy, not in install)"
 	@echo "  make nvim      - Install neovim configuration"
-	@echo "  make opencode  - Install OpenCode configuration (opencode.json, omo.jsonc, AGENTS.md, commands/, skills/, plugins/)"
+	@echo "  make opencode  - Install OpenCode configuration (opencode.json, package.json, AGENTS.md, commands/, skills/, plugins/)"
 	@echo "  make git       - Install git configuration"
 	@echo "  make tig       - Install tig configuration"
-	@echo "  make tmux      - Install tmux configuration (fallback, frozen)"
 	@echo "  make herdr     - Install herdr configuration (primary terminal)"
 	@echo "  make scripts   - Install utility scripts to ~/bin"
 
-install: zshrc nvim opencode git tig tmux herdr scripts
+install: zshrc nvim opencode git tig herdr scripts
 	@echo "✓ Dotfiles installed successfully"
 
 zshrc:
@@ -67,10 +66,7 @@ opencode:
 	@ln -sf $(ROOT_DIR)/opencode/AGENTS.md $(HOME)/.config/opencode/AGENTS.md
 	@ln -sf $(ROOT_DIR)/opencode/opencode.json $(HOME)/.config/opencode/opencode.json
 	@ln -sf $(ROOT_DIR)/opencode/package.json $(HOME)/.config/opencode/package.json
-	@rm -f $(HOME)/.config/opencode/oh-my-openagent.json
-	@mkdir -p $(HOME)/.omo
-	@ln -sf $(ROOT_DIR)/opencode/omo.jsonc $(HOME)/.omo/omo.jsonc
-	@for d in plugins scripts; do \
+	@for d in plugins; do \
 			if [ -e "$(HOME)/.config/opencode/$$d" ] && [ ! -L "$(HOME)/.config/opencode/$$d" ]; then \
 				echo "⚠ .config/opencode/$$d exists and is not a symlink — remove it manually and re-run"; \
 			else \
@@ -89,11 +85,6 @@ tig:
 	@echo "Installing tig configuration..."
 	@ln -sf $(ROOT_DIR)/.tigrc $(HOME)/.tigrc
 	@echo "✓ Tig configuration installed"
-
-tmux:
-	@echo "Installing tmux configuration..."
-	@ln -sf $(ROOT_DIR)/.tmux.conf $(HOME)/.tmux.conf
-	@echo "✓ Tmux configuration installed"
 
 herdr:
 	@echo "Installing herdr configuration..."
@@ -117,7 +108,7 @@ scripts:
 
 uninstall:
 	@echo "Removing dotfiles symlinks..."
-	@for file in .aliases .zshrc .p10k.zsh .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc .tmux.conf; do \
+	@for file in .aliases .zshrc .p10k.zsh .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc; do \
 			if [ -L "$(HOME)/$$file" ]; then \
 				echo "  Removing $$file"; \
 				rm "$(HOME)/$$file"; \
@@ -130,14 +121,6 @@ uninstall:
 				rm "$(HOME)/.config/opencode/$$f"; \
 			fi; \
 		done
-	@if [ -L "$(HOME)/.config/opencode/oh-my-openagent.json" ]; then \
-			echo "  Removing .config/opencode/oh-my-openagent.json (legacy)"; \
-			rm "$(HOME)/.config/opencode/oh-my-openagent.json"; \
-		fi
-	@if [ -L "$(HOME)/.omo/omo.jsonc" ]; then \
-			echo "  Removing .omo/omo.jsonc"; \
-			rm "$(HOME)/.omo/omo.jsonc"; \
-		fi
 	@echo "Removing neovim symlinks..."
 	@if [ -L "$(HOME)/.config/nvim" ]; then \
 			echo "  Removing .config/nvim"; \
@@ -162,7 +145,7 @@ uninstall:
 check:
 	@echo "Checking dotfiles installation..."
 	@echo ""
-	@for file in .zshrc .p10k.zsh .aliases .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc .tmux.conf; do \
+	@for file in .zshrc .p10k.zsh .aliases .bashrc .bash_profile .bash_prompt .gitconfig .gitignore_global .tigrc; do \
 			if [ -L "$(HOME)/$$file" ]; then \
 				target=$$(readlink "$(HOME)/$$file"); \
 				if [ "$$target" = "$(ROOT_DIR)/$$file" ]; then \
@@ -192,18 +175,6 @@ check:
 				echo "✗ .config/opencode/$$f (not found)"; \
 			fi; \
 		done
-	@if [ -L "$(HOME)/.omo/omo.jsonc" ]; then \
-			target=$$(readlink "$(HOME)/.omo/omo.jsonc"); \
-			if [ "$$target" = "$(ROOT_DIR)/opencode/omo.jsonc" ]; then \
-				echo "✓ .omo/omo.jsonc -> $$target"; \
-			else \
-				echo "⚠ .omo/omo.jsonc -> $$target (unexpected target)"; \
-			fi; \
-		elif [ -e "$(HOME)/.omo/omo.jsonc" ]; then \
-			echo "✗ .omo/omo.jsonc (exists but not a symlink)"; \
-		else \
-			echo "✗ .omo/omo.jsonc (not found)"; \
-		fi
 	@echo ""
 	@echo "Checking neovim installation..."
 	@if [ -L "$(HOME)/.config/nvim" ]; then \

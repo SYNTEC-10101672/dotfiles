@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by 0006-remove-tmux-module.md
 ---
 
 # herdr 取代 tmux 為主力終端，agent 通知管線不移轉

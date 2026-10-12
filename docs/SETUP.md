@@ -54,8 +54,7 @@ make check
 
 使用系統套件管理器安裝以下套件：
 
-- `jq` — JSON 處理器（通知 scripts 與一般工具使用）
-- `tmux` — 終端機多工器
+- `jq` — JSON 處理器（herdr tab 自動命名與一般工具使用）
 - `tig` — Git TUI 介面
 - `ripgrep` — 快速 grep（Neovim Telescope 使用）
 - `fzf` — 模糊搜尋（Tig 檔案選擇器使用）
@@ -218,13 +217,13 @@ curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 npm install -g opencode-ai@latest
 ```
 
-建立設定 symlink（`opencode.json`、`package.json`、`AGENTS.md`、`commands/`、`skills/`、`plugins/`、`scripts/` 透過 `make opencode` 部署到 `~/.config/opencode/`；`omo.jsonc` 部署到 `~/.omo/omo.jsonc`）：
+建立設定 symlink（`opencode.json`、`package.json`、`AGENTS.md`、`commands/`、`skills/`、`plugins/` 透過 `make opencode` 部署到 `~/.config/opencode/`）：
 
 ```bash
 make opencode
 ```
 
-> **注意**：`opencode.json` 宣告的 plugin（`@slkiser/opencode-quota`、`oh-my-openagent@latest`）將在首次啟動 opencode 時自動下載，無需手動執行 `npm install`。`omo.jsonc` 由 `oh-my-openagent` plugin 讀取（OmO >= 4.19 只讀 `~/.omo/omo.jsonc`），定義每個 agent 與 category 對應的 model。
+> **注意**：唯一 plugin 是 repo 自帶的 local plugin `guard.ts`（Secret Guard，經 `plugins/` symlink 部署），無 npm plugin 需下載；`package.json` 的 `@opencode-ai/plugin` 是它的 SDK 依賴。session 預設 model 固定為 `zai-coding-plan/glm-5.3`（`opencode.json` top-level `model`）。
 
 驗證：
 
@@ -290,7 +289,7 @@ make check
 確認所有必要工具已安裝：
 
 ```bash
-for cmd in bash git make nvim tmux jq curl fzf tig rg fd ag node python3 opencode sshpass gitleaks; do
+for cmd in bash git make nvim jq curl fzf tig rg fd ag node python3 opencode sshpass gitleaks; do
   command -v $cmd &>/dev/null && echo "✓ $cmd" || echo "✗ $cmd: NOT FOUND"
 done
 # atuin 安裝在 ~/.atuin/bin/，需開新 terminal 或 source ~/.zshrc 後才能查到

@@ -2,7 +2,6 @@
 
 alias diff="diff -ubBw"
 alias less="less -R"
-alias tmux-attach="tmux attach &> /dev/null || tmux"
 
 if [ -e /usr/local/bin/vim ]; then
   alias vim=/usr/local/bin/vim

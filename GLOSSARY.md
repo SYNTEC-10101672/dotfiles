@@ -1,6 +1,6 @@
 # dotfiles
 
-個人開發環境設定檔 repo：bash/zsh/nvim/git/tmux 設定與 Claude Code、OpenCode 的 agent 配置，透過 Makefile symlink 部署到 `~/.config/` 與 `$HOME`。
+個人開發環境設定檔 repo：bash/zsh/nvim/git/herdr 設定與 Claude Code、OpenCode 的 agent 配置，透過 Makefile symlink 部署到 `~/.config/` 與 `$HOME`。
 
 ## Language
 
@@ -33,7 +33,7 @@ vendored 檔案對齊的 upstream 版本基準（matt 系列：mattpocock/skills
 _Avoid_: upstream 版本單獨指稱此基準時
 
 **user-only 入口**:
-只由人以 slash command 觸發的工作流，形式為自包含 `commands/*.md`，不佔 skill listing。上游以 `disable-model-invocation` 表達此概念，但該 flag 在 opencode 為 no-op（core 與 OmO 皆不讀），故以刪除 skill 檔達成零 ambient。
+只由人以 slash command 觸發的工作流，形式為自包含 `commands/*.md`，不佔 skill listing。上游以 `disable-model-invocation` 表達此概念，但該 flag 在 opencode core 為 no-op，故以刪除 skill 檔達成零 ambient。
 _Avoid_: user-invoked skill（本環境無此機制）
 
 **dual-entry skill**:
@@ -47,12 +47,12 @@ _Avoid_: 把 wrapper 當 skill 本體稱呼（內容在 `skills/<name>/SKILL.md`
 ### 終端機
 
 **主力終端**:
-日常使用的 terminal multiplexer，現為 herdr；tmux 為 fallback（設定凍結：壞了修、不演進，見 ADR-0002）。
-_Avoid_: 把 tmux 稱為主力、把 fallback 說成並存雙主力
+日常使用的 terminal multiplexer，現為 herdr，也是唯一受組態的終端；tmux 模組已退役（見 ADR-0006），回退路徑 = git history。
+_Avoid_: 把 tmux 稱為 fallback 或並存雙主力（tmux 模組已移除，僅存於 git history）
 
 **native agent observation**:
-herdr 內建的 agent 偵測與狀態回報機制（detection manifests + sidebar rollup + toast/sound），涵蓋 opencode。
-_Avoid_: 與 tmux 時代的 `@claude_state` + notify scripts 觀測管線混稱（那是 fallback 專屬 hack）
+herdr 內建的 agent 偵測與狀態回報機制（detection manifests + sidebar rollup + toast/sound），涵蓋 opencode；為唯一的 agent 觀測來源。
+_Avoid_: 與 tmux 時代的 `@claude_state` + notify scripts 觀測管線混稱（該管線已移除，僅存於 git history）
 
 **tab ↔ window**:
 herdr 的 tab 是 tmux window 的對應物（workspace 內的 tab row，位置可由 `ui.tab_bar_position` 設定，現為底部）；herdr workspace 是 sidebar 的專案空間，tmux 無對應物。

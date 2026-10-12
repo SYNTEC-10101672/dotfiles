@@ -56,7 +56,7 @@ User-only 入口的改裝規則（ADR-0001）：剝除 `name:` 與 `disable-mode
 
 | upstream skill | 理由 |
 |---|---|
-| `engineering/ask-matt` | upstream 的 user-invoked router（指引該用哪個 skill）；本環境 skills 由 OmO 分類排程、總覽即本檔，router 無額外價值 |
+| `engineering/ask-matt` | upstream 的 user-invoked router（指引該用哪個 skill）；本環境 skills 總覽即本檔，router 無額外價值 |
 | `engineering/pr` | PR body 撰寫（model-invoked）；PR 產出情境罕見，需要時再 vendor |
 | `engineering/wizard` | 產生互動式 bash wizard 引導人工步驟（provisioning、credentials）；目前無對應使用場景 |
 | `engineering/triage` | issue 分診狀態機（五個 triage label）；本環境 issue tracker 為 local markdown（`.scratch/`，狀態以 `Status:` 行記錄，見 `docs/agents/issue-tracker.md`），label 體系用不上 |

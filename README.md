@@ -9,7 +9,6 @@
 - 🔧 **Git**: 顏色配置、別名、自動 rebase
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
 - 🖥️ **Herdr**: 主力終端（terminal workspace manager for AI coding agents），tab bar 底部化、hostname/日期時間顯示、tab 自動命名、`alt+j`/`alt+k` 翻頁
-- 🖥️ **Tmux**: fallback 終端機多工器（設定凍結：壞了修、不演進，見 [ADR-0002](docs/adr/0002-herdr-replaces-tmux-primary-terminal.md)）
 - 🖥️ **opencode**: AI 編程工具設定（`opencode.json`、全域指示檔 `AGENTS.md`、commands、skills、plugins）
 
 ## 快速安裝
@@ -51,7 +50,6 @@ make nvim      # 安裝 Neovim 設定
 make opencode  # 安裝 opencode 設定
 make git       # 安裝 Git 設定
 make tig       # 安裝 Tig 設定
-make tmux      # 安裝 Tmux 設定（fallback）
 make herdr     # 安裝 Herdr 設定（主力終端）
 ```
 
@@ -76,7 +74,6 @@ dotfiles/
 ├── .gitignore_global     # Git 全域忽略檔案
 ├── .gitignore            # 本專案忽略檔案
 ├── .tigrc                # Tig 設定檔（Git 文字介面）
-├── .tmux.conf            # Tmux 設定檔（fallback 終端機多工器）
 ├── herdr/                # herdr 設定目錄（主力終端）
 │   ├── config.toml       # herdr 設定檔（symlink 到 ~/.config/herdr/config.toml）
 │   └── shell.zsh         # tab 自動命名 shell integration（symlink 到 ~/.config/herdr/shell.zsh，由 .zshrc source）
@@ -89,14 +86,12 @@ dotfiles/
 ├── AGENTS.md             # 專案層級指令（opencode project instructions）
 ├── opencode/             # opencode 設定（symlink 到 ~/.config/opencode/）
 │   ├── AGENTS.md         # 全域指示檔（部署為 ~/.config/opencode/AGENTS.md）
-│   ├── opencode.json     # 主設定與 plugin 宣告
-│   ├── package.json      # plugin SDK 依賴
-│   ├── omo.jsonc         # oh-my-openagent (OmO) 的 agent / category model 設定（部署為 ~/.omo/omo.jsonc，OmO >= 4.19 唯一讀取的 config）
+│   ├── opencode.json     # 主設定（permission、top-level model；見 ADR-0007）
+│   ├── package.json      # local plugin SDK 依賴（guard.ts 用）
 │   ├── commands/         # slash commands（commit、writing 系列、grill 系列、matt workflow：to-spec、to-tickets、implement；user-only 入口 setup-matt-pocock-skills、handoff、teach、wayfinder、improve-codebase-architecture、retro、wait-what、implement-spec、to-questionnaire、show-me（humanlayer 來源）為自包含 command，工作流內容直接內聯於 command 檔）
 │   ├── skills/           # skills（matt 系列：grilling、domain-modeling、writing-for-agents、code-review、tdd、codebase-design、prototype、diagnosing-bugs、research）
 │   ├── VENDORED.md       # vendor 基準線記錄（matt 系列、humanlayer 系列；upstream 版本、包裝形式、客製摘要；見 ADR-0001/0004）
-│   ├── plugins/          # opencode native plugins（notify.ts：tmux 完成通知、guard.ts：金鑰洩漏防護：gitleaks staged 掃描 + fail-closed）
-│   └── scripts/          # 通知 scripts（notify-stop / notify-waiting，tmux @claude_state + BEL）
+│   └── plugins/          # opencode native plugins（guard.ts：金鑰洩漏防護：gitleaks staged 掃描 + fail-closed）
 ├── scripts/              # 一般工具腳本
 │   └── ...
 ├── docs/                 # 文件目錄
@@ -177,32 +172,32 @@ nvim/                       # Neovim 配置目錄
 
 ## Herdr 設定
 
-herdr 是[主力終端](https://herdr.dev)（terminal workspace manager for AI coding agents）；tmux 為 fallback，設定凍結。決策與 keybinding 策略見 [ADR-0002](docs/adr/0002-herdr-replaces-tmux-primary-terminal.md)。
+herdr 是[主力終端](https://herdr.dev)（terminal workspace manager for AI coding agents），也是唯一受組態的終端——tmux 模組已退役（見 [ADR-0006](docs/adr/0006-remove-tmux-module.md)，回退路徑 = git history）。
 
 ### 特色功能
 
 - **Tab bar 底部化**: tab row 位於 terminal panes 下方（`ui.tab_bar_position = "bottom"`），右側顯示 hostname 與日期時間（`ui.tab_bar_right` structured entries）
 - **`alt+j` / `alt+k` 翻頁**: 把 PageDown / PageUp 送給聚焦 pane，供無翻頁鍵的鍵盤使用。經 `[[keys.command]]`（type shell）+ `herdr pane send-text` 送 terminal escape sequence 實作（`herdr pane send-keys` 在 0.9.3 無 page key 名稱）
-- **Native agent observation**: herdr 內建 agent 偵測（detection manifests + sidebar rollup），sidebar 直接顯示 opencode 的 working/idle/blocked 狀態；tmux 時代的 `@claude_state` + notify scripts 管線不移轉（fallback 專屬，凍結）
+- **Native agent observation**: herdr 內建 agent 偵測（detection manifests + sidebar rollup），sidebar 直接顯示 opencode 的 working/idle/blocked 狀態；tmux 時代的 `@claude_state` + notify scripts 管線已移除，herdr 原生觀測為唯一來源
 - **Tab 自動命名**: pane 內執行指令時，tab 名自動改為指令第一個 word（`nvim config.toml` → `nvim`）；回到 prompt 顯示 `shell`；`zsh`/`bash`/`sh` 一律顯示 `shell`。手動改名（如 `prefix+shift+t`）後自動命名讓道，鎖定至 tab 關閉。實作於 `herdr/shell.zsh`（zsh preexec/precmd hooks + `herdr tab rename`），經 `.zshrc` 一行 source 載入；以 `HERDR_TAB_ID` 自我守門，非 herdr 環境零副作用。見 [ADR-0003](docs/adr/0003-herdr-tab-autonaming-shell-hooks.md)
 - **主題與通知**: theme gruvbox（部署後經 herdr Settings 變更，2026-10-02）、status indicators dots、toast delivery off
 
-### 與 tmux 的 keybinding 對應
+### Keybindings
 
-herdr 與 tmux 的 prefix 同為 `ctrl+b`。採納 herdr 原生 keybinding，不復刻 tmux 肌肉記憶（見 ADR-0002）；僅翻頁自建。herdr 的 tab 對應 tmux 的 window；herdr 的 workspace（sidebar 的專案空間）在 tmux 無對應物。
+prefix 為 `ctrl+b`。採納 herdr 原生 keybinding，僅翻頁自建（keybinding 決策見 [ADR-0002](docs/adr/0002-herdr-replaces-tmux-primary-terminal.md)；tmux 模組退役見 [ADR-0006](docs/adr/0006-remove-tmux-module.md)）。tab 是 workspace 內的分頁；workspace 是 sidebar 的專案空間。
 
-| 操作 | tmux | herdr |
-|------|------|-------|
-| Pane 切換 | `Ctrl-w` + `h/j/k/l` | `prefix` + `h/j/k/l` |
-| 新 tab（tmux window） | `prefix` + `c` | `prefix` + `c` |
-| Tab 切換 | `prefix` + `1..9`、`Ctrl-w` + `j/k` | `prefix` + `1..9`、`prefix` + `n` / `p` |
-| 關閉 tab | `prefix` + `&` | `prefix` + `shift+x` |
-| 垂直分割 | `prefix` + `\|` | `prefix` + `v` |
-| 水平分割 | `prefix` + `-` | `prefix` + `minus` |
-| Pane zoom | `prefix` + `z` | `prefix` + `z` |
-| Copy mode | `prefix` + `Escape` | `prefix` + `[` |
-| Workspace 切換 | （無對應） | `prefix` + `w`（picker，`j`/`k` 導覽）、`prefix` + `g`（goto，內建 `j`/`k`） |
-| 翻頁 | 鍵盤 PageUp/PageDown | `alt+j` / `alt+k`（自訂 `[[keys.command]]`） |
+| 操作 | herdr |
+|------|-------|
+| Pane 切換 | `prefix` + `h/j/k/l` |
+| 新 tab | `prefix` + `c` |
+| Tab 切換 | `prefix` + `1..9`、`prefix` + `n` / `p` |
+| 關閉 tab | `prefix` + `shift+x` |
+| 垂直分割 | `prefix` + `v` |
+| 水平分割 | `prefix` + `minus` |
+| Pane zoom | `prefix` + `z` |
+| Copy mode | `prefix` + `[` |
+| Workspace 切換 | `prefix` + `w`（picker，`j`/`k` 導覽）、`prefix` + `g`（goto，內建 `j`/`k`） |
+| 翻頁 | `alt+j` / `alt+k`（自訂 `[[keys.command]]`） |
 
 ### 常用指令
 
@@ -220,113 +215,6 @@ herdr server reload-config
 ### 本地自訂設定
 
 設定檔由 repo 管理（symlink）；`herdr config reset-keys` 會直接改寫 `~/.config/herdr/config.toml`（即 repo 檔案），使用前請先確認 symlink 指向與 git 狀態。
-
-## Tmux 設定
-
-tmux 為 fallback 終端機多工器，設定凍結：壞了修、不主動演進（見 [ADR-0002](docs/adr/0002-herdr-replaces-tmux-primary-terminal.md)）。
-
-### 特色功能
-
-- **Vim 風格操作**: 使用 hjkl 按鍵移動和操作面板/視窗
-- **Ctrl-w 視窗切換**: 類似 Vim 的 `Ctrl-w` + `hjkl` 快速切換視窗
-- **滑鼠支援**: 可使用滑鼠點擊切換視窗、調整面板大小
-- **美化狀態列**: 顯示 session、時間、主機名等資訊
-- **快速鍵優化**: 更直覺的面板分割和視窗切換
-- **複製模式**: Vi 風格的文字選取和複製
-- **自動編號**: 視窗自動重新編號，保持連續性
-- **中文支援**: UTF-8 編碼，完整支援中文顯示
-
-### 常用快捷鍵
-
-以下快捷鍵使用 `Ctrl-b` 作為 prefix（記作 `<prefix>`）
-
-**基本操作：**
-- `<prefix> r` - 重新載入配置檔
-- `<prefix> ?` - 顯示所有快捷鍵
-- `<prefix> d` - 離開（detach）session
-
-**視窗管理：**
-- `<prefix> c` - 新建視窗
-- `<prefix> ,` - 重新命名視窗
-- `<prefix> &` - 關閉視窗
-- `<prefix> a` - 切換到上一個視窗
-- `Ctrl-w` + `h/l` - Vim 風格切換視窗（左/右，不需要 prefix）
-- `Ctrl-w` + `j/k` - Vim 風格切換視窗（下一個/上一個）
-- `Ctrl-w` + `c` - 新建視窗（在當前路徑）
-- `Shift-Left` / `Shift-Right` - 切換視窗（不需要 prefix）
-- `<prefix> Ctrl-h` / `<prefix> Ctrl-l` - 快速切換視窗
-
-**面板管理：**
-- `<prefix> |` - 垂直分割面板
-- `<prefix> -` - 水平分割面板
-- `<prefix> h/j/k/l` - Vim 風格切換面板（左/下/上/右）
-- `Alt-方向鍵` - 切換面板（不需要 prefix）
-- `<prefix> H/J/K/L` - 調整面板大小（可重複按）
-- `<prefix> x` - 關閉面板
-- `<prefix> z` - 最大化/還原當前面板
-
-**複製模式：**
-- `<prefix> Escape` - 進入複製模式
-- `v` - 開始選取（在複製模式中）
-- `y` - 複製選取內容（在複製模式中）
-- `r` - 矩形選取模式（在複製模式中）
-- `<prefix> p` - 貼上
-
-**其他：**
-- `<prefix> :` - 命令模式
-- `<prefix> t` - 顯示時鐘
-
-### 常用指令
-
-```bash
-# 啟動 tmux
-tmux
-
-# 啟動並命名 session
-tmux new -s 工作
-
-# 列出所有 session
-tmux ls
-
-# 重新連接 session
-tmux attach -t 工作
-
-# 重新連接最後的 session
-tmux attach
-
-# 刪除 session
-tmux kill-session -t 工作
-
-# 刪除所有 session
-tmux kill-server
-```
-
-### 進階使用
-
-**多個 Session 工作流程：**
-```bash
-# 為不同專案建立不同 session
-tmux new -s dotfiles     # 開發專案
-tmux new -s server       # 伺服器監控
-tmux new -s debug        # 除錯工作
-
-# 在 session 間切換
-<prefix> s              # 顯示 session 列表
-<prefix> (              # 切換到上一個 session
-<prefix> )              # 切換到下一個 session
-```
-
-**本地自訂設定：**
-
-如需個人專屬設定，可建立 `~/.tmux.conf.local`：
-```bash
-# ~/.tmux.conf.local
-# 這裡的設定不會被版本控制
-
-# 例如：使用原本的 prefix
-set-option -g prefix C-b
-unbind C-a
-```
 
 ## Tig 設定
 
@@ -454,9 +342,9 @@ make uninstall
 - **Neovim 0.6+**
 - Git 2.0+
 - Tig 2.0+（可選，用於 Git 圖形介面）
-- herdr 0.9.3+（可選，主力終端；`alt+j`/`alt+k` 翻頁與 tab 自動命名依賴 jq）
+- herdr 0.9.3+（主力終端，唯一受組態的 terminal multiplexer；`alt+j`/`alt+k` 翻頁與 tab 自動命名依賴 jq）
 - fzf（必需，用於 Tig 互動式檔案選擇器）
-- jq（必需，JSON 處理器 — 通知 scripts 與一般工具使用）
+- jq（必需，JSON 處理器 — herdr tab 自動命名與一般工具使用）
 - gitleaks（必需，OpenCode secret guard 掃描；未安裝時 AI 的 git commit 會被 fail-closed 擋下）
 
 新機器完整建置指引請參考 [docs/SETUP.md](docs/SETUP.md)。
