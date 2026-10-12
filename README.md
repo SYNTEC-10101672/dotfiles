@@ -9,7 +9,7 @@
 - 🔧 **Git**: 顏色配置、別名、自動 rebase
 - 📊 **Tig**: Git 文字介面工具，支援美化的 commit graph 和 vim 風格操作
 - 🖥️ **Herdr**: 主力終端（terminal workspace manager for AI coding agents），tab bar 底部化、hostname/日期時間顯示、tab 自動命名、`alt+j`/`alt+k` 翻頁
-- 🖥️ **opencode**: AI 編程工具設定（`opencode.json`、全域指示檔 `AGENTS.md`、commands、skills、plugins）
+- 🖥️ **opencode**: AI 編程工具設定（`opencode.json`、`cli.json`、全域指示檔 `AGENTS.md`、commands、skills、plugins）
 
 ## 快速安裝
 
@@ -87,6 +87,7 @@ dotfiles/
 ├── opencode/             # opencode 設定（symlink 到 ~/.config/opencode/）
 │   ├── AGENTS.md         # 全域指示檔（部署為 ~/.config/opencode/AGENTS.md）
 │   ├── opencode.json     # 主設定（v2 permissions array、top-level model、explore/title cheap model；見 ADR-0008）
+│   ├── cli.json          # terminal client 偏好（theme、diffs、session 顯示；部署為 ~/.config/opencode/cli.json）
 │   ├── package.json      # local plugin SDK 依賴與測試工具（guard.ts 用）
 │   ├── tsconfig.json     # 型別檢查設定（tsc --noEmit）
 │   ├── commands/         # slash commands（commit、writing 系列、grill 系列、matt workflow：to-spec、to-tickets、implement；user-only 入口 setup-matt-pocock-skills、handoff、teach、wayfinder、improve-codebase-architecture、retro、wait-what、implement-spec、to-questionnaire、show-me（humanlayer 來源）為自包含 command，工作流內容直接內聯於 command 檔）

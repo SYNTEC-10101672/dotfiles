@@ -2,7 +2,7 @@ SHELL := bash
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
-OPENCODE_ITEMS := commands skills AGENTS.md opencode.json package.json plugins
+OPENCODE_ITEMS := commands skills AGENTS.md opencode.json cli.json package.json plugins
 
 HERDR_ITEMS := config.toml shell.zsh
 
@@ -22,7 +22,7 @@ help:
 	@echo "  make zshrc     - Install zsh configuration (symlinks + clone p10k/plugins)"
 	@echo "  make bashrc    - Install bash configuration (legacy, not in install)"
 	@echo "  make nvim      - Install neovim configuration"
-	@echo "  make opencode  - Install OpenCode configuration (opencode.json, package.json, AGENTS.md, commands/, skills/, plugins/)"
+	@echo "  make opencode  - Install OpenCode configuration (opencode.json, cli.json, package.json, AGENTS.md, commands/, skills/, plugins/)"
 	@echo "  make git       - Install git configuration"
 	@echo "  make tig       - Install tig configuration"
 	@echo "  make herdr     - Install herdr configuration (primary terminal)"
@@ -65,6 +65,7 @@ opencode:
 	@ln -sfn $(ROOT_DIR)/opencode/skills $(HOME)/.config/opencode/skills
 	@ln -sf $(ROOT_DIR)/opencode/AGENTS.md $(HOME)/.config/opencode/AGENTS.md
 	@ln -sf $(ROOT_DIR)/opencode/opencode.json $(HOME)/.config/opencode/opencode.json
+	@ln -sf $(ROOT_DIR)/opencode/cli.json $(HOME)/.config/opencode/cli.json
 	@ln -sf $(ROOT_DIR)/opencode/package.json $(HOME)/.config/opencode/package.json
 	@for d in plugins; do \
 			if [ -e "$(HOME)/.config/opencode/$$d" ] && [ ! -L "$(HOME)/.config/opencode/$$d" ]; then \
