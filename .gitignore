@@ -36,3 +36,6 @@ Thumbs.db
 .opencode/bun.lock
 .opencode/node_modules/
 .opencode/package.json
+
+# opencode local dev dependencies
+opencode/node_modules/

@@ -7,7 +7,7 @@
 ### AI 金鑰防護
 
 **Secret Guard**:
-OpenCode 層的三層金鑰洩漏防護機制（read deny、commit 掃描、push 確認），實作於 `opencode/plugins/guard.ts` 與 `opencode/opencode.json` 的 `permission` 區塊。
+OpenCode 層的三層金鑰洩漏防護機制（read deny、commit 掃描、push 確認），實作於 `opencode/plugins/guard.ts`（v2 plugin：`Plugin.define` + `ctx.tool.hook`）與 `opencode/opencode.json` 的 `permissions` 規則（v2 ordered array，last match wins；見 ADR-0008）。
 _Avoid_: git 保護、金鑰保護單獨指稱此機制時
 
 **fail-closed**:

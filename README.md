@@ -86,10 +86,12 @@ dotfiles/
 ├── AGENTS.md             # 專案層級指令（opencode project instructions）
 ├── opencode/             # opencode 設定（symlink 到 ~/.config/opencode/）
 │   ├── AGENTS.md         # 全域指示檔（部署為 ~/.config/opencode/AGENTS.md）
-│   ├── opencode.json     # 主設定（permission、top-level model；見 ADR-0007）
-│   ├── package.json      # local plugin SDK 依賴（guard.ts 用）
+│   ├── opencode.json     # 主設定（v2 permissions array、top-level model、explore/title cheap model；見 ADR-0008）
+│   ├── package.json      # local plugin SDK 依賴與測試工具（guard.ts 用）
+│   ├── tsconfig.json     # 型別檢查設定（tsc --noEmit）
 │   ├── commands/         # slash commands（commit、writing 系列、grill 系列、matt workflow：to-spec、to-tickets、implement；user-only 入口 setup-matt-pocock-skills、handoff、teach、wayfinder、improve-codebase-architecture、retro、wait-what、implement-spec、to-questionnaire、show-me（humanlayer 來源）為自包含 command，工作流內容直接內聯於 command 檔）
 │   ├── skills/           # skills（matt 系列：grilling、domain-modeling、writing-for-agents、code-review、tdd、codebase-design、prototype、diagnosing-bugs、research）
+│   ├── tests/            # guard.ts 測試（bun test；不隨 make opencode 部署）
 │   ├── VENDORED.md       # vendor 基準線記錄（matt 系列、humanlayer 系列；upstream 版本、包裝形式、客製摘要；見 ADR-0001/0004）
 │   └── plugins/          # opencode native plugins（guard.ts：金鑰洩漏防護：gitleaks staged 掃描 + fail-closed）
 ├── scripts/              # 一般工具腳本

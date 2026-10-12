@@ -211,10 +211,10 @@ curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 
 ## 7. opencode
 
-需先安裝 Node.js（步驟 3）。透過 npm 全域安裝：
+需先安裝 Node.js（步驟 3）。透過 npm 全域安裝（v2；若機器上留有 v1 的 `opencode-ai` 套件，先 `sudo npm uninstall -g opencode-ai`）：
 
 ```bash
-npm install -g opencode-ai@latest
+sudo npm install -g @opencode/cli
 ```
 
 建立設定 symlink（`opencode.json`、`package.json`、`AGENTS.md`、`commands/`、`skills/`、`plugins/` 透過 `make opencode` 部署到 `~/.config/opencode/`）：
@@ -223,7 +223,7 @@ npm install -g opencode-ai@latest
 make opencode
 ```
 
-> **注意**：唯一 plugin 是 repo 自帶的 local plugin `guard.ts`（Secret Guard，經 `plugins/` symlink 部署），無 npm plugin 需下載；`package.json` 的 `@opencode-ai/plugin` 是它的 SDK 依賴。session 預設 model 固定為 `zai-coding-plan/glm-5.3`（`opencode.json` top-level `model`）。
+> **注意**：唯一 plugin 是 repo 自帶的 local plugin `guard.ts`（Secret Guard，經 `plugins/` symlink 部署），無 npm plugin 需下載；`package.json` 的 `@opencode/plugin` 是它的 SDK 依賴。session 預設 model 固定為 `zai-coding-plan/glm-5.3`（`opencode.json` top-level `model`）。在 repo 的 `opencode/` 目錄下可跑 `npm run typecheck`（tsc --noEmit）與 `npm test`（bun test，guard.ts 的單元與 gitleaks integration 測試）。
 
 驗證：
 
