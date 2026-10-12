@@ -8,7 +8,7 @@
 - 能解釋五個 agent 狀態（idle/working/blocked/done/unknown）與 `--wait` 的語意（blocked 拒收、5s stall gate）
 - 能用 `herdr worktree create/open/remove` 為平行任務開獨立 worktree workspace
 - 能說出 workspace / tab / pane / agent 四層結構與 socket API、`HERDR_*` 環境變數的關係
-- 日常不再開 tmux（SSH 應急僅用 bare tmux，見 ADR-0006）
+- 日常不再開 tmux（本機套件已移除，見 ADR-0009）
 
 ## Constraints
 - 已熟悉 herdr 大部分快捷鍵；config.toml 已建制（`[[keys.command]]` shell 綁定、tab 自動命名 hooks）

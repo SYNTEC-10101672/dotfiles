@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: partially superseded by 0009-remove-tmux-package.md (SSH bare tmux fallback clause)
 ---
 
 # tmux 模組退役，回退路徑改為 git history（supersede ADR-0002）

@@ -47,7 +47,7 @@ _Avoid_: 把 wrapper 當 skill 本體稱呼（內容在 `skills/<name>/SKILL.md`
 ### 終端機
 
 **主力終端**:
-日常使用的 terminal multiplexer，現為 herdr，也是唯一受組態的終端；tmux 模組已退役（見 ADR-0006），回退路徑 = git history。
+日常使用的 terminal multiplexer，現為 herdr，也是唯一受組態的終端；tmux 模組已退役（見 ADR-0006），系統套件亦已移除（見 ADR-0009），回退路徑 = git history。
 _Avoid_: 把 tmux 稱為 fallback 或並存雙主力（tmux 模組已移除，僅存於 git history）
 
 **native agent observation**:
