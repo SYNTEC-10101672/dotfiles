@@ -10,11 +10,42 @@
     }
   },
   "permissions": [
-    { "action": "read", "resource": "*", "effect": "allow" },
-    { "action": "read", "resource": "*.env", "effect": "deny" },
-    { "action": "read", "resource": "*.env.*", "effect": "deny" },
-    { "action": "read", "resource": "*.credentials.json", "effect": "deny" },
-    { "action": "read", "resource": "*.env.example", "effect": "allow" },
-    { "action": "shell", "resource": "git push *", "effect": "ask" }
-  ]
+    {
+      "action": "read",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "*.env",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "*.env.*",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "*.credentials.json",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "*.env.example",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git push *",
+      "effect": "ask"
+    }
+  ],
+  "plugin": [
+    "@slkiser/opencode-quota@5.0.2"
+  ],
+  "provider": {
+    "copilot": {},
+    "zai": {}
+  }
 }
