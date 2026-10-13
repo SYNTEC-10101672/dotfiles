@@ -72,19 +72,14 @@ opencode:
 	@ln -sf $(ROOT_DIR)/opencode/opencode.json $(HOME)/.config/opencode/opencode.json
 	@ln -sf $(ROOT_DIR)/opencode/cli.json $(HOME)/.config/opencode/cli.json
 	@ln -sf $(ROOT_DIR)/opencode/package.json $(HOME)/.config/opencode/package.json
-	@for d in plugins; do \
+	@mkdir -p $(HOME)/.config/opencode/opencode-quota
+	@for d in plugins $(QUOTA_ITEM); do \
 			if [ -e "$(HOME)/.config/opencode/$$d" ] && [ ! -L "$(HOME)/.config/opencode/$$d" ]; then \
 				echo "⚠ .config/opencode/$$d exists and is not a symlink — remove it manually and re-run"; \
 			else \
 				ln -sfn $(ROOT_DIR)/opencode/$$d $(HOME)/.config/opencode/$$d; \
 			fi; \
 		done
-	@mkdir -p $(HOME)/.config/opencode/opencode-quota
-	@if [ -e "$(HOME)/.config/opencode/$(QUOTA_ITEM)" ] && [ ! -L "$(HOME)/.config/opencode/$(QUOTA_ITEM)" ]; then \
-			echo "⚠ .config/opencode/$(QUOTA_ITEM) exists and is not a symlink — remove it manually and re-run"; \
-		else \
-			ln -sf $(ROOT_DIR)/opencode/$(QUOTA_ITEM) $(HOME)/.config/opencode/$(QUOTA_ITEM); \
-		fi
 	@echo "✓ OpenCode configuration installed"
 
 git:
