@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: partially superseded by 0010-readopt-opencode-quota-plugin.md (quota plugin clause only; OmO stays retired)
 ---
 
 # OmO 與 quota plugin 退役，harness 回歸純 opencode core
