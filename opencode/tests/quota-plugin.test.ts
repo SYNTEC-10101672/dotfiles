@@ -4,8 +4,9 @@
 //    is the symlink source (the installer only adds comments to .jsonc
 //    outputs);
 // 2. opencode/opencode-quota/quota-toast.jsonc must keep the display
-//    consensus: allWindows format (so the Weekly cap stays visible), one
-//    compact line at the TUI Home bottom, and every other surface off.
+//    consensus: allWindows format (so the Weekly cap stays visible), the
+//    compact line at the TUI Home bottom and under session prompts, zai
+//    as the only provider, and every other surface off.
 import { describe, expect, test } from "bun:test"
 import { readFileSync } from "node:fs"
 import path from "node:path"
@@ -43,12 +44,20 @@ describe("quota toast config", () => {
     expect(config.formatStyle).toBe("allWindows")
   })
 
-  test("renders one compact line at the TUI Home bottom only", () => {
+  test("renders the compact line at Home bottom and under session prompts", () => {
     expect(config.tuiCompactStatus).toEqual({
       enabled: true,
       homeBottom: true,
-      sessionPrompt: false,
+      sessionPrompt: true,
     })
+  })
+
+  test("scopes providers to zai", () => {
+    // Copilot is unlimited, so its segment carries no information; with
+    // "auto" it re-enters the compact line and demotes Z.ai behind "+1",
+    // hiding the windows the line exists for. A future metered provider
+    // joins by adding its id here.
+    expect(config.enabledProviders).toEqual(["zai"])
   })
 
   test("keeps toast, sidebar panel, and prompt bar off", () => {

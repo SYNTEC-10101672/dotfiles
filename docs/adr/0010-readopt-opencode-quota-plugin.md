@@ -20,3 +20,8 @@ ADR-0007 退役 `@slkiser/opencode-quota` 的理由是 v1/v2 plugin 斷代（v1 
 - init 精靈重跑時：`configFormat` 選 `json`（原地編輯 realpath）；選 `jsonc` 會嘗試 `opencode.json` → `opencode.jsonc` 轉換並因 symlink source 拒絕。
 - request 撞上 provider 上限時掛起至 window reset（`waitForQuotaReset` 開的代價，最長約一個 window 週期）。
 - ADR-0007 標記 partially superseded（僅 quota 條款）；OmO 退役與 ADR-0007 其餘內容不變。
+
+## 修訂（2026-10-13）
+
+- 顯示面從「僅 Home 底部」改為「Home 底部 + 每個 session prompt 底下」（`tuiCompactStatus.sessionPrompt: true`）：Home-only 決策修訂，日常工作多在 session 內，離開 Home 就看不到剩餘量違背本 ADR 的目的。
+- `enabledProviders` 從 `"auto"` 收斂為 `["zai"]`：Copilot 為無上限方案，quota 資訊量為零（compact line 與 `/quota` 都不再顯示）；未來加入計量 provider 時擴充此 list。

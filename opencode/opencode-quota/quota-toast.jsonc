@@ -3,7 +3,7 @@
   "tuiCommandDisplay": "dialog",
   "showSessionTokens": false,
   "sessionTokenScope": "current",
-  "enabledProviders": "auto",
+  "enabledProviders": ["zai"],
   "formatStyle": "allWindows",
   "percentDisplayMode": "remaining",
   "tuiSidebarPanel": {
@@ -15,7 +15,7 @@
   "tuiCompactStatus": {
     "enabled": true,
     "homeBottom": true,
-    "sessionPrompt": false
+    "sessionPrompt": true
   },
   "maintainerAnnouncements": {
     "enabled": false
