@@ -1,0 +1,23 @@
+{
+  "enableToast": false,
+  "tuiCommandDisplay": "dialog",
+  "showSessionTokens": false,
+  "sessionTokenScope": "current",
+  "enabledProviders": "auto",
+  "formatStyle": "allWindows",
+  "percentDisplayMode": "remaining",
+  "tuiSidebarPanel": {
+    "enabled": false
+  },
+  "tuiPromptBar": {
+    "enabled": false
+  },
+  "tuiCompactStatus": {
+    "enabled": true,
+    "homeBottom": true,
+    "sessionPrompt": false
+  },
+  "maintainerAnnouncements": {
+    "enabled": false
+  }
+}

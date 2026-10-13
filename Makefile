@@ -4,6 +4,11 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 OPENCODE_ITEMS := commands skills AGENTS.md opencode.json cli.json package.json plugins
 
+# Nested single-file item: the opencode-quota dir stays a real directory
+# (it may later hold other providers' secret files), so only the config
+# file inside it is symlinked.
+QUOTA_ITEM := opencode-quota/quota-toast.jsonc
+
 HERDR_ITEMS := config.toml shell.zsh
 
 .PHONY: all install bashrc zshrc nvim opencode git tig herdr scripts uninstall check help
@@ -22,7 +27,7 @@ help:
 	@echo "  make zshrc     - Install zsh configuration (symlinks + clone p10k/plugins)"
 	@echo "  make bashrc    - Install bash configuration (legacy, not in install)"
 	@echo "  make nvim      - Install neovim configuration"
-	@echo "  make opencode  - Install OpenCode configuration (opencode.json, cli.json, package.json, AGENTS.md, commands/, skills/, plugins/)"
+	@echo "  make opencode  - Install OpenCode configuration (opencode.json, cli.json, package.json, AGENTS.md, commands/, skills/, plugins/, opencode-quota/quota-toast.jsonc)"
 	@echo "  make git       - Install git configuration"
 	@echo "  make tig       - Install tig configuration"
 	@echo "  make herdr     - Install herdr configuration (primary terminal)"
@@ -74,6 +79,12 @@ opencode:
 				ln -sfn $(ROOT_DIR)/opencode/$$d $(HOME)/.config/opencode/$$d; \
 			fi; \
 		done
+	@mkdir -p $(HOME)/.config/opencode/opencode-quota
+	@if [ -e "$(HOME)/.config/opencode/$(QUOTA_ITEM)" ] && [ ! -L "$(HOME)/.config/opencode/$(QUOTA_ITEM)" ]; then \
+			echo "⚠ .config/opencode/$(QUOTA_ITEM) exists and is not a symlink — remove it manually and re-run"; \
+		else \
+			ln -sf $(ROOT_DIR)/opencode/$(QUOTA_ITEM) $(HOME)/.config/opencode/$(QUOTA_ITEM); \
+		fi
 	@echo "✓ OpenCode configuration installed"
 
 git:
@@ -116,7 +127,7 @@ uninstall:
 			fi; \
 		done
 	@echo "Removing OpenCode configuration symlinks..."
-	@for f in $(OPENCODE_ITEMS); do \
+	@for f in $(OPENCODE_ITEMS) $(QUOTA_ITEM); do \
 			if [ -L "$(HOME)/.config/opencode/$$f" ]; then \
 				echo "  Removing .config/opencode/$$f"; \
 				rm "$(HOME)/.config/opencode/$$f"; \
@@ -162,7 +173,7 @@ check:
 		done
 	@echo ""
 	@echo "Checking OpenCode configuration..."
-	@for f in $(OPENCODE_ITEMS); do \
+	@for f in $(OPENCODE_ITEMS) $(QUOTA_ITEM); do \
 			if [ -L "$(HOME)/.config/opencode/$$f" ]; then \
 				target=$$(readlink "$(HOME)/.config/opencode/$$f"); \
 				if [ "$$target" = "$(ROOT_DIR)/opencode/$$f" ]; then \
