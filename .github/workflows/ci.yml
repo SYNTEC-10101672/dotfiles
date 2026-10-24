@@ -1,0 +1,30 @@
+# Wire up the opencode/ package's own checks: bun install -> typecheck -> test.
+# gitleaks is pinned so guard.ts integration tests run at full coverage
+# (they self-skip via test.skipIf when the binary is missing).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  GITLEAKS_VERSION: "8.30.1"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: opencode
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install gitleaks
+        run: >
+          curl -sSL
+          "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          | sudo tar -xz -C /usr/local/bin gitleaks
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun test
