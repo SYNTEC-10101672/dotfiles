@@ -62,6 +62,24 @@ _Avoid_: 把 herdr tab 稱為 workspace（兩層結構，混用會讓 keybinding
 tab 名稱自動反映該 tab 內正在執行的指令；手動改名優先於自動命名（鎖定至 tab 關閉，見 ADR-0003）。
 _Avoid_: 與 tmux `automatic-rename` 混稱（tmux 以輪詢實作、本 repo 以 shell hooks 實作；herdr 0.9.3 無原生）
 
+### OpenCode TUI
+
+**session panel**:
+OpenCode TUI 裡由 host 擁有 sizing/focus/fullscreen 的側邊 panel，plugin 只貢獻內容；NBA 比數顯示的載體，只能 在 session 內開啟。
+_Avoid_: sidebar（指 TUI 內建的 session sidebar，另一個東西）、右半邊 panel（位置由 host 決定，不保證右側或 50% 寬）
+
+**scoreboard**:
+比賽層級的即時數據：對戰組合、比數、節次、game clock、比賽狀態（pre/in/post）；NBA panel 的顯示範圍。
+_Avoid_: 即時數據（範圍模糊）、box score
+
+**box score**:
+單場球員數據（MIN/PTS/REB/AST 等）；NBA panel 的未來擴充，不屬於 scoreboard 範圍。
+_Avoid_: 與 scoreboard 混用
+
+**賽程日**:
+panel 語境的「今天」＝NBA 官方 scoreboard 的日期基準（US Eastern）；台灣早上對到的是前一個賽程日。
+_Avoid_: 台灣日曆天
+
 ### 部署
 
 **deploy**:

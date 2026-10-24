@@ -8,7 +8,9 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "jsx": "preserve",
+    "jsxImportSource": "@opentui/solid"
   },
-  "include": ["plugins/**/*.ts", "tests/**/*.ts"]
+  "include": ["plugins/**/*.ts", "plugins/**/*.tsx", "tests/**/*.ts"]
 }
