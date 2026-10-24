@@ -4,9 +4,12 @@
 //    is the symlink source (the installer only adds comments to .jsonc
 //    outputs);
 // 2. opencode/opencode-quota/quota-toast.jsonc must keep the display
-//    consensus: allWindows format (so the Weekly cap stays visible), the
-//    compact line at the TUI Home bottom and under session prompts, zai
-//    as the only provider, and every other surface off.
+//    consensus: allWindows format at the root (so the /quota report
+//    keeps the Weekly cap visible, and toast/sidebar would too if ever
+//    enabled), a per-surface singleWindow override on the compact line
+//    (short line, shows the binding constraint), the compact line at
+//    the TUI Home bottom and under session prompts, zai as the only
+//    provider, and every other surface off.
 import { describe, expect, test } from "bun:test"
 import { readFileSync } from "node:fs"
 import path from "node:path"
@@ -38,17 +41,24 @@ describe("quota toast config", () => {
   // copy; the .jsonc extension only follows the plugin's expected name.
   const config = JSON.parse(readFileSync(quotaToastPath, "utf8"))
 
-  test("shows every window so the Weekly cap stays visible", () => {
-    // singleWindow auto-picks the lowest-remaining window, which does not
-    // guarantee the Weekly cap appears.
+  test("keeps every window on full-report surfaces (root formatStyle)", () => {
+    // Root allWindows keeps /quota (and toast/sidebar, if ever enabled)
+    // showing every window; singleWindow at the root auto-picks the
+    // lowest-remaining window, which does not guarantee the Weekly cap
+    // appears. The compact line opts out separately below.
     expect(config.formatStyle).toBe("allWindows")
   })
 
-  test("renders the compact line at Home bottom and under session prompts", () => {
+  test("renders the compact line at Home bottom and under session prompts, single-window only", () => {
+    // allWindows made the line ~48 chars (three windows with reset
+    // countdowns). The per-surface singleWindow override collapses it to
+    // the lowest-remaining window (~18 chars); the compact line drops
+    // the window label, so a segment reads "Z.ai 98% 5d 0h 2m".
     expect(config.tuiCompactStatus).toEqual({
       enabled: true,
       homeBottom: true,
       sessionPrompt: true,
+      formatStyle: "singleWindow",
     })
   })
 

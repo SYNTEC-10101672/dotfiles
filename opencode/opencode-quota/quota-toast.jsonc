@@ -15,7 +15,8 @@
   "tuiCompactStatus": {
     "enabled": true,
     "homeBottom": true,
-    "sessionPrompt": true
+    "sessionPrompt": true,
+    "formatStyle": "singleWindow"
   },
   "maintainerAnnouncements": {
     "enabled": false

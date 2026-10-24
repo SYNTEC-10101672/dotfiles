@@ -25,3 +25,7 @@ ADR-0007 退役 `@slkiser/opencode-quota` 的理由是 v1/v2 plugin 斷代（v1 
 
 - 顯示面從「僅 Home 底部」改為「Home 底部 + 每個 session prompt 底下」（`tuiCompactStatus.sessionPrompt: true`）：Home-only 決策修訂，日常工作多在 session 內，離開 Home 就看不到剩餘量違背本 ADR 的目的。
 - `enabledProviders` 從 `"auto"` 收斂為 `["zai"]`：Copilot 為無上限方案，quota 資訊量為零（compact line 與 `/quota` 都不再顯示）；未來加入計量 provider 時擴充此 list。
+
+## 修訂（2026-10-24）
+
+- compact status line 加 per-surface override `tuiCompactStatus.formatStyle: "singleWindow"`：`allWindows` 下三個 window（5h、Weekly、MCP）連 reset countdown 共約 48 字，過長；`singleWindow` 使 compact line 收斂為剩餘 % 最低的單一 window——即當下 binding constraint（約 18 字），5h 與 Weekly 誰先耗盡就顯示誰。root `formatStyle` 維持 `allWindows`，`/quota` 全文報告與 toast / sidebar 的三 window 顯示不變；原拒絕理由「週上限不保證出現」以 surface 分層化解——compact line 只承擔 binding constraint 的可見性，週上限的全文可見性由 `/quota` 承擔。
