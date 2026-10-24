@@ -76,6 +76,14 @@ _Avoid_: 即時數據（範圍模糊）、box score
 單場球員數據（MIN/PTS/REB/AST 等）；NBA panel 的未來擴充，不屬於 scoreboard 範圍。
 _Avoid_: 與 scoreboard 混用
 
+**game line**:
+scoreboard 中單場比賽的單行呈現：對戰組合、比數與狀態細節（live clock/period、開賽時間或 Final）。
+_Avoid_: 與 game/event（ESPN 資料裡的比賽本身）混用
+
+**column grid**:
+所有 game line 共用的固定欄位結構（狀態、隊伍、比數、細節），使每行同欄位垂直對齊；欄寬固定，不隨當次內容變動。
+_Avoid_: 動態欄寬（明確被否決的方案）
+
 **賽程日**:
 panel 語境的「今天」＝NBA 官方 scoreboard 的日期基準（US Eastern）；台灣早上對到的是前一個賽程日。
 _Avoid_: 台灣日曆天

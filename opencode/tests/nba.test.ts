@@ -19,6 +19,14 @@ const lineText = (line: { tokens: readonly { text: string }[] }) =>
 const findLine = (view: ScoreboardView, prefix: string) =>
   view.lines.find((line) => lineText(line).startsWith(prefix))
 
+// Column grid (GLOSSARY): away field [2,6), away score [7,10), home field
+// [11,15), home score [16,19), detail from 21. Status column is [0,1).
+// Team fields are 4 wide (UTAH, WSH), scores 3 right-aligned.
+const matchupOf = (line: { tokens: readonly { text: string }[] }) => {
+  const text = lineText(line)
+  return `${text.slice(2, 6).trim()} at ${text.slice(11, 15).trim()}`
+}
+
 // Minimal upcoming (pre-state) event shaped like an ESPN scoreboard event.
 const upcomingEvent = (date: string, away: string, home: string) => ({
   date,
@@ -44,19 +52,17 @@ describe("sort order", () => {
 
   test("orders upcoming games by start time", () => {
     const view = toScoreboardView(fixture, NOW)
-    const matchups = view.lines
-      .slice(6, 11)
-      .map((line) => lineText(line).split(" · ")[0])
+    const matchups = view.lines.slice(6, 11).map(matchupOf)
     expect(matchups).toEqual(["HOU at SA", "NO at UTAH", "MEM at GS", "LAC at LAL", "POR at SAC"])
   })
 })
 
 describe("line formats", () => {
-  test("in-progress: scores, quarter and game clock with red live dot and clock", () => {
+  test("in-progress: red live dot, column-grid scores, period and red clock", () => {
     const view = toScoreboardView(fixture, NOW)
     const line = findLine(view, "● NY")
     expect(line?.state).toBe("in-progress")
-    expect(lineText(line!)).toBe("● NY 82 BOS 93 · 8:01 Q4")
+    expect(lineText(line!)).toBe("● NY    82 BOS   93  Q4 8:01")
     expect(line?.dim).toBe(false)
     // The live dot and the game clock are red; scores carry no brand color.
     const red = line!.tokens.filter((token) => token.color === "#ff0000").map((t) => t.text)
@@ -66,21 +72,63 @@ describe("line formats", () => {
   test("upcoming: matchup and Taiwan local start time, dim", () => {
     const view = toScoreboardView(fixture, NOW)
     // 2026-10-24T01:30Z and 02:00Z are 9:30 AM and 10:00 AM in Asia/Taipei.
-    const hou = findLine(view, "HOU at SA")
-    const lac = findLine(view, "LAC at LAL")
-    expect(lineText(hou!)).toBe("HOU at SA · 9:30 AM")
-    expect(lineText(lac!)).toBe("LAC at LAL · 10:00 AM")
+    const hou = findLine(view, "  HOU")
+    const lac = findLine(view, "  LAC")
+    expect(lineText(hou!)).toBe("  HOU      SA        9:30 AM")
+    expect(lineText(lac!)).toBe("  LAC      LAL       10:00 AM")
     expect(hou?.state).toBe("upcoming")
     expect(hou?.dim).toBe(true)
     expect(lac?.dim).toBe(true)
   })
 
-  test("finished: final score with dim Final marker", () => {
+  test("finished: middle-dot status, final score, dim Final detail", () => {
     const view = toScoreboardView(fixture, NOW)
-    const line = findLine(view, "CHI 132")
+    const line = findLine(view, "· CHI")
     expect(line?.state).toBe("finished")
-    expect(lineText(line!)).toBe("CHI 132 MIL 125 · Final")
+    expect(lineText(line!)).toBe("· CHI  132 MIL  125  Final")
     expect(line?.dim).toBe(true)
+  })
+})
+
+describe("column grid", () => {
+  // Worked example agreed with the spec: status 1 wide, away 4 left-aligned,
+  // away score 3 right-aligned, home 4 left, home score 3 right, detail from
+  // column 21. Any state must land on the same columns.
+  test("places teams, scores and detail at identical columns in every state", () => {
+    const view = toScoreboardView(fixture, NOW)
+    const live = lineText(findLine(view, "● NY")!)
+    const upcoming = lineText(findLine(view, "  HOU")!)
+    const finished = lineText(findLine(view, "· CHI")!)
+
+    expect(live.slice(2, 6)).toBe("NY  ")
+    expect(live.slice(7, 10)).toBe(" 82")
+    expect(live.slice(11, 15)).toBe("BOS ")
+    expect(live.slice(16, 19)).toBe(" 93")
+    expect(live.slice(21)).toBe("Q4 8:01")
+
+    expect(upcoming.slice(2, 6)).toBe("HOU ")
+    expect(upcoming.slice(7, 10)).toBe("   ")
+    expect(upcoming.slice(11, 15)).toBe("SA  ")
+    expect(upcoming.slice(16, 19)).toBe("   ")
+    expect(upcoming.slice(21)).toBe("9:30 AM")
+
+    expect(finished.slice(2, 6)).toBe("CHI ")
+    expect(finished.slice(7, 10)).toBe("132")
+    expect(finished.slice(11, 15)).toBe("MIL ")
+    expect(finished.slice(16, 19)).toBe("125")
+    expect(finished.slice(21)).toBe("Final")
+  })
+
+  test("keeps every game line on the grid, not only the examples above", () => {
+    const view = toScoreboardView(fixture, NOW)
+    for (const line of view.lines) {
+      const text = lineText(line)
+      expect(text.slice(6, 7)).toBe(" ")
+      expect(text.slice(10, 11)).toBe(" ")
+      expect(text.slice(15, 16)).toBe(" ")
+      expect(text.slice(19, 21)).toBe("  ")
+      expect(text.slice(21).length).toBeGreaterThan(0)
+    }
   })
 })
 
@@ -96,19 +144,19 @@ describe("brand colors", () => {
   test("uses the ESPN brand color for teams above the luminance floor", () => {
     const view = toScoreboardView(fixture, NOW)
     // BOS #008348 and MEM #5d76a9 are readable as-is: passed through unchanged.
-    const bos = findLine(view, "● NY")!.tokens.find((token) => token.text === "BOS")
+    const bos = findLine(view, "● NY")!.tokens.find((token) => token.text === "BOS ")
     expect(bos?.color).toBe("#008348")
-    const mem = findLine(view, "MEM at GS")!.tokens.find((token) => token.text === "MEM")
+    const mem = findLine(view, "  MEM")!.tokens.find((token) => token.text === "MEM ")
     expect(mem?.color).toBe("#5d76a9")
   })
 
   test("brightens brand colors below the luminance floor", () => {
     const view = toScoreboardView(fixture, NOW)
     // LAL #552583 and SA #000000 are too dark against a terminal background.
-    const lal = findLine(view, "LAC at LAL")!.tokens.find((token) => token.text === "LAL")
+    const lal = findLine(view, "  LAC")!.tokens.find((token) => token.text === "LAL ")
     expect(lal?.color).not.toBe("#552583")
     expect(luminance(lal!.color!)).toBeGreaterThanOrEqual(FLOOR)
-    const sa = findLine(view, "HOU at SA")!.tokens.find((token) => token.text === "SA")
+    const sa = findLine(view, "  HOU")!.tokens.find((token) => token.text === "SA  ")
     expect(sa?.color).not.toBe("#000000")
     expect(luminance(sa!.color!)).toBeGreaterThanOrEqual(FLOOR)
   })
@@ -146,7 +194,7 @@ describe("empty schedule day", () => {
     expect(view.message).toBe("No games today")
     expect(view.nextGame?.state).toBe("upcoming")
     expect(view.nextGame?.dim).toBe(true)
-    expect(lineText(view.nextGame!)).toBe("POR at SAC · 8:00 AM")
+    expect(lineText(view.nextGame!)).toBe("  POR      SAC       8:00 AM")
   })
 
   test("without a found next game keeps the bare No games today view", () => {
@@ -364,7 +412,7 @@ describe("scoreboard poller", () => {
     await settle()
     const good = poller.state().view
     expect(poller.state().status).toBe("live")
-    expect(lineText(good!.lines[0])).toBe("LAC at LAL · 10:00 AM")
+    expect(lineText(good!.lines[0])).toBe("  LAC      LAL       10:00 AM")
 
     scheduler.tick()
     await settle()
@@ -374,7 +422,7 @@ describe("scoreboard poller", () => {
     scheduler.tick()
     await settle()
     expect(poller.state().status).toBe("live")
-    expect(lineText(poller.state().view!.lines[0])).toBe("POR at SAC · 10:00 AM")
+    expect(lineText(poller.state().view!.lines[0])).toBe("  POR      SAC       10:00 AM")
   })
 
   test("before the first successful fetch the state stays connecting", async () => {
@@ -428,13 +476,13 @@ describe("scoreboard poller", () => {
     releaseFirst()
     await settle()
     expect(poller.state().status).toBe("live")
-    expect(lineText(poller.state().view!.lines[0])).toBe("LAC at LAL · 10:00 AM")
+    expect(lineText(poller.state().view!.lines[0])).toBe("  LAC      LAL       10:00 AM")
 
     // The next tick after the refresh completed fetches normally again.
     scheduler.tick()
     await settle()
     expect(urls).toEqual([ESPN_URL, ESPN_URL])
-    expect(lineText(poller.state().view!.lines[0])).toBe("POR at SAC · 10:00 AM")
+    expect(lineText(poller.state().view!.lines[0])).toBe("  POR      SAC       10:00 AM")
   })
 
   test("off-day walks future dates and shows the next game in Taiwan time", async () => {
@@ -452,7 +500,7 @@ describe("scoreboard poller", () => {
     expect(poller.state().status).toBe("live")
     expect(poller.state().view?.message).toBe("No games today")
     expect(poller.state().view?.lines).toHaveLength(0)
-    expect(lineText(poller.state().view?.nextGame!)).toBe("POR at SAC · 8:00 AM")
+    expect(lineText(poller.state().view?.nextGame!)).toBe("  POR      SAC       8:00 AM")
   })
 
   test("the walk stops after five empty days without a next game", async () => {

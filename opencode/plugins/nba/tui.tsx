@@ -102,6 +102,16 @@ const periodLabel = (period: number) =>
 
 const scoreOf = (competitor: { score?: string } | undefined) => competitor?.score ?? "0"
 
+// Column grid (GLOSSARY): every game line renders on the same fixed columns
+// so status, teams, scores and detail align vertically across lines. Widths
+// are constants, not derived from the day's data — a score going 99 → 100
+// between polls must not reflow the panel. Team fields are 4 wide because
+// ESPN abbreviations reach 4 characters (UTAH, WSH). Layout: status(1) +
+// gap + away(4, left) + gap + score(3, right) + gap + home(4, left) + gap +
+// score(3, right) + gap(2) + detail.
+const TEAM_COLUMNS = 4
+const SCORE_COLUMNS = 3
+
 const toGameLine = (event: EspnEvent): GameLine => {
   const state = stateOf(event)
   const { away, home } = sides(event)
@@ -110,8 +120,13 @@ const toGameLine = (event: EspnEvent): GameLine => {
   const awayColor = brandColor(away?.team.color)
   const homeColor = brandColor(home?.team.color)
   const abbrToken = (abbr: string, color: string | undefined): LineToken => ({
-    text: abbr,
+    text: abbr.padEnd(TEAM_COLUMNS),
     ...(color ? { color } : {}),
+  })
+  // Leading gap plus right-aligned score; `gap` separates the score field
+  // from what follows (single before home, double before detail).
+  const scoreToken = (score: string, gap: string): LineToken => ({
+    text: ` ${score.padStart(SCORE_COLUMNS)}${gap}`,
   })
   const status = event.status
 
@@ -120,36 +135,34 @@ const toGameLine = (event: EspnEvent): GameLine => {
       state,
       dim: true,
       tokens: [
+        { text: "  " }, // blank status column + gap
         abbrToken(awayAbbr, awayColor),
-        { text: " at " },
+        scoreToken("", " "), // blank score keeps the column in the grid
         abbrToken(homeAbbr, homeColor),
-        { text: ` · ${taipeiTime(new Date(event.date))}` },
+        scoreToken("", "  "),
+        { text: taipeiTime(new Date(event.date)) },
       ],
       start: new Date(event.date),
     }
   }
 
-  const scoreTokens =
-    state === "in-progress"
-      ? [
-          { text: "● ", color: LIVE_RED },
-          abbrToken(awayAbbr, awayColor),
-          { text: ` ${scoreOf(away)} ` },
-          abbrToken(homeAbbr, homeColor),
-          { text: ` ${scoreOf(home)} · ` },
-          { text: status.displayClock || "0:00", color: LIVE_RED },
-          { text: ` ${periodLabel(status.period ?? 0)}` },
-        ]
-      : [
-          abbrToken(awayAbbr, awayColor),
-          { text: ` ${scoreOf(away)} ` },
-          abbrToken(homeAbbr, homeColor),
-          { text: ` ${scoreOf(home)} · Final` },
-        ]
+  const live = state === "in-progress"
   return {
     state,
-    dim: state !== "in-progress",
-    tokens: scoreTokens,
+    dim: !live,
+    tokens: [
+      live ? { text: "● ", color: LIVE_RED } : { text: "· " },
+      abbrToken(awayAbbr, awayColor),
+      scoreToken(scoreOf(away), " "),
+      abbrToken(homeAbbr, homeColor),
+      scoreToken(scoreOf(home), "  "),
+      ...(live
+        ? [
+            { text: `${periodLabel(status.period ?? 0)} ` },
+            { text: status.displayClock || "0:00", color: LIVE_RED },
+          ]
+        : [{ text: "Final" }]),
+    ],
     start: new Date(event.date),
   }
 }
