@@ -19,7 +19,7 @@ Thumbs.db
 # Local issue tracker
 .scratch/
 
-# OpenCode
+# OpenCode runtime state (deploy-target ~/.config/opencode/.opencode/, not this repo's opencode/ dir)
 .opencode/.env
 .opencode/.credentials.json
 .opencode/debug/
@@ -34,6 +34,6 @@ Thumbs.db
 .opencode/node_modules/
 .opencode/package.json
 
-# opencode local dev dependencies
+# opencode/ repo dir: dev artifacts only (bun is the package manager; package.json and bun.lock are tracked)
 opencode/node_modules/
 opencode/package-lock.json
