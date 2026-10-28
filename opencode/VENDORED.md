@@ -64,6 +64,7 @@ User-only 入口的改裝規則（ADR-0001）：剝除 `name:` 與 `disable-mode
 ## 自製（非 vendored，不在 vendor 基準內）
 
 - `commands/commit`：自製 command。
+- `commands/land`：自製 command。
 
 ## 注意事項
 
