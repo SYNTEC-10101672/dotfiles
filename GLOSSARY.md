@@ -68,6 +68,14 @@ _Avoid_: 與 tmux `automatic-rename` 混稱（tmux 以輪詢實作、本 repo �
 OpenCode TUI 裡由 host 擁有 sizing/focus/fullscreen 的側邊 panel，plugin 只貢獻內容；NBA 比數顯示的載體，只能 在 session 內開啟。
 _Avoid_: sidebar（指 TUI 內建的 session sidebar，另一個東西）、右半邊 panel（位置由 host 決定，不保證右側或 50% 寬）
 
+**輸入框**:
+session 裡輸入 prompt 的文字框；opencode 文件稱 composer 或 prompt。位置由 host 擁有，plugin 不能移動它。
+_Avoid_: composer（opencode 文件用詞，非本 repo 常用語）、把 pane focus 變更講成「移動輸入框」（位置不動，只有鍵盤目標變更）
+
+**pane focus**:
+鍵盤 focus 在 session pane（主對話區，含輸入框）與 session panel 之間切換；只改變鍵盤目標，不改變 layout。
+_Avoid_: 與 panel 位置調整混用（pane layout 由 host 擁有）
+
 **scoreboard**:
 比賽層級的即時數據：對戰組合、比數、節次、game clock、比賽狀態（pre/in/post）；NBA panel 的顯示範圍。
 _Avoid_: 即時數據（範圍模糊）、box score

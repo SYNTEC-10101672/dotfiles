@@ -352,7 +352,7 @@ export const createNbaPlugin = (deps: NbaDeps) =>
           {
             id: "nba.scoreboard.toggle",
             description: "Toggle the NBA scoreboard panel",
-            bind: false,
+            bind: "<leader>f",
             slash: { name: "nba" },
             // The command run callback has no context parameter: close over ctx.
             run: () => {
@@ -365,7 +365,11 @@ export const createNbaPlugin = (deps: NbaDeps) =>
                   message: "The NBA scoreboard panel needs an open session.",
                   variant: "info",
                 })
+                return
               }
+              // Opening the panel focuses it; hand focus back so typing goes
+              // straight to the prompt.
+              ctx.keymap.dispatch("pane.focus.left")
             },
           },
         ],

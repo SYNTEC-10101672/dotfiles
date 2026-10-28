@@ -11,5 +11,11 @@
     "scrollbar": false,
     "thinking": "hide"
   },
+  "keybinds": {
+    "leader": "ctrl+\\",
+    "session.list": "<leader>p",
+    "pane.focus.left": "<leader>h,<leader>left",
+    "pane.focus.right": "<leader>l,<leader>right"
+  },
   "animations": true
 }

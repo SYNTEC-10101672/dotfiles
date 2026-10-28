@@ -207,15 +207,19 @@ describe("plugin registration", () => {
   type PanelState = { name: string } | undefined
 
   const makeCtx = (inSession: boolean) => {
-    const layers: { mode?: string; commands?: { id?: string; slash?: { name: string }; bind?: false; run: () => void }[] }[] = []
+    const layers: { mode?: string; commands?: { id?: string; slash?: { name: string }; bind?: false | string; run: () => void }[] }[] = []
     const slots: { append: string; render: unknown }[] = []
     const toasts: { message: string }[] = []
     const opened: string[] = []
     const closed: number[] = []
+    const dispatched: string[] = []
     const slotUnregisters: number[] = []
     let current: PanelState
     const ctx = {
-      keymap: { layer: (factory: () => unknown) => layers.push(factory() as never) },
+      keymap: {
+        layer: (factory: () => unknown) => layers.push(factory() as never),
+        dispatch: (id: string) => dispatched.push(id),
+      },
       ui: {
         slot: (registration: { append: string; render: unknown }) => {
           slots.push(registration)
@@ -239,7 +243,7 @@ describe("plugin registration", () => {
         toast: { show: (toast: { message: string }) => toasts.push(toast) },
       },
     }
-    return { ctx: ctx as never, layers, slots, toasts, opened, closed, slotUnregisters }
+    return { ctx: ctx as never, layers, slots, toasts, opened, closed, dispatched, slotUnregisters }
   }
 
   test("registers a global slash command named nba and a session.panel slot", async () => {
@@ -255,23 +259,29 @@ describe("plugin registration", () => {
     // The host rejects slash commands without a stable id.
     expect(command?.id).toBe("nba.scoreboard.toggle")
     expect(command?.slash?.name).toBe("nba")
-    expect(command?.bind).toBe(false)
+    // The toggle lives on the leader chord; the slash command stays as an
+    // alternative. The leader key itself is ctrl+\ (cli.json).
+    expect(command?.bind).toBe("<leader>f")
   })
 
-  test("run opens the scoreboard panel, then closes it on the second call", async () => {
-    const { ctx, layers, opened, closed } = makeCtx(true)
+  test("run opens the scoreboard panel and returns pane focus to the session pane, then closes it without dispatching", async () => {
+    const { ctx, layers, opened, closed, dispatched } = makeCtx(true)
     await nbaPlugin.setup?.(ctx)
     const run = layers[0]?.commands?.[0]?.run
 
     await run?.()
     expect(opened).toEqual(["nba.scoreboard"])
+    // Opening the panel grabs focus; the plugin hands it back to the prompt.
+    expect(dispatched).toEqual(["pane.focus.left"])
 
     await run?.()
     expect(closed).toHaveLength(1)
+    // Closing leaves keyboard focus where it is.
+    expect(dispatched).toEqual(["pane.focus.left"])
   })
 
   test("run shows a toast when no session is open", async () => {
-    const { ctx, layers, toasts, opened } = makeCtx(false)
+    const { ctx, layers, toasts, opened, dispatched } = makeCtx(false)
     await nbaPlugin.setup?.(ctx)
     const run = layers[0]?.commands?.[0]?.run
 
@@ -279,6 +289,7 @@ describe("plugin registration", () => {
     expect(opened).toHaveLength(0)
     expect(toasts).toHaveLength(1)
     expect(toasts[0]?.message).toMatch(/session/i)
+    expect(dispatched).toHaveLength(0)
   })
 
   test("plugin cleanup unregisters the session.panel slot", async () => {
