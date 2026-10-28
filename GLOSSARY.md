@@ -44,6 +44,20 @@ _Avoid_: 與 user-only 入口混用（判準：model 會不會自主觸發）
 `commands/*.md` 中只做 `$ARGUMENTS` 轉發給 dual-entry skill 的薄指令檔（frontmatter + 一行 Skill tool 呼叫）。僅 grill-me 與 grill-with-docs 使用；user-only 入口一律自包含。
 _Avoid_: 把 wrapper 當 skill 本體稱呼（內容在 `skills/<name>/SKILL.md`）
 
+### Spec 工作流
+
+**base branch**:
+work branch 的建立起點與 land 的落點；日常是使用者自己的 feature branch，不假設是主幹線（main）。
+_Avoid_: original branch、「原本的 branch」（口語）
+
+**work branch**:
+為單一工作單元而建的暫時 branch：工作 commits 落在其上，收尾是 land 或整支拋棄；implement 流程由使用者手動建立，implement-spec 的 integration branch 為其在 spec 流程的實例。
+_Avoid_: 與 base branch 互換使用（後者是落點，不是工作現場）
+
+**落地**:
+把 work branch 的全部變更收成單一 commit 落回 base branch 的收尾操作；對應自製 `/land` 指令（`commands/land.md`，非 vendored），由使用者手動觸發，implement 與 implement-spec 共用。
+_Avoid_: merge back（非 merge 語意）、squash merge（保留指 git 指令本身）、land（保留指指令名與檔名）、收尾（語意漏到 code-review、worktree 清理等步驟）
+
 ### 終端機
 
 **主力終端**:
