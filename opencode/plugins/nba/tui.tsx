@@ -12,7 +12,7 @@ export type EspnScoreboard = {
   readonly events?: readonly {
     readonly date: string
     readonly status: {
-      readonly type: { readonly state: "pre" | "in" | "post" }
+      readonly type: { readonly state: "pre" | "in" | "post"; readonly description?: string }
       readonly period?: number
       readonly displayClock?: string
     }
@@ -100,6 +100,18 @@ const brandColor = (hex: string | undefined): string | undefined => {
 const periodLabel = (period: number) =>
   period <= 4 ? `Q${period}` : period === 5 ? "OT" : `${period - 4}OT`
 
+// Between-periods (GLOSSARY): a live game whose clock reads exactly zero —
+// halftime, an end-of-quarter break, or a tie waiting for OT. ESPN keeps
+// state "in" there; the clock is "" or a zero value ("0.0", "0:00"), while
+// sub-second remainders ("0.4") are still live play.
+const clockIsZero = (displayClock: string | undefined) => {
+  const clock = displayClock ?? ""
+  return clock === "" || Number.parseFloat(clock) === 0
+}
+
+// Break label naming the period that just ended; Q2's break is halftime.
+const breakLabel = (period: number) => (period === 2 ? "HALF" : `END ${periodLabel(period)}`)
+
 const scoreOf = (competitor: { score?: string } | undefined) => competitor?.score ?? "0"
 
 // Column grid (GLOSSARY): every game line renders on the same fixed columns
@@ -147,6 +159,9 @@ const toGameLine = (event: EspnEvent): GameLine => {
   }
 
   const live = state === "in-progress"
+  // Between-periods (GLOSSARY): live, known period, clock at zero. Named once
+  // so the detail branches below test this condition a single time.
+  const betweenPeriods = live && status.period !== undefined && clockIsZero(status.displayClock)
   return {
     state,
     dim: !live,
@@ -156,12 +171,19 @@ const toGameLine = (event: EspnEvent): GameLine => {
       scoreToken(scoreOf(away), " "),
       abbrToken(homeAbbr, homeColor),
       scoreToken(scoreOf(home), "  "),
-      ...(live
-        ? [
-            { text: `${periodLabel(status.period ?? 0)} ` },
-            { text: status.displayClock || "0:00", color: LIVE_RED },
-          ]
-        : [{ text: "Final" }]),
+      ...(betweenPeriods
+        ? // Between-periods: neutral break label like Final; live dot stays.
+          [{ text: breakLabel(status.period) }]
+        : live
+          ? [
+              // A missing period must not surface as Q0: clock only.
+              ...(status.period !== undefined ? [{ text: `${periodLabel(status.period)} ` }] : []),
+              { text: status.displayClock || "0:00", color: LIVE_RED },
+            ]
+          : // Post-state detail shows the honest label from ESPN's
+            // status.type.description (e.g. "Postponed"), not a blanket Final;
+            // an absent description keeps the long-standing default.
+            [{ text: status.type.description ?? "Final" }]),
     ],
     start: new Date(event.date),
   }

@@ -2,7 +2,7 @@
 // The seam is the ESPN-response-to-view-model transform (pure, injected clock)
 // plus the plugin registration surface (fake context, no TUI).
 import { describe, expect, test } from "bun:test"
-import { toScoreboardView, createScoreboardPoller, createNbaPlugin, type ScoreboardView, type EspnScoreboard, type NbaFetch } from "../plugins/nba/tui"
+import { toScoreboardView, createScoreboardPoller, createNbaPlugin, type ScoreboardView, type EspnScoreboard, type EspnEvent, type NbaFetch } from "../plugins/nba/tui"
 import nbaPlugin from "../plugins/nba/tui"
 
 // Recorded live from the default ESPN NBA scoreboard endpoint (2026-10-24):
@@ -36,6 +36,41 @@ const upcomingEvent = (date: string, away: string, home: string) => ({
       competitors: [
         { homeAway: "away" as const, score: "0", team: { abbreviation: away, color: "e03a3e" } },
         { homeAway: "home" as const, score: "0", team: { abbreviation: home, color: "5a76a9" } },
+      ],
+    },
+  ],
+})
+
+// Minimal post-state event shaped like an ESPN scoreboard event.
+// status.type.description carries the honest post-state label ("Final" for
+// the fixture's finished game; ESPN sends "Postponed" for postponed ones).
+const postEvent = (description: string) => ({
+  date: "2026-10-24T00:00:00Z",
+  status: { type: { state: "post" as const, description } },
+  competitions: [
+    {
+      competitors: [
+        { homeAway: "away" as const, score: "0", team: { abbreviation: "POR", color: "e03a3e" } },
+        { homeAway: "home" as const, score: "0", team: { abbreviation: "SAC", color: "5a76a9" } },
+      ],
+    },
+  ],
+})
+
+// Synthetic live (in-state) event; `period` is spread in only when defined
+// because ESPN leaves the field absent (not null) in some in-progress statuses.
+const liveEvent = (period: number | undefined, displayClock: string) => ({
+  date: "2026-10-24T02:00:00Z",
+  status: {
+    type: { state: "in" as const },
+    ...(period !== undefined ? { period } : {}),
+    displayClock,
+  },
+  competitions: [
+    {
+      competitors: [
+        { homeAway: "away" as const, score: "82", team: { abbreviation: "LAC", color: "e03a3e" } },
+        { homeAway: "home" as const, score: "93", team: { abbreviation: "LAL", color: "5a76a9" } },
       ],
     },
   ],
@@ -87,6 +122,101 @@ describe("line formats", () => {
     expect(line?.state).toBe("finished")
     expect(lineText(line!)).toBe("· CHI  132 MIL  125  Final")
     expect(line?.dim).toBe(true)
+  })
+})
+
+describe("post-state labels", () => {
+  test("postponed: shows ESPN's honest Postponed label, dim like a final", () => {
+    const view = toScoreboardView({ events: [postEvent("Postponed")] }, NOW)
+    const line = view.lines[0]
+    expect(line?.state).toBe("finished")
+    expect(line?.dim).toBe(true)
+    expect(lineText(line!)).toBe("· POR    0 SAC    0  Postponed")
+  })
+
+  test("final: keeps the Final detail when the honest label is Final", () => {
+    const view = toScoreboardView({ events: [postEvent("Final")] }, NOW)
+    const line = view.lines[0]
+    expect(line?.state).toBe("finished")
+    expect(line?.dim).toBe(true)
+    expect(lineText(line!)).toBe("· POR    0 SAC    0  Final")
+  })
+})
+
+describe("between-periods break labels", () => {
+  // The fixture's halftime game (DET @ MIA): state "in", period 2, clock "0.0".
+  const halftime = ((fixture as EspnScoreboard).events ?? []).find(
+    (event) => event.status.type.state === "in" && event.status.displayClock === "0.0",
+  )!
+  // Clone of the halftime event with status fields overridden.
+  const withStatus = (status: Partial<EspnEvent["status"]>): EspnEvent => ({
+    ...halftime,
+    status: { ...halftime.status, ...status },
+  })
+
+  test("a live game with a zero clock shows HALF instead of a clock string", () => {
+    const view = toScoreboardView(fixture, NOW)
+    expect(lineText(findLine(view, "● DET")!)).toBe("● DET   65 MIA   53  HALF")
+    // An empty clock string counts as zero: same between-periods state.
+    const empty = toScoreboardView({ events: [withStatus({ displayClock: "" })] }, NOW)
+    expect(lineText(empty.lines[0]!).slice(21)).toBe("HALF")
+  })
+
+  test("the period that just ended maps to its break label", () => {
+    const cases: readonly (readonly [number, string])[] = [
+      [1, "END Q1"],
+      [3, "END Q3"],
+      [4, "END Q4"],
+      [5, "END OT"],
+      [6, "END 2OT"],
+      [7, "END 3OT"],
+    ]
+    for (const [period, label] of cases) {
+      const view = toScoreboardView({ events: [withStatus({ period })] }, NOW)
+      expect(view.lines[0]?.state).toBe("in-progress")
+      expect(lineText(view.lines[0]!).slice(21)).toBe(label)
+    }
+  })
+
+  test("the break label is neutral like Final while the red live dot stays", () => {
+    const view = toScoreboardView(fixture, NOW)
+    const line = findLine(view, "● DET")!
+    expect(line.dim).toBe(false)
+    const red = line.tokens.filter((token) => token.color === "#ff0000").map((t) => t.text)
+    expect(red).toEqual(["● "])
+    expect(line.tokens.find((token) => token.text === "HALF")?.color).toBeUndefined()
+  })
+
+  test("a sub-second clock like 0.4 is live play and keeps the red clock string", () => {
+    const view = toScoreboardView({ events: [withStatus({ displayClock: "0.4" })] }, NOW)
+    const line = view.lines[0]!
+    expect(lineText(line)).toBe("● DET   65 MIA   53  Q2 0.4")
+    expect(line.tokens.find((token) => token.text === "0.4")?.color).toBe("#ff0000")
+  })
+
+  test("a zero clock on a pre-state game does not affect the upcoming rendering", () => {
+    const view = toScoreboardView({ events: [withStatus({ type: { state: "pre" } })] }, NOW)
+    const line = view.lines[0]!
+    expect(line.state).toBe("upcoming")
+    // 2026-10-24T00:00Z is 8:00 AM in Asia/Taipei.
+    expect(lineText(line)).toBe("  DET      MIA       8:00 AM")
+  })
+})
+
+describe("live period detail", () => {
+  test("without a period, shows only the clock and never Q0", () => {
+    const view = toScoreboardView({ events: [liveEvent(undefined, "8:01")] }, NOW)
+    expect(lineText(view.lines[0]!)).toBe("● LAC   82 LAL   93  8:01")
+  })
+
+  test("without a period at a zero clock, shows the clock only (no Q0, no break label)", () => {
+    const view = toScoreboardView({ events: [liveEvent(undefined, "0.0")] }, NOW)
+    expect(lineText(view.lines[0]!)).toBe("● LAC   82 LAL   93  0.0")
+  })
+
+  test("with a period, shows the period label and clock unchanged", () => {
+    const view = toScoreboardView({ events: [liveEvent(2, "10:24")] }, NOW)
+    expect(lineText(view.lines[0]!)).toBe("● LAC   82 LAL   93  Q2 10:24")
   })
 })
 
