@@ -15,10 +15,13 @@ g.maplocalleader = ","
 
 -- 基本設定
 opt.compatible = false
-opt.clipboard = "unnamedplus"
 opt.swapfile = false
 opt.hidden = true
 opt.mouse = "a"
+
+-- OSC 52 clipboard: forward yank to the local clipboard over SSH
+-- (same mechanism as the main config, see lua/config/clipboard.lua)
+require('config.clipboard')
 
 -- 編碼設定
 opt.encoding = "utf-8"
