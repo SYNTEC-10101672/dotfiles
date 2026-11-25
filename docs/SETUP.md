@@ -223,7 +223,7 @@ sudo npm install -g @opencode/cli
 make opencode
 ```
 
-> **注意**：唯一 plugin 是 repo 自帶的 local plugin `guard.ts`（Secret Guard，經 `plugins/` symlink 部署），無 npm plugin 需下載；`package.json` 的 `@opencode/plugin` 是它的 SDK 依賴。session 預設 model 固定為 `zai-coding-plan/glm-5.3`（`opencode.json` top-level `model`）。在 repo 的 `opencode/` 目錄下可跑 `bun run typecheck`（tsc --noEmit）與 `bun test`（guard.ts 的單元與 gitleaks integration 測試）。
+> **注意**：唯一 plugin 是 repo 自帶的 local plugin `guard.ts`（Secret Guard，經 `plugins/` symlink 部署），無 npm plugin 需下載；`package.json` 的 `@opencode/plugin` 是它的 SDK 依賴。session 預設 model 由 `opencode.json` 的 top-level `model` 決定；升級 model 只改那一行，本文件不重複記版本號。在 repo 的 `opencode/` 目錄下可跑 `bun run typecheck`（tsc --noEmit）與 `bun test`（guard.ts 的單元與 gitleaks integration 測試）。
 
 驗證：
 
