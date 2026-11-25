@@ -6,7 +6,7 @@
   editor = nvim
   excludesfile = ~/.gitignore_global
 [color]
-  ui = always
+  ui = auto
 [color "diff"]
   meta = yellow bold
   commit = green bold
