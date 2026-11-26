@@ -44,6 +44,17 @@
   "plugin": [
     "@slkiser/opencode-quota@5.0.2"
   ],
+  "providers": {
+    "zai-coding-plan": {
+      "settings": {
+        "thinking": {
+          "type": "enabled",
+          "clear_thinking": false
+        },
+        "reasoningEffort": "high"
+      }
+    }
+  },
   "provider": {
     "copilot": {},
     "zai": {}
